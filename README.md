@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+
+배포도메인 - 추후 추가 바람
+node v20
+
 ## Getting Started
 
 First, run the development server:
