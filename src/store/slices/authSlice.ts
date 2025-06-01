@@ -1,3 +1,4 @@
+// 비동기 로그인 로직 추가 필요
 import { createSlice } from '@reduxjs/toolkit'
 
 interface AuthState {
