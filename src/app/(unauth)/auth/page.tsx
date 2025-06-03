@@ -1,5 +1,5 @@
-const auth = () => {
+const Auth = () => {
   return <div>Home</div>
 }
 
-export default auth
+export default Auth
