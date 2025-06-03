@@ -29,7 +29,8 @@ export default defineConfig([
       },
     },
     rules: {
-      'react/react-in-jsx-scope': 'off', // ✅ 덮어씌움
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-pascal-case': 'error',
     },
   },
 ])
