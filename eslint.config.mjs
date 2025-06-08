@@ -1,19 +1,18 @@
 import js from '@eslint/js'
-import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import pluginReact from 'eslint-plugin-react'
-import pluginNext from 'eslint-plugin-next'
+import globals from 'globals'
 import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
   js.configs.recommended,
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
-  pluginNext.configs.recommended,
 
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: 2020,
         sourceType: 'module',
@@ -24,7 +23,7 @@ export default defineConfig([
     plugins: {
       js,
       pluginReact,
-      pluginNext,
+      '@typescript-eslint': tseslint.plugin,
     },
     settings: {
       react: {
@@ -35,5 +34,13 @@ export default defineConfig([
       'react/react-in-jsx-scope': 'off',
       'react/jsx-pascal-case': 'error',
     },
+  },
+
+  {
+    ignores: [
+      '**/.next/**',
+      'eslint.config.mjs',
+      'postcss.config.mjs',
+    ],
   },
 ])
