@@ -6,6 +6,9 @@ node v20
 
 ## Getting Started
 
+node version: 20
+pnpm version: 10.12.0
+
 First, run the development server:
 
 ```bash
