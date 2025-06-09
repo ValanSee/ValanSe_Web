@@ -37,10 +37,6 @@ export default defineConfig([
   },
 
   {
-    ignores: [
-      '**/.next/**',
-      'eslint.config.mjs',
-      'postcss.config.mjs',
-    ],
+    ignores: ['**/.next/**', 'eslint.config.mjs', 'postcss.config.mjs'],
   },
 ])
