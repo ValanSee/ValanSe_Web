@@ -1,0 +1,4 @@
+{
+  "windsurf.enableAutocomplete": true,
+  "windsurf.schemaPath": "./schema.graphql"
+}
