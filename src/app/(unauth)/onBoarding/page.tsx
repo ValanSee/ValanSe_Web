@@ -1,9 +1,11 @@
+'use client'
+
 import { useState } from 'react'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
 
-const OnBoarding = () => {
+const Onboarding = () => {
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
@@ -80,4 +82,4 @@ const OnBoarding = () => {
   )
 }
 
-export default OnBoarding
+export default Onboarding
