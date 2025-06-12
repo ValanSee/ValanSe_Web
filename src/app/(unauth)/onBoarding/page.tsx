@@ -42,7 +42,8 @@ const Onboarding = () => {
             <button
               key={option}
               onClick={() => setGender(option)}
-              className={`flex-1 border border-gray-300 py-2 rounded-md`}
+              className={`flex-1 border border-gray-300 py-2 rounded-md 
+               ${gender === option ? 'text-blue-500 border-blue-500' : ''}`}
             >
               {option}
             </button>
@@ -57,7 +58,8 @@ const Onboarding = () => {
             <button
               key={option}
               onClick={() => setAge(option)}
-              className={`flex-1 border border-gray-300 py-2 rounded-md`}
+              className={`flex-1 border border-gray-300 py-2 rounded-md
+                 ${age === option ? 'text-blue-500 border-blue-500' : ''}`}
             >
               {option}
             </button>
