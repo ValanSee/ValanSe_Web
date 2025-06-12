@@ -1,22 +1,24 @@
-import { useState } from 'react';
+'use client'
+
+import { useState } from 'react'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
 
-const OnBoarding = () => {
-  const [nickname, setNickname] = useState('');
-  const [gender, setGender] = useState<string | null>(null);
-  const [age, setAge] = useState<string | null>(null);
+const Onboarding = () => {
+  const [nickname, setNickname] = useState('')
+  const [gender, setGender] = useState<string | null>(null)
+  const [age, setAge] = useState<string | null>(null)
   // const [mbti, setMbti] = useState('');
 
   const handleSubmit = () => {
-    console.log('Nickname:', nickname);
-    console.log('Gender:', gender);
-    console.log('Age:', age);
+    console.log('Nickname:', nickname)
+    console.log('Gender:', gender)
+    console.log('Age:', age)
     // console.log('MBTI:', mbti);
 
     // TODO: 유효성 검사 && API 호출
-  };
+  }
 
   return (
     <div className="px-6 py-10">
@@ -72,11 +74,12 @@ const OnBoarding = () => {
 
       <button
         onClick={handleSubmit}
-        className="w-full py-4 rounded-md border border-gray-300 mt-8">
+        className="w-full py-4 rounded-md border border-gray-300 mt-8"
+      >
         완료
       </button>
     </div>
   )
 }
 
-export default OnBoarding
+export default Onboarding
