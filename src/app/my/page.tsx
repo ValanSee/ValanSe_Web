@@ -1,5 +1,5 @@
-import MyPage from "@/components/pages/my/myPage";
+import MyPage from '@/components/pages/my/myPage'
 
 export default function My() {
-    return <MyPage />
+  return <MyPage />
 }

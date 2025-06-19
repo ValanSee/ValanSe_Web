@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import Image from 'next/image';
+import Image from 'next/image'
 
 export default function MyProfileSection() {
   return (
@@ -41,9 +41,11 @@ export default function MyProfileSection() {
             <div className="font-medium">남성 · 30대 · ENFP</div>
           </div>
           {/* 수정 버튼 */}
-          <button className="text-sm text-gray-400 hover:text-black">수정</button>
+          <button className="text-sm text-gray-400 hover:text-black">
+            수정
+          </button>
         </div>
       </div>
     </section>
-  );
+  )
 }
