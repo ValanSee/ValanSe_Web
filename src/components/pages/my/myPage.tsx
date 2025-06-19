@@ -5,7 +5,6 @@ import AccountControlSection from './accountControlSection'
 function MyPage() {
   return (
     <div className="pt-12">
-      {' '}
       {/* 상단 여백 */}
       <MyProfileSection />
       <div className="w-full h-3 bg-gray-200"></div>
