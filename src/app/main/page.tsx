@@ -1,4 +1,4 @@
-import MainPage from "../../components/pages/main/mainPage"
+import MainPage from '../../components/pages/main/mainPage'
 
 function Main() {
   return <MainPage />

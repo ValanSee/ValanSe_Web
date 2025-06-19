@@ -1,7 +1,7 @@
-import HotIssueSection from './hotIssueSection';
-import GameCreateSection from './gameCreateSection';
-import CategorySection from './categorySection';
-import BottomNavBar from '../_shared/bottomNavBar';
+import HotIssueSection from './hotIssueSection'
+import GameCreateSection from './gameCreateSection'
+import CategorySection from './categorySection'
+import BottomNavBar from '../_shared/bottomNavBar'
 
 const MainPage = () => {
   return (
@@ -13,7 +13,7 @@ const MainPage = () => {
       </div>
       <BottomNavBar />
     </div>
-  );
-};
+  )
+}
 
 export default MainPage

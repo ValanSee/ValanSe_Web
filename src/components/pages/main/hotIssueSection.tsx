@@ -1,16 +1,16 @@
 'use client'
 
-import Image from 'next/image';
-import { useState } from 'react';
+import Image from 'next/image'
+import { useState } from 'react'
 
 function HotIssueSection() {
-  const options = ['A', 'B'];
+  const options = ['A', 'B']
   const optionTexts = [
     '점심 회사 돈으로, 메뉴 못 정함',
     '점심 내 돈으로, 메뉴 마음대로',
-  ];
+  ]
 
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null)
 
   return (
     <div className="bg-[#839DB7] px-6 pb-6 rounded-b-[2rem]">
@@ -24,19 +24,21 @@ function HotIssueSection() {
 
       {/* 선택지 */}
       <div className="grid grid-cols-2 gap-2 w-full max-w-md pt-5">
-          {options.map((label, i) => (
-            <button
-              key={label}
-              className={`w-45 h-[9.5rem] rounded-lg border shadow-sm px-7 py-6 ${
-              selectedOption === label ? 'bg-black text-white' : 'bg-white text-gray-800'
+        {options.map((label, i) => (
+          <button
+            key={label}
+            className={`w-45 h-[9.5rem] rounded-lg border shadow-sm px-7 py-6 ${
+              selectedOption === label
+                ? 'bg-black text-white'
+                : 'bg-white text-gray-800'
             }`}
             onClick={() => setSelectedOption(label)}
-            >
+          >
             <div className="font-bold text-lg mb-1">{label}</div>
             <div className="text-sm">{optionTexts[i]}</div>
-            </button>
-          ))}
-        </div>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
