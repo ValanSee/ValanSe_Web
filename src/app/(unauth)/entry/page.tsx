@@ -1,9 +1,7 @@
-import EntryPage from "@/components/pages/entry/entryPage"
+import EntryPage from '@/components/pages/entry/entryPage'
 
 const Entry = () => {
-  return (
-    <EntryPage />
-  )
+  return <EntryPage />
 }
 
 export default Entry
