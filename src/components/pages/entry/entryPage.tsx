@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Divider from './_components/divider'
+import KakaoLoginButton from './_components/kakaoLoginButton'
 
 function EntryPage() {
   return (
@@ -27,9 +28,7 @@ function EntryPage() {
 
       <div className="w-full max-w-xs">
         {/* 카카오 로그인 버튼 */}
-        <button className="w-full max-w-xs bg-[#FEE500] text-black flex items-center justify-center gap-2 py-3 rounded-xl font-semibold shadow-sm hover:brightness-95 mb-4">
-          카카오로 시작하기
-        </button>
+        <KakaoLoginButton />
 
         {/* 구분선 텍스트 */}
         <Divider />

@@ -1,7 +1,5 @@
-'use client'
-
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import axios from 'axios'
 
 export default function KakaoRedirect() {
@@ -17,7 +15,7 @@ export default function KakaoRedirect() {
           // 토큰 저장
           localStorage.setItem('accessToken', res.data.accessToken)
           localStorage.setItem('refreshToken', res.data.refreshToken)
-          router.push('/onboarding') // 온보딩으로 리디렉션
+          router.replace('/') // 메인 페이지 등으로 리디렉션
         })
         .catch((err) => {
           console.error('로그인 실패', err)
