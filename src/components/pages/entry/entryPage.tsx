@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Divider from './_components/divider'
 
 function EntryPage() {
   return (
@@ -31,11 +32,7 @@ function EntryPage() {
         </button>
 
         {/* 구분선 텍스트 */}
-        <div className="flex w-full items-center gap-2 mb-4">
-          <hr className="w-full border-gray-300" />
-          <p className="text-gray-500 text-sm whitespace-nowrap">또는</p>
-          <hr className="w-full border-gray-300" />
-        </div>
+        <Divider />
 
         {/* 로그인 없이 시작하기 */}
         <button className="w-full max-w-xs bg-white/60 text-gray-600 border border-gray-300 py-3 rounded-xl font-medium hover:bg-white/80">
