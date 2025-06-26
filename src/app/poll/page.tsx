@@ -1,7 +1,11 @@
 // 투표페이지
-import PollPage from '../../components/pages/poll/pollPage'
+import PollCard from '../../components/pages/poll/pollCard'
 
 function Poll() {
-  return <PollPage />
+  return (
+    <div>
+      <PollCard />
+    </div>
+  )
 }
 export default Poll
