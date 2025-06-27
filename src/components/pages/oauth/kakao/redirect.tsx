@@ -12,7 +12,7 @@ export default function KakaoRedirect() {
 
     if (code) {
       axios
-        .post('/auth/kakao/login', { code })
+        .post('https://valanse-server.com/auth/kakao/login', { code })
         .then((res) => {
           // 토큰 저장
           localStorage.setItem('accessToken', res.data.accessToken)
