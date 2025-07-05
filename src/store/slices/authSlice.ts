@@ -1,14 +1,6 @@
 // 비동기 로그인 로직 추가 필요
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
-type Profile = {
-  nickname: string
-  gender: string
-  age: string
-  mbtiIe: string
-  mbtiTf: string
-  mbti: string
-} | null
+import { Profile } from '@/types/_shared/profile'
 
 interface AuthState {
   isLogined: boolean
@@ -16,7 +8,7 @@ interface AuthState {
   refreshToken: string | null
   user: {
     id: string
-    profile: Profile
+    profile: Profile | null
   } | null
   loading: boolean
   error: string | null
