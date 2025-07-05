@@ -17,21 +17,12 @@ const OnboardingPage = () => {
   const [age, setAge] = useState<string | null>(null)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
   const [mbti, setMbti] = useState<string>('')
-  const [form, setForm] = useState<Profile>({
-    nickname: '',
-    gender: '',
-    age: '',
-    mbtiIe: '',
-    mbtiTf: '',
-    mbti: '',
-  })
 
-  const refineForm = () => {
+  const refineForm = (): Profile => {
     const mbtiIe = mbti[0]
     const mbtiTf = mbti[2]
 
     let ageData: Age = 'TEN'
-    console.log(age)
     if (age === '10대') {
       ageData = 'TEN'
     } else if (age === '20대') {
@@ -42,7 +33,6 @@ const OnboardingPage = () => {
       ageData = 'OVER_FOURTY'
     }
 
-    console.log(gender)
     let genderData: Gender = 'FEMALE'
     if (gender === '여성') {
       genderData = 'FEMALE'
@@ -50,22 +40,21 @@ const OnboardingPage = () => {
       genderData = 'MALE'
     }
 
-    setForm({
+    return {
       nickname: nickname!,
       gender: genderData,
       age: ageData,
       mbtiIe: mbtiIe,
       mbtiTf: mbtiTf,
       mbti: mbti,
-    })
-    console.log(form)
+    }
   }
 
   const handleSubmit = async () => {
-    refineForm()
+    const refinedForm = refineForm()
 
-    const response = await authApi.post('/member/profile', form)
-    console.log(response.data)
+    const response = await authApi.post('/member/profile', refinedForm)
+    console.log('response', response.data)
   }
 
   return (
