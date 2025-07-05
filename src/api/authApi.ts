@@ -6,7 +6,7 @@ import { getAccessToken, clearTokens } from '@/api/tokenUtils'
 // import { refreshAccessToken } from './authApiService';  <-- 필요 시
 
 export const authApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
