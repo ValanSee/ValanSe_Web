@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
 import { Profile } from '@/types/_shared/profile'
-import axios from 'axios'
+import { authApi } from '@/api/authApi'
 
 type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
 type Gender = 'FEMALE' | 'MALE'
@@ -64,10 +64,7 @@ const OnboardingPage = () => {
   const handleSubmit = async () => {
     refineForm()
 
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/member/profile`,
-      form,
-    )
+    const response = await authApi.post('/member/profile', form)
     console.log(response.data)
   }
 
