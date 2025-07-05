@@ -6,7 +6,7 @@ import { Profile } from '@/types/_shared/profile'
 import { authApi } from '@/api/authApi'
 
 type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
-type Gender = 'FEMALE' | 'MALE'
+type Gender = 'F' | 'M'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
@@ -33,11 +33,11 @@ const OnboardingPage = () => {
       ageData = 'OVER_FOURTY'
     }
 
-    let genderData: Gender = 'FEMALE'
+    let genderData: Gender = 'F'
     if (gender === '여성') {
-      genderData = 'FEMALE'
+      genderData = 'F'
     } else if (gender === '남성') {
-      genderData = 'MALE'
+      genderData = 'M'
     }
 
     return {
