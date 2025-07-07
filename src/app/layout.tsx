@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Providers from './providers'
+import { ModalRootInitializer } from './modalRootInitializer'
 
 export const metadata: Metadata = {
   title: 'ValanSe',

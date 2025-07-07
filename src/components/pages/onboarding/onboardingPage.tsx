@@ -1,23 +1,60 @@
 'use client'
 
 import { useState } from 'react'
+import MBTIBottomSheet from './mbtiBottomSheet'
+import { Profile } from '@/types/_shared/profile'
+import { authApi } from '@/api/authApi'
+
+type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
+type Gender = 'FEMALE' | 'MALE'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
 
-const Onboarding = () => {
+const OnboardingPage = () => {
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
-  // const [mbti, setMbti] = useState('');
+  const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
+  const [mbti, setMbti] = useState<string>('')
 
-  const handleSubmit = () => {
-    console.log('Nickname:', nickname)
-    console.log('Gender:', gender)
-    console.log('Age:', age)
-    // console.log('MBTI:', mbti);
+  const refineForm = (): Profile => {
+    const mbtiIe = mbti[0]
+    const mbtiTf = mbti[2]
 
-    // TODO: 유효성 검사 && API 호출
+    let ageData: Age = 'TEN'
+    if (age === '10대') {
+      ageData = 'TEN'
+    } else if (age === '20대') {
+      ageData = 'TWENTY'
+    } else if (age === '30대') {
+      ageData = 'THIRTY'
+    } else if (age === '40대') {
+      ageData = 'OVER_FOURTY'
+    }
+
+    let genderData: Gender = 'FEMALE'
+    if (gender === '여성') {
+      genderData = 'FEMALE'
+    } else if (gender === '남성') {
+      genderData = 'MALE'
+    }
+
+    return {
+      nickname: nickname!,
+      gender: genderData,
+      age: ageData,
+      mbtiIe: mbtiIe,
+      mbtiTf: mbtiTf,
+      mbti: mbti,
+    }
+  }
+
+  const handleSubmit = async () => {
+    const refinedForm = refineForm()
+
+    const response = await authApi.post('/member/profile', refinedForm)
+    console.log('response', response.data)
   }
 
   return (
@@ -69,14 +106,23 @@ const Onboarding = () => {
 
       <div className="mb-6">
         <label className="block mb-4 text-sm font-bold">MBTI</label>
-        <div className="text-sm border border-gray-300 px-4 py-3 rounded-md">
-          MBTI를 알려주세요
+        <div
+          onClick={() => setMbtiBottomSheetOpen(true)}
+          className="text-sm border border-gray-300 px-4 py-3 rounded-md"
+        >
+          {mbti ? mbti : 'MBTI를 알려주세요'}
         </div>
       </div>
+      {mbtiBottomSheetOpen && (
+        <MBTIBottomSheet
+          onClose={() => setMbtiBottomSheetOpen(false)}
+          setMbti={setMbti}
+        />
+      )}
 
       <button
         onClick={handleSubmit}
-        className="w-full py-4 rounded-md border border-gray-300 mt-8"
+        className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-8"
       >
         완료
       </button>
@@ -84,4 +130,4 @@ const Onboarding = () => {
   )
 }
 
-export default Onboarding
+export default OnboardingPage
