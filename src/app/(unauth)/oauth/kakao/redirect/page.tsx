@@ -1,7 +1,7 @@
-import KakaoRedirect from '@/components/pages/oauth/kakao/redirect'
+import RedirectPage from '@/components/pages/oauth/kakao/RedirectPage'
 
 function Redirect() {
-  return <KakaoRedirect />
+  return <RedirectPage />
 }
 
 export default Redirect
