@@ -18,10 +18,16 @@ export default function KakaoRedirect() {
     if (code) {
       try {
         dispatch(loginThunk(code))
-        dispatch(fetchProfileThunk())
       } catch (err) {
         console.error('로그인 실패', err)
         router.push('/entry')
+      }
+
+      try {
+        dispatch(fetchProfileThunk())
+      } catch (err) {
+        console.error('프로필 조회 실패', err)
+        router.push('/onboarding')
       }
     }
   }, [])
