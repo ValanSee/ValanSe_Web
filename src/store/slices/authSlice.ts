@@ -1,7 +1,7 @@
 // 비동기 로그인 로직 추가 필요
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Profile } from '@/types/_shared/profile'
-import { saveTokens, clearTokens } from '@/api/tokenUtils'
+import { saveTokens, clearTokens } from '@/utils/tokenUtils'
 
 interface AuthState {
   isLogined: boolean
