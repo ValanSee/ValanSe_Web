@@ -1,6 +1,6 @@
 // src/api/authApi.ts
 import axios from 'axios'
-import { getAccessToken, clearTokens } from '@/api/tokenUtils'
+import { getAccessToken, clearTokens } from '@/utils/tokenUtils'
 
 // TODO: 리프레시 API
 // import { refreshAccessToken } from './authApiService';  <-- 필요 시

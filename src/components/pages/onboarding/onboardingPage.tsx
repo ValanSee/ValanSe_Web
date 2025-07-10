@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
 import { Profile } from '@/types/_shared/profile'
-import { authApi } from '@/api/authApi'
+import { createMemberProfile } from '@/api/member'
 
 type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
 type Gender = 'FEMALE' | 'MALE'
@@ -52,9 +52,7 @@ const OnboardingPage = () => {
 
   const handleSubmit = async () => {
     const refinedForm = refineForm()
-
-    const response = await authApi.post('/member/profile', refinedForm)
-    console.log('response', response.data)
+    await createMemberProfile(refinedForm)
   }
 
   return (

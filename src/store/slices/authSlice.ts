@@ -1,14 +1,16 @@
 // 비동기 로그인 로직 추가 필요
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Profile } from '@/types/_shared/profile'
-import { saveTokens, clearTokens } from '@/api/tokenUtils'
+import { saveTokens, clearTokens } from '@/utils/tokenUtils'
+
+interface User {
+  id: string
+  profile: Profile | null
+}
 
 interface AuthState {
   isLogined: boolean
-  user: {
-    id: string
-    profile: Profile | null
-  } | null
+  user: User | null
   loading: boolean
   error: string | null
 }
@@ -53,8 +55,13 @@ const authSlice = createSlice({
       state.user = null
       clearTokens()
     },
+    setProfile(state, action: PayloadAction<Profile>) {
+      if (state.user) {
+        state.user.profile = action.payload
+      }
+    },
   },
 })
-export const { loginStart, loginSuccess, loginFailure, logout } =
+export const { loginStart, loginSuccess, loginFailure, logout, setProfile } =
   authSlice.actions
 export default authSlice.reducer
