@@ -45,10 +45,14 @@ const MainPage = () => {
           {options.map((label, index) => (
             <div
               key={label}
-              className={`w-full h-full p-4 py-6 rounded-lg bg-white border ${index % 2 === 0 ? 'border-[#5F81A3]' : 'border-[#F27F34]'}`}
+              className={`flex flex-col items-center gap-5 w-full h-full p-4 py-6 rounded-lg bg-white border ${index % 2 === 0 ? 'border-[#5F81A3]' : 'border-[#F27F34]'}`}
             >
-              <div className="font-bold text-lg mb-1">{label}</div>
-              <div className="text-sm">{optionTexts[index]}</div>
+              <div
+                className={`font-bold text-2xl ${index % 2 === 0 ? 'text-[#5F81A3]' : 'text-[#F27F34]'}`}
+              >
+                {label}
+              </div>
+              <div className="text-sm text-center">{optionTexts[index]}</div>
             </div>
           ))}
         </div>
