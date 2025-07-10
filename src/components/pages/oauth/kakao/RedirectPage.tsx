@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { loginThunk } from '@/store/thunks/authThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import { fetchProfileThunk } from '@/store/thunks/authThunks'
 
 export default function KakaoRedirect() {
   const router = useRouter()
@@ -17,13 +18,15 @@ export default function KakaoRedirect() {
     if (code) {
       try {
         dispatch(loginThunk(code))
-        router.push('/onboarding')
+        dispatch(fetchProfileThunk())
       } catch (err) {
         console.error('로그인 실패', err)
+        router.push('/entry')
       }
     }
   }, [])
 
+  // TODO: 로딩 스피너 디자인 나오면 반영
   return (
     <>
       {auth.loading ? (

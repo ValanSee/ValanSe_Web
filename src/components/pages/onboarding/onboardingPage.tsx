@@ -4,6 +4,7 @@ import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
 import { Profile } from '@/types/_shared/profile'
 import { createMemberProfile } from '@/api/member'
+import { useRouter } from 'next/navigation'
 
 type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
 type Gender = 'FEMALE' | 'MALE'
@@ -12,6 +13,7 @@ const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
 
 const OnboardingPage = () => {
+  const router = useRouter()
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
@@ -52,7 +54,14 @@ const OnboardingPage = () => {
 
   const handleSubmit = async () => {
     const refinedForm = refineForm()
-    await createMemberProfile(refinedForm)
+    try {
+      await createMemberProfile(refinedForm)
+      router.push('/main')
+    } catch (error) {
+      console.error('Failed to create member profile:', error)
+      alert('회원 정보 생성에 실패했습니다.')
+      router.push('/entry')
+    }
   }
 
   return (
