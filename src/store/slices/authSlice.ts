@@ -55,6 +55,7 @@ const authSlice = createSlice({
       state.user = null
       clearTokens()
     },
+    // TODO: memberslice로 이동
     setProfile(state, action: PayloadAction<Profile>) {
       if (state.user) {
         state.user.profile = action.payload

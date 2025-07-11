@@ -1,5 +1,4 @@
 // features/auth/authThunks.ts
-import { authApi } from '@/api/instance/authApi'
 import { publicApi } from '@/api/instance/publicApi'
 import {
   loginStart,
@@ -9,7 +8,7 @@ import {
 } from '../slices/authSlice'
 import { AppDispatch } from '../store'
 import { setProfile } from '../slices/authSlice'
-import { Profile } from '@/types/_shared/profile'
+import { fetchMemberProfile } from '@/api/member'
 import { getRefreshToken } from '@/utils/tokenUtils'
 import { saveTokens, clearTokens } from '@/utils/tokenUtils'
 
@@ -36,9 +35,9 @@ export const loginThunk = (code: string) => async (dispatch: AppDispatch) => {
 
 export const fetchProfileThunk = () => async (dispatch: AppDispatch) => {
   try {
-    const res = await authApi.get<Profile>('/member/profile')
-    dispatch(setProfile(res.data))
-    return res.data
+    const res = await fetchMemberProfile()
+    dispatch(setProfile(res))
+    return res
   } catch (err) {
     throw err
   }
