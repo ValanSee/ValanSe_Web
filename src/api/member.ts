@@ -11,8 +11,8 @@ export const createMemberProfile = async (profile: Profile) => {
 
 export const fetchMemberProfile = async () => {
   try {
-    const response = await authApi.get<Profile>('/member/profile')
-    return response.data
+    const response = await authApi.get<{ profile: Profile }>('/member/profile')
+    return response.data.profile
   } catch (error) {
     throw error
   }
