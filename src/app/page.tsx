@@ -20,6 +20,7 @@ export default function Home() {
     const checkAuth = async () => {
       // access token이 없으면 entry 페이지로
       if (!getAccessToken()) {
+        alert('AccessToken이 없습니다.')
         router.replace('/entry')
         return
       }
@@ -28,11 +29,14 @@ export default function Home() {
         // access token 이 유효하면 profile을 가져오고 main 페이지로
         const profile = await dispatch(fetchProfileThunk())
         if (profile) {
+          alert(`Profile이 있습니다. ${profile}`)
           router.replace('/main')
         } else {
+          alert('Profile이 없습니다.')
           router.replace('/onboarding')
         }
       } catch {
+        alert('Profile이 없습니다.')
         router.replace('/entry')
       }
     }
