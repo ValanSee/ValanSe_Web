@@ -9,19 +9,16 @@ export const createMemberProfile = async (profile: Profile) => {
   }
 }
 
-type fetchMemberProfileResponse = Profile
-
 export const fetchMemberProfile = async () => {
   try {
-    const response =
-      await authApi.get<fetchMemberProfileResponse>('/member/profile')
+    const response = await authApi.get<Profile>('/member/profile')
     return response.data
   } catch (error) {
     throw error
   }
 }
 
-type fetchMemberMypageResponse = {
+export type fetchMemberMypageResponse = {
   profile: {
     profile_image_url: string
     kakaoname: string
