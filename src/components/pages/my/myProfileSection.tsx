@@ -1,8 +1,11 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 export default function MyProfileSection() {
+  const router = useRouter()
+
   return (
     <section className="bg-white px-4 py-6 border-b">
       {/* 타이틀 */}
@@ -41,7 +44,10 @@ export default function MyProfileSection() {
             <div className="font-medium">남성 · 30대 · ENFP</div>
           </div>
           {/* 수정 버튼 */}
-          <button className="text-sm text-gray-400 hover:text-black">
+          <button
+            onClick={() => router.push('/my/edit')}
+            className="text-sm text-gray-400 hover:text-black"
+          >
             수정
           </button>
         </div>

@@ -1,3 +1,7 @@
+// TODO: 수정하기
+// TODO: 비로그인 페이지
+// TODO: api 호출
+
 'use client'
 
 import MyProfileSection from './myProfileSection'
