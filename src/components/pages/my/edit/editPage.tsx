@@ -6,10 +6,13 @@ import { useState } from 'react'
 import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
 import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
 import { Profile } from '@/types/_shared/profile'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
 
+const responseKakaoname = '김철수'
 const responseNickname = 'dinopark'
 const responseGender = 'MALE'
 const responseAge = 'TEN'
@@ -42,6 +45,7 @@ const genderMap = (label: string) => {
 }
 
 const EditPage = () => {
+  const router = useRouter()
   const [nickname, setNickname] = useState(responseNickname)
   const [isNicknameEditing, setIsNicknameEditing] = useState(false)
   const [gender, setGender] = useState<string | null>(responseGender)
@@ -76,8 +80,17 @@ const EditPage = () => {
   }
 
   return (
-    <div className="px-6 py-10">
-      <div className="flex flex-col gap-4 mb-6">
+    <div className="px-4 py-10">
+      <div className="flex flex-col items-center gap-4">
+        <Image
+          src="/profile-example.svg"
+          alt="profile"
+          width={84}
+          height={84}
+        />
+        <div className="text-[20px]">{responseKakaoname}</div>
+      </div>
+      <div className="flex flex-col gap-4 mb-6 pt-6">
         <label className="text-md font-bold">닉네임</label>
         <div className="flex items-center justify-between pl-5 pr-3.5 py-3 border border-[#C6C6C6] rounded-md">
           {!isNicknameEditing ? (
@@ -168,12 +181,21 @@ const EditPage = () => {
         />
       )}
 
-      <button
-        onClick={handleSubmit}
-        className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-8"
-      >
-        완료
-      </button>
+      {/* Action Bar */}
+      <div className="flex gap-4">
+        <button
+          onClick={router.back}
+          className="w-full py-4 rounded-md bg-[#e4e4e4] text-[#8E8E8E] mt-8"
+        >
+          취소
+        </button>
+        <button
+          onClick={handleSubmit}
+          className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-8"
+        >
+          변경사항 저장
+        </button>
+      </div>
     </div>
   )
 }
