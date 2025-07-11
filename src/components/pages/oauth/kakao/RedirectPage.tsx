@@ -24,19 +24,15 @@ export default function KakaoRedirect() {
           try {
             const profile = await dispatch(fetchProfileThunk())
             if (profile) {
-              alert(`Profile이 있습니다. ${profile}`)
               router.push('/main')
             } else {
-              alert('Profile이 없습니다.')
               router.push('/onboarding')
             }
-          } catch (profileErr) {
+          } catch {
             // 프로필이 없으면 onboarding 페이지로 이동
-            console.error('프로필이 없습니다:', profileErr)
             router.push('/onboarding')
           }
-        } catch (loginErr) {
-          console.error('로그인 실패', loginErr)
+        } catch {
           router.push('/entry')
         }
       }
