@@ -1,18 +1,7 @@
 import { authApi } from './instance/authApi'
-import { Gender, Age, mbtiIe, mbtiTf, MBTI } from '@/types/_shared/profile'
+import { Profile } from '@/types/_shared/profile'
 
-export type createMemberProfileRequest = {
-  nickname: string
-  gender: Gender
-  age: Age
-  mbtiIe: mbtiIe
-  mbtiTf: mbtiTf
-  mbti: MBTI
-}
-
-export const createMemberProfile = async (
-  profile: createMemberProfileRequest,
-) => {
+export const createMemberProfile = async (profile: Profile) => {
   try {
     await authApi.post('/member/profile', profile)
   } catch (error) {
@@ -20,12 +9,9 @@ export const createMemberProfile = async (
   }
 }
 
-export type fetchMemberProfileResponse = createMemberProfileRequest
-
 export const fetchMemberProfile = async () => {
   try {
-    const response =
-      await authApi.get<fetchMemberProfileResponse>('/member/profile')
+    const response = await authApi.get<Profile>('/member/profile')
     return response.data
   } catch (error) {
     throw error

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
 import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
-import { createMemberProfileRequest } from '@/api/member'
+import { Profile } from '@/types/_shared/profile'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
@@ -15,7 +15,7 @@ const EditPage = () => {
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
   const [mbti, setMbti] = useState<MBTI>('ISTJ')
 
-  const refineForm = (): createMemberProfileRequest => {
+  const refineForm = (): Profile => {
     const mbtiIe = mbti[0] as mbtiIe
     const mbtiTf = mbti[2] as mbtiTf
 
@@ -38,7 +38,7 @@ const EditPage = () => {
     }
 
     return {
-      nickname: nickname!,
+      nickname: nickname,
       gender: genderData,
       age: ageData,
       mbtiIe: mbtiIe,

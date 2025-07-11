@@ -1,30 +1,24 @@
 // 비동기 로그인 로직 추가 필요
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Profile } from '@/types/_shared/profile'
 import { saveTokens, clearTokens } from '@/utils/tokenUtils'
-
-interface User {
-  id: string
-  profile: Profile | null
-}
 
 interface AuthState {
   isLogined: boolean
-  user: User | null
+  userId: string | null
   loading: boolean
   error: string | null
 }
 
 const initialState: AuthState = {
   isLogined: false,
-  user: null,
+  userId: null,
   loading: false,
   error: null,
 }
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: initialState,
+  initialState,
   reducers: {
     loginStart(state) {
       state.loading = true
@@ -40,10 +34,7 @@ const authSlice = createSlice({
     ) {
       state.loading = false
       state.isLogined = true
-      state.user = {
-        id: action.payload.userId,
-        profile: null,
-      }
+      state.userId = action.payload.userId
       saveTokens(action.payload.accessToken, action.payload.refreshToken)
     },
     loginFailure(state, action: PayloadAction<string>) {
@@ -52,17 +43,17 @@ const authSlice = createSlice({
     },
     logout(state) {
       state.isLogined = false
-      state.user = null
+      state.userId = null
       clearTokens()
     },
     // TODO: memberslice로 이동
-    setProfile(state, action: PayloadAction<Profile>) {
-      if (state.user) {
-        state.user.profile = action.payload
-      }
-    },
+    // setProfile(state, action: PayloadAction<Profile>) {
+    //   if (state.user) {
+    //     state.user.profile = action.payload
+    //   }
+    // },
   },
 })
-export const { loginStart, loginSuccess, loginFailure, logout, setProfile } =
+export const { loginStart, loginSuccess, loginFailure, logout } =
   authSlice.actions
 export default authSlice.reducer
