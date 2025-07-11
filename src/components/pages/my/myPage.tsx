@@ -1,15 +1,27 @@
+'use client'
+
 import MyProfileSection from './myProfileSection'
 import MyActivitySection from './myActivitySection'
 import AccountControlSection from './accountControlSection'
+import { useEffect } from 'react'
+import { fetchMemberMypage } from '@/api/member'
 
 function MyPage() {
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchMemberMypage()
+      console.log(data)
+    }
+    fetchData()
+  }, [])
+
   return (
     <div className="pt-12">
       {/* 상단 여백 */}
       <MyProfileSection />
-      <div className="w-full h-3 bg-gray-200"></div>
+      <div className="w-full h-3 bg-[#F0F0F0]"></div>
       <MyActivitySection />
-      <div className="mx-4 border-t-[0.5px] border-gray-200"></div>
+      <div className="mx-4 border-t-[0.5px] border-[#F0F0F0]"></div>
       <AccountControlSection />
     </div>
   )

@@ -9,10 +9,35 @@ export const createMemberProfile = async (profile: Profile) => {
   }
 }
 
+type fetchMemberProfileResponse = Profile
+
 export const fetchMemberProfile = async () => {
   try {
-    const response = await authApi.get('/member/profile')
+    const response =
+      await authApi.get<fetchMemberProfileResponse>('/member/profile')
     return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+type fetchMemberMypageResponse = {
+  profile: {
+    profile_image_url: string
+    kakaoname: string
+    email: string
+    nickname: string
+    gender: string
+    age: string
+    mbti: string
+  } | null
+}
+
+export const fetchMemberMypage = async () => {
+  try {
+    const response =
+      await authApi.get<fetchMemberMypageResponse>('/member/mypage')
+    return response.data.profile
   } catch (error) {
     throw error
   }
