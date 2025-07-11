@@ -1,6 +1,14 @@
 // src/api/authApi.ts
 import axios from 'axios'
-import { getAccessToken, clearTokens } from '@/utils/tokenUtils'
+import {
+  getAccessToken,
+  clearTokens,
+  getRefreshToken,
+} from '@/utils/tokenUtils'
+import { reissue } from '@/api/auth'
+import { saveTokens } from '@/utils/tokenUtils'
+import { store } from '@/store/store'
+import { logout } from '@/store/slices/authSlice'
 
 // TODO: 리프레시 API
 // import { refreshAccessToken } from './authApiService';  <-- 필요 시
@@ -25,24 +33,48 @@ authApi.interceptors.request.use(
 )
 
 // 응답 후: 401 처리 (선택 사항)
+
+let isRefreshing = false
+let failedQueue: (() => void)[] = []
+
 authApi.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      // TODO: refresh 로직이 여기에 추가
-      // try {
-      //   const newAccessToken = await refreshAccessToken();
-      //   setAccessToken(newAccessToken);
-      //   error.config.headers.Authorization = `Bearer ${newAccessToken}`;
-      //   return axios(error.config); // 요청 재시도
-      // } catch (refreshError) {
-      //   clearTokens();
-      //   window.location.href = '/entry'; // or dispatch(logout())
-      // }
+    const originalRequest = error.config
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          failedQueue.push(() => {
+            resolve(authApi(originalRequest))
+          })
+        })
+      }
 
-      clearTokens()
-      window.location.href = '/entry' // 인증 만료 시 로그인 페이지로
+      originalRequest._retry = true
+      isRefreshing = true
+
+      try {
+        const refreshToken = getRefreshToken()
+        if (!refreshToken) throw new Error('Refresh token not found')
+
+        const newAccessToken = await reissue(refreshToken)
+        saveTokens(newAccessToken, refreshToken)
+
+        failedQueue.forEach((cb) => cb())
+        failedQueue = []
+
+        return authApi(originalRequest)
+      } catch (refreshError) {
+        clearTokens()
+        store.dispatch(logout())
+        return Promise.reject(refreshError)
+      } finally {
+        isRefreshing = false
+        failedQueue.forEach((fn) => fn())
+        failedQueue = []
+      }
     }
+
     return Promise.reject(error)
   },
 )

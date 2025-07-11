@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
+import AuthRedirectWatcher from './authRedirectWatcher'
 
 export const metadata: Metadata = {
   title: 'ValanSe',
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <ModalRootInitializer />
+          <AuthRedirectWatcher />
           {children}
         </Providers>
       </body>
