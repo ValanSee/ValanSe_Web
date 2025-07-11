@@ -9,6 +9,7 @@ import MyActivitySection from './myActivitySection'
 import AccountControlSection from './accountControlSection'
 import { useEffect } from 'react'
 import { fetchMemberMypage } from '@/api/member'
+import BottomNavBar from '@/components/_shared/bottomNavBar'
 
 function MyPage() {
   useEffect(() => {
@@ -27,6 +28,8 @@ function MyPage() {
       <MyActivitySection />
       <div className="mx-4 border-t-[0.5px] border-[#F0F0F0]"></div>
       <AccountControlSection />
+
+      <BottomNavBar />
     </div>
   )
 }

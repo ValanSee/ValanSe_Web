@@ -1,5 +1,6 @@
 'use client'
 
+import BottomNavBar from '@/components/_shared/bottomNavBar'
 import Image from 'next/image'
 
 // 테스트 데이터
@@ -13,15 +14,6 @@ const options = ['A', 'B']
 const optionTexts = [
   '점심 회사 돈으로, 메뉴 못 정함',
   '점심 내 돈으로, 메뉴 마음대로',
-]
-
-const navItems = ['홈', '인기', '밸런스', '만들기', '내 정보']
-const icons = [
-  'home.svg',
-  'hotissue.svg',
-  'valanse.svg',
-  'write.svg',
-  'mypage.svg',
 ]
 
 const MainPage = () => {
@@ -85,19 +77,7 @@ const MainPage = () => {
       </div>
 
       {/* 하단 네비게이션 */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-2">
-        {navItems.map((label, i) => (
-          <div
-            key={i}
-            className="text-center text-sm text-gray-700 flex flex-col items-center justify-around"
-          >
-            <div className="text-lg">
-              <Image src={icons[i]} alt={label} width={24} height={24} />
-            </div>
-            {label}
-          </div>
-        ))}
-      </nav>
+      <BottomNavBar />
     </div>
   )
 }
