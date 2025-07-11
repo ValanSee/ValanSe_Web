@@ -46,12 +46,6 @@ const authSlice = createSlice({
       state.userId = null
       clearTokens()
     },
-    // TODO: memberslice로 이동
-    // setProfile(state, action: PayloadAction<Profile>) {
-    //   if (state.user) {
-    //     state.user.profile = action.payload
-    //   }
-    // },
   },
 })
 export const { loginStart, loginSuccess, loginFailure, logout } =
