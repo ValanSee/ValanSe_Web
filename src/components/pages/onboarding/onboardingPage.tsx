@@ -5,6 +5,7 @@ import MBTIBottomSheet from './mbtiBottomSheet'
 import { Profile } from '@/types/_shared/profile'
 import { createMemberProfile } from '@/api/member'
 import { useRouter } from 'next/navigation'
+import { MBTI, mbtiIe, mbtiTf } from '@/types/_shared/profile'
 
 // TODO: 타입 위치 변경
 type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
@@ -19,11 +20,11 @@ const OnboardingPage = () => {
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
-  const [mbti, setMbti] = useState<string>('')
+  const [mbti, setMbti] = useState<MBTI>('ISTJ')
 
   const refineForm = (): Profile => {
-    const mbtiIe = mbti[0]
-    const mbtiTf = mbti[2]
+    const mbtiIe = mbti[0] as mbtiIe
+    const mbtiTf = mbti[2] as mbtiTf
 
     let ageData: Age = 'TEN'
     if (age === '10대') {

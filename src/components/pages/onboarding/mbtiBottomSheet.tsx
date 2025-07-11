@@ -2,10 +2,11 @@
 
 import Modal from '@/components/_shared/modal'
 import { useState } from 'react'
+import { MBTI } from '@/types/_shared/profile'
 
 interface MBTIBottomSheetProps {
   onClose: () => void
-  setMbti: (mbti: string) => void
+  setMbti: (mbti: MBTI) => void
 }
 
 const MBTIBottomSheet = ({ onClose, setMbti }: MBTIBottomSheetProps) => {
@@ -16,7 +17,7 @@ const MBTIBottomSheet = ({ onClose, setMbti }: MBTIBottomSheetProps) => {
 
   const handleSelectMBTI = () => {
     onClose()
-    setMbti(`${selectedEI}${selectedNS}${selectedTF}${selectedPJ}`)
+    setMbti(`${selectedEI}${selectedNS}${selectedTF}${selectedPJ}` as MBTI)
   }
 
   return (
