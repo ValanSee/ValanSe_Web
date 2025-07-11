@@ -8,16 +8,21 @@ import MyProfileSection from './myProfileSection'
 import MyActivitySection from './myActivitySection'
 import AccountControlSection from './accountControlSection'
 import { useEffect } from 'react'
-import { fetchMemberMypage } from '@/api/member'
 import BottomNavBar from '@/components/_shared/bottomNavBar'
+import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
 
 function MyPage() {
+  const mypageData = useAppSelector((state) => state.member.mypageData)
+
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchMemberMypage()
-      console.log(data)
+    if (!mypageData) {
+      const fetchData = async () => {
+        const data = await fetchMypageDataThunk()
+        console.log('data', data)
+      }
+      fetchData()
     }
-    fetchData()
   }, [])
 
   return (
