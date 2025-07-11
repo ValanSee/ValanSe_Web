@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { loginThunk, fetchProfileThunk } from '@/store/thunks/authThunks'
+import { loginThunk } from '@/store/thunks/authThunks'
+import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 

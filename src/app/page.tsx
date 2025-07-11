@@ -8,7 +8,8 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
-import { fetchProfileThunk, reissueTokenThunk } from '@/store/thunks/authThunks'
+import { reissueTokenThunk } from '@/store/thunks/authThunks'
+import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { getAccessToken } from '@/utils/tokenUtils'
 import Loading from '@/components/_shared/loading'
 
