@@ -22,9 +22,14 @@ export default function KakaoRedirect() {
           await dispatch(loginThunk(code))
           // 2. 프로필 조회 시도
           try {
-            await dispatch(fetchProfileThunk())
-            // 프로필이 있으면 메인 페이지로 이동
-            router.push('/main')
+            const profile = await dispatch(fetchProfileThunk())
+            if (profile) {
+              alert(`Profile이 있습니다. ${profile}`)
+              router.push('/main')
+            } else {
+              alert('Profile이 없습니다.')
+              router.push('/onboarding')
+            }
           } catch (profileErr) {
             // 프로필이 없으면 onboarding 페이지로 이동
             console.error('프로필이 없습니다:', profileErr)
