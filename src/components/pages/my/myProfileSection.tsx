@@ -17,6 +17,32 @@ export default function MyProfileSection() {
     )
   }
 
+  const parseGender = (gender: string) => {
+    switch (gender) {
+      case 'MALE':
+        return '남성'
+      case 'FEMALE':
+        return '여성'
+      default:
+        return '기타'
+    }
+  }
+
+  const parseAge = (age: string) => {
+    switch (age) {
+      case 'TEN':
+        return '10대'
+      case 'TWENTY':
+        return '20대'
+      case 'THIRTY':
+        return '30대'
+      case 'OVER_FOURTY':
+        return '40대'
+      default:
+        return '기타'
+    }
+  }
+
   return (
     <section className="bg-white px-4 py-6 border-b">
       {/* 타이틀 */}
@@ -46,7 +72,15 @@ export default function MyProfileSection() {
             <div className="font-bold">연결된 계정</div>
             <div className="text-gray-500">{mypageData.email}</div>
           </div>
-          <div className="font-medium">카카오</div>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/kakaoIcon.svg"
+              alt="카카오 아이콘"
+              width={18}
+              height={18}
+            />
+            <div className="font-medium">카카오</div>
+          </div>
         </div>
 
         {/* 회원 정보 */}
@@ -54,7 +88,8 @@ export default function MyProfileSection() {
           <div className="text-md text-gray-700">
             <div className="font-bold">회원 정보</div>
             <div className="font-medium">
-              {mypageData.gender} · {mypageData.age} · {mypageData.mbti}
+              {parseGender(mypageData.gender)} · {parseAge(mypageData.age)} ·{' '}
+              {mypageData.mbti}
             </div>
           </div>
           {/* 수정 버튼 */}
