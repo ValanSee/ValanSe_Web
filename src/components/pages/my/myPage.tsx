@@ -11,16 +11,19 @@ import { useEffect } from 'react'
 import BottomNavBar from '@/components/_shared/bottomNavBar'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
+import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 
 function MyPage() {
   const mypageData = useAppSelector((state) => state.member.mypageData)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
+    const fetchData = async () => {
+      const data = await dispatch(fetchMypageDataThunk())
+      console.log('data', data)
+    }
+
     if (!mypageData) {
-      const fetchData = async () => {
-        const data = fetchMypageDataThunk()
-        console.log('data', data)
-      }
       fetchData()
     }
   }, [])
