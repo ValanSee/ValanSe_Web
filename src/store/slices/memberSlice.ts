@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Profile } from '@/types/_shared/profile'
 
-type MypageData = {
+export type MypageData = {
   profile_image_url: string
   kakaoname: string
   email: string
