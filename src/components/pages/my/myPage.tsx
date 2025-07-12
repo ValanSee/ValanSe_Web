@@ -18,7 +18,7 @@ function MyPage() {
   useEffect(() => {
     if (!mypageData) {
       const fetchData = async () => {
-        const data = await fetchMypageDataThunk()
+        const data = fetchMypageDataThunk()
         console.log('data', data)
       }
       fetchData()
