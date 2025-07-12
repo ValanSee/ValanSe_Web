@@ -14,11 +14,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="ko">
+      <body className="bg-background">
         <Providers>
-          <ModalRootInitializer />
-          {children}
+          <div className="max-w-3xl mx-auto">{children}</div>
         </Providers>
       </body>
     </html>
