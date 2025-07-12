@@ -14,11 +14,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko">
-      <body className="bg-background">
-        <Providers>
-          <div className="max-w-3xl mx-auto">{children}</div>
-        </Providers>
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
