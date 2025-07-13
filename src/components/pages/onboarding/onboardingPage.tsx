@@ -2,25 +2,25 @@
 
 import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
+import { createMemberProfile } from '@/api/member'
+import { useRouter } from 'next/navigation'
+import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
 import { Profile } from '@/types/_shared/profile'
-import { authApi } from '@/api/authApi'
-
-type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
-type Gender = 'FEMALE' | 'MALE'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
 
 const OnboardingPage = () => {
+  const router = useRouter()
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
-  const [mbti, setMbti] = useState<string>('')
+  const [mbti, setMbti] = useState<MBTI>('ISTJ')
 
   const refineForm = (): Profile => {
-    const mbtiIe = mbti[0]
-    const mbtiTf = mbti[2]
+    const mbtiIe = mbti[0] as mbtiIe
+    const mbtiTf = mbti[2] as mbtiTf
 
     let ageData: Age = 'TEN'
     if (age === '10대') {
@@ -52,9 +52,14 @@ const OnboardingPage = () => {
 
   const handleSubmit = async () => {
     const refinedForm = refineForm()
-
-    const response = await authApi.post('/member/profile', refinedForm)
-    console.log('response', response.data)
+    try {
+      await createMemberProfile(refinedForm)
+      router.push('/main')
+    } catch (error) {
+      console.error('Failed to create member profile:', error)
+      alert('회원 정보 생성에 실패했습니다.')
+      router.push('/entry')
+    }
   }
 
   return (

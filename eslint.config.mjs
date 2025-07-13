@@ -33,6 +33,7 @@ export default defineConfig([
     rules: {
       'react/react-in-jsx-scope': 'off',
       'react/jsx-pascal-case': 'error',
+      'no-useless-catch': 'off',
     },
   },
 
