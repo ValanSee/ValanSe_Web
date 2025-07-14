@@ -6,26 +6,31 @@ const navOptions = [
   {
     label: '홈',
     icon: 'home.svg',
+    activeIcon: 'home-blue.svg',
     route: '/main',
   },
   {
     label: '인기',
     icon: 'hotissue.svg',
+    activeIcon: 'hotissue-blue.svg',
     route: '/hotissue',
   },
   {
     label: '밸런스',
-    icon: 'valanse.svg',
+    icon: 'poll.svg',
+    activeIcon: 'poll-blue.svg',
     route: '/poll',
   },
   {
     label: '만들기',
-    icon: 'write.svg',
+    icon: 'create.svg',
+    activeIcon: 'create-blue.svg',
     route: '/create',
   },
   {
     label: '내 정보',
     icon: 'mypage.svg',
+    activeIcon: 'mypage-blue.svg',
     route: '/my',
   },
 ]
@@ -46,7 +51,7 @@ function BottomNavBar() {
           >
             <div className="flex items-center justify-center w-6 h-6">
               <Image
-                src={option.icon}
+                src={isActive ? option.activeIcon : option.icon}
                 alt={option.label}
                 width={20}
                 height={20}
