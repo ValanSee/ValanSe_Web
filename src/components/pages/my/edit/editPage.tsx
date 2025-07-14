@@ -2,17 +2,17 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
 import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
 import { Profile } from '@/types/_shared/profile'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { useAppSelector } from '@/hooks/utils/useAppSelector'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
 
-const responseKakaoname = '김철수'
 const responseNickname = 'dinopark'
 const responseGender = 'MALE'
 const responseAge = 'TEN'
@@ -52,6 +52,16 @@ const EditPage = () => {
   const [age, setAge] = useState<string | null>(responseAge)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
   const [mbti, setMbti] = useState<MBTI | null>(responseMBTI)
+  const myPageData = useAppSelector((state) => state.member.mypageData)
+
+  useEffect(() => {
+    if (myPageData) {
+      setNickname(myPageData.nickname)
+      setGender(myPageData.gender)
+      setAge(myPageData.age)
+      setMbti(myPageData.mbti as MBTI)
+    }
+  }, [myPageData])
 
   const refineForm = (): Profile => {
     if (!mbti) {
@@ -79,16 +89,25 @@ const EditPage = () => {
     // TODO: api 호출
   }
 
+  if (!myPageData) {
+    return (
+      <div className="pt-12 text-center text-gray-500">
+        마이페이지 정보를 불러오는 중입니다...
+      </div>
+    )
+  }
+
   return (
     <div className="px-4 py-10">
       <div className="flex flex-col items-center gap-4">
         <Image
-          src="/profile-example.svg"
+          src={myPageData.profile_image_url || '/profile-example.svg'}
           alt="profile"
           width={84}
           height={84}
+          className="rounded-full object-cover"
         />
-        <div className="text-[20px]">{responseKakaoname}</div>
+        <div className="text-[20px]">{myPageData.kakaoname}</div>
       </div>
       <div className="flex flex-col gap-4 mb-6 pt-6">
         <label className="text-md font-bold">닉네임</label>
