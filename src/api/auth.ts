@@ -10,3 +10,11 @@ export const reissue = async (refreshToken: string) => {
     throw error
   }
 }
+
+export const logout = async () => {
+  try {
+    await authApi.post('/auth/logout')
+  } catch (error) {
+    throw error
+  }
+}
