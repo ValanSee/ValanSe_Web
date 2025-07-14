@@ -39,3 +39,31 @@ export const fetchMemberMypage = async () => {
     throw error
   }
 }
+
+export const updateMemberProfile = async (profile: Profile) => {
+  try {
+    await authApi.post('/member/profile', profile)
+  } catch (error) {
+    throw error
+  }
+}
+
+export const checkNickname = async (nickname: string) => {
+  try {
+    const response = await authApi.get<checkNicknameResponse>(
+      '/member/check-nickname',
+      {
+        params: { nickname },
+      },
+    )
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+interface checkNicknameResponse {
+  isMeaningful: boolean
+  isAvailable: boolean
+  isClean: boolean
+}

@@ -9,6 +9,7 @@ import { Profile } from '@/types/_shared/profile'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import { checkNickname, updateMemberProfile } from '@/api/member'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
@@ -85,8 +86,15 @@ const EditPage = () => {
 
   const handleSubmit = async () => {
     const refinedForm = refineForm()
-    console.log(refinedForm)
-    // TODO: api 호출
+    const nicknameCheck = await checkNickname(nickname)
+
+    // TODO: 닉네임 사용 가능성 체크, response 요소 3개 적절히 판정
+    if (!nicknameCheck.isAvailable) {
+      alert('이미 사용 중인 닉네임입니다.')
+      return
+    }
+
+    await updateMemberProfile(refinedForm)
   }
 
   if (!myPageData) {
