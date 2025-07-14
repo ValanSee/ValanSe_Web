@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const navOptions = [
   {
@@ -15,7 +16,7 @@ const navOptions = [
   {
     label: '밸런스',
     icon: 'valanse.svg',
-    route: '/balance',
+    route: '/poll',
   },
   {
     label: '만들기',
@@ -30,25 +31,31 @@ const navOptions = [
 ]
 
 function BottomNavBar() {
+  const pathname = usePathname()
+
   return (
     <nav className="fixed bottom-0 w-full h-20 bg-white border-t flex items-center shadow-2xl shadow-black z-50">
-      {navOptions.map((option) => (
-        <Link
-          key={option.label}
-          href={option.route}
-          className="text-center text-sm text-gray-700 flex flex-col items-center justify-center w-full h-10"
-        >
-          <div className="text-lg">
-            <Image
-              src={option.icon}
-              alt={option.label}
-              width={20}
-              height={20}
-            />
-          </div>
-          {option.label}
-        </Link>
-      ))}
+      {navOptions.map((option) => {
+        const isActive = pathname.startsWith(option.route)
+
+        return (
+          <Link
+            key={option.label}
+            href={option.route}
+            className={`flex flex-col items-center justify-center w-full h-10 gap-1 text-xs font-bold leading-none ${isActive ? 'text-[#4D7298]' : 'text-[#1D1D1D]'}`}
+          >
+            <div className="flex items-center justify-center w-6 h-6">
+              <Image
+                src={option.icon}
+                alt={option.label}
+                width={20}
+                height={20}
+              />
+            </div>
+            {option.label}
+          </Link>
+        )
+      })}
     </nav>
   )
 }
