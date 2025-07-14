@@ -57,12 +57,7 @@ const MainPage = () => {
         {/* 밸런스 게임 만들기 */}
         <button className="flex items-center justify-between w-full h-[120px] pl-5 pr-4 py-3 bg-white rounded-lg text-2xl font-bold">
           밸런스 게임 만들기
-          <Image
-            src="/create-game.svg"
-            alt="create-game"
-            width={44}
-            height={44}
-          />
+          <Image src="/create.svg" alt="create" width={28} height={28} />
         </button>
 
         {/* 카테고리 */}
