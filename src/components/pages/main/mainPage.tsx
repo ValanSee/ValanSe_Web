@@ -4,6 +4,7 @@ import BottomNavBar from '@/components/_shared/bottomNavBar'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { BestVoteResponse, fetchBestVote } from '@/api/votes'
+import VoteOptionGrid from './voteOptionGrid'
 
 // 테스트 데이터
 const categories = [
@@ -49,21 +50,7 @@ const MainPage = () => {
         </div>
 
         {/* 선택지 */}
-        <div className="grid grid-cols-2 gap-2 w-full pt-4 h-[164px]">
-          {voteData.options.map((option, index) => (
-            <div
-              key={option.optionId}
-              className={`flex flex-col items-center gap-5 w-full h-full p-4 py-6 rounded-lg bg-white border ${index % 2 === 0 ? 'border-[#5F81A3]' : 'border-[#F27F34]'}`}
-            >
-              <div
-                className={`font-bold text-2xl ${index % 2 === 0 ? 'text-[#5F81A3]' : 'text-[#F27F34]'}`}
-              >
-                {index === 0 ? 'A' : 'B'}
-              </div>
-              <div className="text-sm text-center">{option.content}</div>
-            </div>
-          ))}
-        </div>
+        <VoteOptionGrid options={voteData.options} />
       </div>
 
       <div className="flex flex-col items-center w-full gap-10 pt-8">
