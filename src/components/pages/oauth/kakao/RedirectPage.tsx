@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { loginThunk } from '@/store/thunks/authThunks'
+import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 
@@ -14,16 +15,33 @@ export default function KakaoRedirect() {
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('code')
 
-    if (code) {
-      try {
-        dispatch(loginThunk(code))
-        router.push('/onboarding')
-      } catch (err) {
-        console.error('로그인 실패', err)
+    const handleLogin = async () => {
+      if (code) {
+        try {
+          // 1. 로그인 시도
+          await dispatch(loginThunk(code))
+          // 2. 프로필 조회 시도
+          try {
+            const profile = await dispatch(fetchProfileThunk())
+            if (profile) {
+              router.push('/main')
+            } else {
+              router.push('/onboarding')
+            }
+          } catch {
+            // 프로필이 없으면 onboarding 페이지로 이동
+            router.push('/onboarding')
+          }
+        } catch {
+          router.push('/entry')
+        }
       }
     }
+
+    handleLogin()
   }, [])
 
+  // TODO: 로딩 스피너 디자인 나오면 반영
   return (
     <>
       {auth.loading ? (

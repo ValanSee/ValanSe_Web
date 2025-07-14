@@ -1,28 +1,61 @@
 import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
-const navItems = ['홈', '인기', '밸런스', '만들기', '내 정보']
-const icons = [
-  'home.svg',
-  'hotissue.svg',
-  'valanse.svg',
-  'write.svg',
-  'mypage.svg',
+const navOptions = [
+  {
+    label: '홈',
+    icon: 'home.svg',
+    route: '/main',
+  },
+  {
+    label: '인기',
+    icon: 'hotissue.svg',
+    route: '/hotissue',
+  },
+  {
+    label: '밸런스',
+    icon: 'valanse.svg',
+    route: '/poll',
+  },
+  {
+    label: '만들기',
+    icon: 'write.svg',
+    route: '/create',
+  },
+  {
+    label: '내 정보',
+    icon: 'mypage.svg',
+    route: '/my',
+  },
 ]
 
 function BottomNavBar() {
+  const pathname = usePathname()
+
   return (
-    <nav className="fixed bottom-0 w-full h-20 bg-white border-t flex items-center justify-around">
-      {navItems.map((label, i) => (
-        <div
-          key={i}
-          className="text-center text-sm text-gray-700 flex flex-col items-center justify-center w-full h-10"
-        >
-          <div className="text-lg">
-            <Image src={icons[i]} alt={label} width={20} height={20} />
-          </div>
-          {label}
-        </div>
-      ))}
+    <nav className="fixed bottom-0 w-full h-20 bg-white border-t flex items-center shadow-2xl shadow-black z-50">
+      {navOptions.map((option) => {
+        const isActive = pathname.startsWith(option.route)
+
+        return (
+          <Link
+            key={option.label}
+            href={option.route}
+            className={`flex flex-col items-center justify-center w-full h-10 gap-1 text-xs font-bold leading-none ${isActive ? 'text-[#4D7298]' : 'text-[#1D1D1D]'}`}
+          >
+            <div className="flex items-center justify-center w-6 h-6">
+              <Image
+                src={option.icon}
+                alt={option.label}
+                width={20}
+                height={20}
+              />
+            </div>
+            {option.label}
+          </Link>
+        )
+      })}
     </nav>
   )
 }
