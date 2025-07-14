@@ -2,6 +2,9 @@
 
 import BottomNavBar from '@/components/_shared/bottomNavBar'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { BestVoteResponse, fetchBestVote } from '@/api/votes'
+import VoteOptionGrid from './voteOptionGrid'
 
 // 테스트 데이터
 const categories = [
@@ -10,13 +13,25 @@ const categories = [
   { label: '기타', icon: '/category-etc.svg' },
 ]
 
-const options = ['A', 'B']
-const optionTexts = [
-  '점심 회사 돈으로, 메뉴 못 정함',
-  '점심 내 돈으로, 메뉴 마음대로',
-]
-
 const MainPage = () => {
+  const [voteData, setVoteData] = useState<BestVoteResponse | null>(null)
+
+  useEffect(() => {
+    const loadBestVote = async () => {
+      try {
+        const response = await fetchBestVote()
+        setVoteData(response)
+      } catch (error) {
+        console.error('Failed to fetch best vote:', error)
+      }
+    }
+    loadBestVote()
+  }, [])
+
+  if (!voteData) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pt-6">
       <div className="flex flex-col items-center bg-[#839db7] rounded-bl-2xl rounded-br-2xl w-screen px-6 pb-5">
@@ -29,25 +44,13 @@ const MainPage = () => {
           <div className="pt-1 text-white text-xs font-normal">
             24시간 이후 투표 종료
           </div>
-          <div className="pt-4 text-white text-lg font-bold">1,234명 참여</div>
+          <div className="pt-4 text-white text-lg font-bold">
+            {voteData.totalParticipants.toLocaleString()}명 참여
+          </div>
         </div>
 
         {/* 선택지 */}
-        <div className="grid grid-cols-2 gap-2 w-full pt-4 h-[164px]">
-          {options.map((label, index) => (
-            <div
-              key={label}
-              className={`flex flex-col items-center gap-5 w-full h-full p-4 py-6 rounded-lg bg-white border ${index % 2 === 0 ? 'border-[#5F81A3]' : 'border-[#F27F34]'}`}
-            >
-              <div
-                className={`font-bold text-2xl ${index % 2 === 0 ? 'text-[#5F81A3]' : 'text-[#F27F34]'}`}
-              >
-                {label}
-              </div>
-              <div className="text-sm text-center">{optionTexts[index]}</div>
-            </div>
-          ))}
-        </div>
+        <VoteOptionGrid options={voteData.options} />
       </div>
 
       <div className="flex flex-col items-center w-full gap-10 pt-8">
