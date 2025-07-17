@@ -64,7 +64,7 @@ const EditPage = () => {
       setAge(myPageData.age)
       setMbti(myPageData.mbti as MBTI)
     }
-  }, [])
+  }, [myPageData])
 
   const refineForm = (): Profile => {
     if (!mbti) {
