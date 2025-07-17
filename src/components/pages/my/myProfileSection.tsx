@@ -44,10 +44,10 @@ export default function MyProfileSection() {
   }
 
   return (
-    <section className="bg-white px-4 py-6 border-b">
+    <section className="bg-white px-4 py-6">
       {/* 타이틀 */}
       <div className="flex items-center py-2.5">
-        <h1 className="text-2xl font-bold">내 정보</h1>
+        <h1 className="text-[21px] font-bold">내 정보</h1>
       </div>
 
       {/* 프로필 */}

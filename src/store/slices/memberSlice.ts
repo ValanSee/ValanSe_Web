@@ -30,8 +30,16 @@ const memberSlice = createSlice({
     setMypageData(state, action: PayloadAction<MypageData>) {
       state.mypageData = action.payload
     },
+    updateMypageData(state, action: PayloadAction<Profile>) {
+      if (!state.mypageData) return
+      state.mypageData.nickname = action.payload.nickname
+      state.mypageData.gender = action.payload.gender
+      state.mypageData.age = action.payload.age
+      state.mypageData.mbti = action.payload.mbti
+    },
   },
 })
 
-export const { setProfile, setMypageData } = memberSlice.actions
+export const { setProfile, setMypageData, updateMypageData } =
+  memberSlice.actions
 export default memberSlice.reducer

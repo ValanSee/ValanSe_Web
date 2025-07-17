@@ -2,21 +2,19 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
 import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
 import { Profile } from '@/types/_shared/profile'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import { checkNickname } from '@/api/member'
+import { updateProfileThunk } from '@/store/thunks/memberThunks'
+import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
-
-const responseKakaoname = '김철수'
-const responseNickname = 'dinopark'
-const responseGender = 'MALE'
-const responseAge = 'TEN'
-const responseMBTI = 'ISTJ'
 
 const ageMap = (label: string) => {
   switch (label) {
@@ -46,12 +44,27 @@ const genderMap = (label: string) => {
 
 const EditPage = () => {
   const router = useRouter()
-  const [nickname, setNickname] = useState(responseNickname)
+  const myPageData = useAppSelector((state) => state.member.mypageData)
+  const [nickname, setNickname] = useState(myPageData?.nickname)
   const [isNicknameEditing, setIsNicknameEditing] = useState(false)
-  const [gender, setGender] = useState<string | null>(responseGender)
-  const [age, setAge] = useState<string | null>(responseAge)
+  const [gender, setGender] = useState<string | null>(
+    myPageData?.gender as string,
+  )
+  const [age, setAge] = useState<string | null>(myPageData?.age as string)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
-  const [mbti, setMbti] = useState<MBTI | null>(responseMBTI)
+  const [mbti, setMbti] = useState<MBTI | null>(myPageData?.mbti as MBTI)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    console.log('전역 상태 nickname', myPageData?.nickname)
+    console.log('로컬 상태 nickname', nickname)
+    if (myPageData) {
+      setNickname(myPageData.nickname)
+      setGender(myPageData.gender)
+      setAge(myPageData.age)
+      setMbti(myPageData.mbti as MBTI)
+    }
+  }, [myPageData])
 
   const refineForm = (): Profile => {
     if (!mbti) {
@@ -64,7 +77,7 @@ const EditPage = () => {
     const genderData: Gender = gender! as Gender
 
     return {
-      nickname: nickname,
+      nickname: nickname as string,
       gender: genderData,
       age: ageData,
       mbtiIe: mbtiIe,
@@ -75,20 +88,37 @@ const EditPage = () => {
 
   const handleSubmit = async () => {
     const refinedForm = refineForm()
-    console.log(refinedForm)
-    // TODO: api 호출
+    const nicknameCheck = await checkNickname(nickname as string)
+
+    // TODO: 닉네임 사용 가능성 체크, response 요소 3개 적절히 판정
+    if (!nicknameCheck.isAvailable) {
+      alert('이미 사용 중인 닉네임입니다.')
+      return
+    }
+
+    dispatch(updateProfileThunk(refinedForm))
+    router.push('/my')
+  }
+
+  if (!myPageData) {
+    return (
+      <div className="pt-12 text-center text-gray-500">
+        마이페이지 정보를 불러오는 중입니다...
+      </div>
+    )
   }
 
   return (
     <div className="px-4 py-10">
       <div className="flex flex-col items-center gap-4">
         <Image
-          src="/profile-example.svg"
+          src={myPageData.profile_image_url || '/profile-example.svg'}
           alt="profile"
           width={84}
           height={84}
+          className="rounded-full object-cover"
         />
-        <div className="text-[20px]">{responseKakaoname}</div>
+        <div className="text-[20px]">{myPageData.kakaoname}</div>
       </div>
       <div className="flex flex-col gap-4 mb-6 pt-6">
         <label className="text-md font-bold">닉네임</label>
@@ -184,7 +214,7 @@ const EditPage = () => {
       {/* Action Bar */}
       <div className="flex gap-4">
         <button
-          onClick={router.back}
+          onClick={() => router.push('/my')}
           className="w-full py-4 rounded-md bg-[#e4e4e4] text-[#8E8E8E] mt-8"
         >
           취소
