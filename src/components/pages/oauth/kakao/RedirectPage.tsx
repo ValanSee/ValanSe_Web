@@ -13,26 +13,34 @@ export default function KakaoRedirect() {
   const auth = useAppSelector((state) => state.auth)
 
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get('code')
+    const code = new URLSearchParams(window.location.search).get('code') // 코드 확인
 
     const handleLogin = async () => {
       if (code) {
         try {
           // 1. 로그인 시도
           await dispatch(loginThunk(code))
-          // 2. 프로필 조회 시도
           try {
+            // 2. 프로필 조회 시도
             const profile = await dispatch(fetchProfileThunk())
             if (profile) {
+              // 프로필이 있으면 main 페이지로 이동
               router.push('/main')
-            } else {
+            } else if (profile === null) {
+              // 프로필이 없으면 onboarding 페이지로 이동
               router.push('/onboarding')
+            } else {
+              // 프로필 조회 실패
+              router.push('/entry')
             }
           } catch {
-            // 프로필이 없으면 onboarding 페이지로 이동
-            router.push('/onboarding')
+            // fetchProfileThunk 실패
+            alert('프로필 조회 실패')
+            router.push('/entry')
           }
         } catch {
+          // loginThunk 실패
+          alert('로그인 실패')
           router.push('/entry')
         }
       }

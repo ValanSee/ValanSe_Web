@@ -21,6 +21,10 @@ function MyPage() {
   const isLogined = useAppSelector((state) => state.auth.isLogined)
 
   useEffect(() => {
+    console.log('mypageData:', mypageData)
+  }, [mypageData])
+
+  useEffect(() => {
     // 로그인 안 되어있으면 리디렉션
     if (!isLogined) {
       router.push('/entry')
@@ -51,16 +55,17 @@ function MyPage() {
   }
 
   return (
-    <div className="pt-12">
-      {/* 상단 여백 */}
-      <MyProfileSection />
-      <div className="w-full h-3 bg-[#F0F0F0]"></div>
-      <MyActivitySection />
-      <div className="mx-4 border-t-[0.5px] border-[#F0F0F0]"></div>
-      <AccountControlSection />
-
+    <>
+      <div className="pb-20">
+        {/* 상단 여백 */}
+        <MyProfileSection />
+        <div className="w-full h-3 bg-[#F0F0F0]"></div>
+        <MyActivitySection />
+        <div className="mx-4 border-t-[0.5px] border-[#F0F0F0]"></div>
+        <AccountControlSection />
+      </div>
       <BottomNavBar />
-    </div>
+    </>
   )
 }
 

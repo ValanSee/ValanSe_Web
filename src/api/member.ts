@@ -9,9 +9,11 @@ export const createMemberProfile = async (profile: Profile) => {
   }
 }
 
-export const fetchMemberProfile = async () => {
+export const fetchMemberProfile = async (): Promise<Profile | null> => {
   try {
-    const response = await authApi.get<{ profile: Profile }>('/member/profile')
+    const response = await authApi.get<{ profile: Profile | null }>(
+      '/member/profile',
+    )
     return response.data.profile
   } catch (error) {
     throw error
@@ -38,4 +40,32 @@ export const fetchMemberMypage = async () => {
   } catch (error) {
     throw error
   }
+}
+
+export const updateMemberProfile = async (profile: Profile) => {
+  try {
+    await authApi.post('/member/profile', profile)
+  } catch (error) {
+    throw error
+  }
+}
+
+export const checkNickname = async (nickname: string) => {
+  try {
+    const response = await authApi.get<checkNicknameResponse>(
+      '/member/check-nickname',
+      {
+        params: { nickname },
+      },
+    )
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+interface checkNicknameResponse {
+  isMeaningful: boolean
+  isAvailable: boolean
+  isClean: boolean
 }
