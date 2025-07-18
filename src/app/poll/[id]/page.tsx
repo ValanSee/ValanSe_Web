@@ -11,6 +11,7 @@ import {
   BestComment,
   Comment,
 } from '@/api/comment/commentApi'
+import VoteChart from '@/components/pages/poll/statistics/statisics'
 
 interface PollOption {
   id: number
@@ -37,6 +38,7 @@ export default function PollDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
+  const [showStats, setShowStats] = useState(false)
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -77,7 +79,18 @@ export default function PollDetailPage() {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <PollCard />
+      {data && (
+        <PollCard
+          createdBy={data.nickname}
+          title={data.title}
+          options={data.options.map((opt) => ({
+            optionId: opt.id,
+            content: opt.content,
+            vote_count: opt.vote_count,
+          }))}
+          totalParticipants={data.total_vote_count}
+        />
+      )}
       {bestComment && (
         <PreviewCommentCard
           content={bestComment.content}
@@ -87,6 +100,13 @@ export default function PollDetailPage() {
         />
       )}
       {open && <CommentDetail comments={comments} />}
+      {data && (
+        <VoteChart
+          voteId={data.id}
+          showStats={showStats}
+          setShowStatsAction={setShowStats}
+        />
+      )}
     </div>
   )
 }

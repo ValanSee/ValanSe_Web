@@ -1,31 +1,25 @@
 'use client'
-import { useState, useEffect } from 'react'
-import {
-  fetchMostVotedVote,
-  MostVotedVoteResponse,
-} from '@/api/comment/mostVotedVoteApi'
+import { useState } from 'react'
 
-function PollCard() {
-  const [data, setData] = useState<MostVotedVoteResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+interface PollCardProps {
+  createdBy: string
+  title: string
+  options: {
+    optionId: number
+    content: string
+    vote_count: number
+  }[]
+  totalParticipants: number
+}
+
+function PollCard({
+  createdBy,
+  title,
+  options = [],
+  totalParticipants,
+}: PollCardProps) {
   const [voted, setVoted] = useState(false)
   const [selectedId, setSelectedId] = useState<number | null>(null)
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true)
-        const res = await fetchMostVotedVote()
-        setData(res)
-      } catch {
-        setError('불러오기 실패')
-      } finally {
-        setLoading(false)
-      }
-    }
-    getData()
-  }, [])
 
   const handleClickPercentage = (id: number) => {
     if (voted && selectedId === id) {
@@ -41,27 +35,23 @@ function PollCard() {
     setVoted(true)
   }
 
-  if (loading) return <div className="p-4">로딩 중...</div>
-  if (error) return <div className="p-4 text-red-500">{error}</div>
-  if (!data) return null
-
   return (
     <div className="mx-auto p-4 space-y-4 rounded-xl shadow">
-      <div className="text-sm font-medium text-gray-700">{data.createdBy}</div>
-      <div className="text-base font-semibold">{data.title}</div>
+      <div className="text-sm font-medium text-gray-700">{createdBy}</div>
+      <div className="text-base font-semibold">{title}</div>
       <div className="space-y-2">
-        {data.options.map((option) => {
+        {options.map((option, idx) => {
           const isSelected = selectedId === option.optionId
           // percentage 계산 (총 투표수 0이면 0)
           const percentage =
-            data.totalParticipants > 0
-              ? Math.round((option.vote_count / data.totalParticipants) * 100)
+            totalParticipants > 0
+              ? Math.round((option.vote_count / totalParticipants) * 100)
               : 0
           return (
             <div
               className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
               onClick={() => handleClickPercentage(option.optionId)}
-              key={option.optionId}
+              key={option.optionId ?? idx}
             >
               <div className="flex justify-between relative z-10 font-medium">
                 <span>
@@ -81,7 +71,7 @@ function PollCard() {
         })}
       </div>
       <div className="text-sm text-gray-400 text-right">
-        총 {data.totalParticipants}명 투표
+        총 {totalParticipants}명 투표
       </div>
     </div>
   )
