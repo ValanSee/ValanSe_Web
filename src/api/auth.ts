@@ -2,7 +2,7 @@
 import { authApi } from './instance/authApi'
 import { publicApi } from './instance/publicApi'
 // types
-import { LoginResponse, ReissueResponse } from '@/types/poll/api/auth'
+import { LoginResponse, ReissueResponse } from '@/types/api/auth'
 
 export const login = async (code: string) => {
   try {
