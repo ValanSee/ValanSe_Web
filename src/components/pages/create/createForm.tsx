@@ -2,6 +2,10 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
+import { CreateVoteData } from '@/types/api/votes'
+import { VoteCategory } from '@/types/_shared/vote'
+import { createVote } from '@/api/votes'
+import { useRouter } from 'next/navigation'
 
 const categories = [
   { label: '음식', value: 'FOOD' },
@@ -10,8 +14,33 @@ const categories = [
 ]
 
 const CreateForm = () => {
+  const router = useRouter()
+  const [title, setTitle] = useState<string>('')
   const [category, setCategory] = useState<string | null>(null)
   const [options, setOptions] = useState<string[]>(['', '']) // A, B
+
+  const isFormValid = () => {
+    if (title.trim() === '') return false
+    if (!category) return false
+    for (const option of options) {
+      if (option.trim() === '') return false
+    }
+    return true
+  }
+
+  const onSubmit = async () => {
+    if (!isFormValid()) {
+      alert('필수 정보를 입력해주세요')
+      return
+    }
+    const voteData: CreateVoteData = {
+      title,
+      options,
+      category: category as VoteCategory,
+    }
+    const voteId = await createVote(voteData)
+    return voteId
+  }
 
   return (
     <div className="flex flex-col items-center gap-10">
@@ -25,9 +54,12 @@ const CreateForm = () => {
             type="text"
             className="w-full text-[18px] text-[#1D1D1D] font-[500]"
             placeholder="예) 나에게 초능력이 생긴다면?"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
       </div>
+
       {/* 주제 */}
       <div className="flex flex-col items-center gap-3 w-full">
         <div className="w-full text-[18px] font-[700] leading-none">
@@ -42,7 +74,13 @@ const CreateForm = () => {
                   ? 'bg-[#839DB7] text-white'
                   : 'bg-white text-[#8E8E8E] border border-[#C6C6C6]'
               }`}
-              onClick={() => setCategory(c.value)}
+              onClick={() => {
+                if (category === c.value) {
+                  setCategory(null)
+                  return
+                }
+                setCategory(c.value)
+              }}
             >
               <div className="text-[16px]">{c.label}</div>
             </button>
@@ -61,12 +99,14 @@ const CreateForm = () => {
           {options.map((option, index) => (
             <div
               key={index}
-              className="w-full border border-[#C6C6C6] rounded-lg px-5 py-3"
+              className="flex items-center gap-3 w-full border border-[#C6C6C6] rounded-lg px-5 py-3"
             >
+              <div className="text-[18px] font-[500] leading-none">
+                {String.fromCharCode(65 + index)}
+              </div>
               <input
                 type="text"
                 className="w-full text-[18px] text-[#1D1D1D] font-[500]"
-                placeholder={String.fromCharCode(65 + index)} // A, B, C...
                 value={option}
                 onChange={(e) => {
                   const newOptions = [...options]
@@ -100,6 +140,7 @@ const CreateForm = () => {
       </div>
       {/* 제출 버튼 */}
       <div className="flex flex-col items-center gap-3">
+        {/* 경고문 */}
         <div className="flex gap-1 w-full items-start">
           <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
             *
@@ -109,11 +150,26 @@ const CreateForm = () => {
             게시물은 금지되어 있으며, 위반 시 이용이 제한될 수 있습니다.
           </div>
         </div>
+        {/* 버튼 */}
         <div className="flex gap-2 w-full">
-          <button className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#E4E4E4] rounded-lg text-[18px] text-[#8E8E8E] font-[400]">
+          <button
+            onClick={() => {
+              // NOTE: 뒤로 갈 페이지가 없음
+            }}
+            className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#E4E4E4] rounded-lg text-[18px] text-[#8E8E8E] font-[400]"
+          >
             취소
           </button>
-          <button className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#839DB7] rounded-lg text-[18px] text-white font-[400]">
+          <button
+            onClick={async () => {
+              const voteId = await onSubmit()
+              console.log(voteId)
+              if (voteId) {
+                router.push('/poll')
+              }
+            }}
+            className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#839DB7] rounded-lg text-[18px] text-white font-[400]"
+          >
             업로드
           </button>
         </div>
