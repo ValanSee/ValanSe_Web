@@ -1,5 +1,4 @@
 // features/auth/authThunks.ts
-import { publicApi } from '@/api/instance/publicApi'
 import {
   loginStart,
   loginSuccess,
@@ -11,13 +10,14 @@ import { getRefreshToken } from '@/utils/tokenUtils'
 import { saveTokens, clearTokens } from '@/utils/tokenUtils'
 import { reissue } from '@/api/auth'
 import { logout as logoutApi } from '@/api/auth'
+import { login } from '@/api/auth'
 
 export const loginThunk = (code: string) => async (dispatch: AppDispatch) => {
   try {
     dispatch(loginStart())
-    const res = await publicApi.post(`/auth/kakao/login`, { code })
-    dispatch(loginSuccess({ userId: res.data.userId }))
-    saveTokens(res.data.accessToken, res.data.refreshToken)
+    const res = await login(code)
+    saveTokens(res.accessToken, res.refreshToken) // localstorage 에 토큰 저장
+    dispatch(loginSuccess({ userId: res.id }))
   } catch (err: unknown) {
     if (err instanceof Error) {
       dispatch(loginFailure(err.message))
@@ -30,11 +30,14 @@ export const loginThunk = (code: string) => async (dispatch: AppDispatch) => {
 
 export const reissueThunk = () => async (dispatch: AppDispatch) => {
   try {
-    const refreshToken = getRefreshToken()
-    const res = await reissue(refreshToken!)
-    saveTokens(res, refreshToken!)
+    const currentRefreshToken = getRefreshToken() // localstorage 에서 현재 refreshToken 가져오기
+    if (!currentRefreshToken) {
+      throw new Error('Refresh token not found')
+    }
+    const res = await reissue(currentRefreshToken)
+    saveTokens(res, currentRefreshToken)
     return res
-  } catch (err) {
+  } catch (err: unknown) {
     clearTokens()
     dispatch(logout())
     throw err
