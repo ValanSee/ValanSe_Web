@@ -9,7 +9,7 @@ export const createMemberProfile = async (profile: Profile) => {
   }
 }
 
-export const fetchMemberProfile = async () => {
+export const fetchMemberProfile = async (): Promise<Profile> => {
   try {
     const response = await authApi.get<{ profile: Profile }>('/member/profile')
     return response.data.profile

@@ -1,15 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Profile } from '@/types/_shared/profile'
+import { MypageData } from '@/types/_shared/mypageData'
 
-export type MypageData = {
-  profile_image_url: string
-  kakaoname: string
-  email: string
-  nickname: string
-  gender: string
-  age: string
-  mbti: string
-}
 interface MemberState {
   profile: Profile | null
   mypageData: MypageData | null
@@ -30,16 +22,8 @@ const memberSlice = createSlice({
     setMypageData(state, action: PayloadAction<MypageData>) {
       state.mypageData = action.payload
     },
-    updateMypageData(state, action: PayloadAction<Profile>) {
-      if (!state.mypageData) return
-      state.mypageData.nickname = action.payload.nickname
-      state.mypageData.gender = action.payload.gender
-      state.mypageData.age = action.payload.age
-      state.mypageData.mbti = action.payload.mbti
-    },
   },
 })
 
-export const { setProfile, setMypageData, updateMypageData } =
-  memberSlice.actions
+export const { setProfile, setMypageData } = memberSlice.actions
 export default memberSlice.reducer

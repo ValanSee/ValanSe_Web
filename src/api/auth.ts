@@ -15,7 +15,7 @@ export const login = async (code: string) => {
   }
 }
 
-export const reissue = async (refreshToken: string) => {
+export const reissue = async (refreshToken: string): Promise<string> => {
   try {
     const response = await authApi.post<ReissueResponse>('/auth/reissue', {
       refreshToken,
