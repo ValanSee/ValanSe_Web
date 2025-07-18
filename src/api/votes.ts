@@ -25,4 +25,4 @@ export interface BestVoteResponse {
   options: VoteOption[]
 }
 
-type VoteCategory = 'FOOD' | 'LOVE' | 'ETC' | 'ALL'
+export type VoteCategory = 'FOOD' | 'LOVE' | 'ETC' | 'ALL'
