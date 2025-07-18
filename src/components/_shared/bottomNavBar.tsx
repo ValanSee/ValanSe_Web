@@ -16,7 +16,7 @@ const navOptions = [
   {
     label: '밸런스',
     icon: 'valanse.svg',
-    route: '/poll',
+    route: '/balanse',
   },
   {
     label: '만들기',
