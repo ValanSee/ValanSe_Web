@@ -1,81 +1,79 @@
 'use client'
-import { useState } from 'react'
-import PollData from '@/types/poll/pollCardOption'
-
-const mockPollData: PollData = {
-  pollId: 'abc-123',
-  user: {
-    name: 'lunarecho33',
-  },
-  question: '회사에서 점심 먹을 때 뭐가 더 좋음?',
-  options: [
-    {
-      id: '1',
-      label: 'A',
-      text: '점심 회사 돈으로, 메뉴 못 정함',
-      votes: 76000,
-      percentage: 76,
-    },
-    {
-      id: '2',
-      label: 'B',
-      text: '점심 내 돈으로, 메뉴 마음대로',
-      votes: 24000,
-      percentage: 24,
-    },
-  ],
-  totalVotes: 948203,
-}
+import { useState, useEffect } from 'react'
+import {
+  fetchMostVotedVote,
+  MostVotedVoteResponse,
+} from '@/api/comment/mostVotedVoteApi'
 
 function PollCard() {
+  const [data, setData] = useState<MostVotedVoteResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [voted, setVoted] = useState(false)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const handleClickPercentage = (id: string) => {
-    // 선택한 걸 다시 누르면 원상복구
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        setLoading(true)
+        const res = await fetchMostVotedVote()
+        setData(res)
+      } catch {
+        setError('불러오기 실패')
+      } finally {
+        setLoading(false)
+      }
+    }
+    getData()
+  }, [])
+
+  const handleClickPercentage = (id: number) => {
     if (voted && selectedId === id) {
       setSelectedId(null)
       setVoted(false)
       return
     }
-
-    // 이미 투표했고, 다른 걸 누르면 selectedId만 바꿈
     if (voted) {
       setSelectedId(id)
       return
     }
-
-    // 최초 투표
     setSelectedId(id)
     setVoted(true)
   }
 
+  if (loading) return <div className="p-4">로딩 중...</div>
+  if (error) return <div className="p-4 text-red-500">{error}</div>
+  if (!data) return null
+
   return (
-    <div className="max-w-md mx-auto p-4 space-y-4 rounded-xl shadow">
-      <div className="text-sm font-medium text-gray-700">
-        {mockPollData.user.name}
-      </div>
-      <div className="text-base font-semibold">{mockPollData.question}</div>
+    <div className="mx-auto p-4 space-y-4 rounded-xl shadow">
+      <div className="text-sm font-medium text-gray-700">{data.createdBy}</div>
+      <div className="text-base font-semibold">{data.title}</div>
       <div className="space-y-2">
-        {mockPollData.options.map((option) => {
-          const isSelected = selectedId === option.id
+        {data.options.map((option) => {
+          const isSelected = selectedId === option.optionId
+          // percentage 계산 (총 투표수 0이면 0)
+          const percentage =
+            data.totalParticipants > 0
+              ? Math.round((option.vote_count / data.totalParticipants) * 100)
+              : 0
           return (
             <div
-              className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all 
-  ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-              onClick={() => handleClickPercentage(option.id)}
-              key={option.id}
+              className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+              onClick={() => handleClickPercentage(option.optionId)}
+              key={option.optionId}
             >
               <div className="flex justify-between relative z-10 font-medium">
                 <span>
-                  <strong>{option.label}</strong> {option.text}
+                  <strong>{String.fromCharCode(65 + option.optionId)}</strong>{' '}
+                  {option.content}
                 </span>
-                {voted && <span>{option.percentage}%</span>}
+                {voted && <span>{percentage}%</span>}
               </div>
-
               {voted && (
                 <div
                   className="absolute left-0 top-0 h-full bg-blue-100 rounded-md -z-10 transition-all duration-500 ease-in-out"
-                  style={{ width: `${option.percentage}%` }}
+                  style={{ width: `${percentage}%` }}
                 />
               )}
             </div>
@@ -83,7 +81,7 @@ function PollCard() {
         })}
       </div>
       <div className="text-sm text-gray-400 text-right">
-        총 {mockPollData.totalVotes}명 투표
+        총 {data.totalParticipants}명 투표
       </div>
     </div>
   )
