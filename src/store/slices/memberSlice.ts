@@ -16,7 +16,7 @@ const memberSlice = createSlice({
   name: 'member',
   initialState,
   reducers: {
-    setProfile(state, action: PayloadAction<Profile>) {
+    setProfile(state, action: PayloadAction<Profile | null>) {
       state.profile = action.payload
     },
     setMypageData(state, action: PayloadAction<MypageData>) {

@@ -9,7 +9,7 @@ import { Profile } from '@/types/_shared/profile'
 
 // 프로필을 가져오고 store에 저장
 export const fetchProfileThunk = () => async (dispatch: AppDispatch) => {
-  let profile: Profile
+  let profile: Profile | null = null
 
   try {
     profile = await fetchMemberProfile()

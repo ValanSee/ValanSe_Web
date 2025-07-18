@@ -9,9 +9,11 @@ export const createMemberProfile = async (profile: Profile) => {
   }
 }
 
-export const fetchMemberProfile = async (): Promise<Profile> => {
+export const fetchMemberProfile = async (): Promise<Profile | null> => {
   try {
-    const response = await authApi.get<{ profile: Profile }>('/member/profile')
+    const response = await authApi.get<{ profile: Profile | null }>(
+      '/member/profile',
+    )
     return response.data.profile
   } catch (error) {
     throw error
