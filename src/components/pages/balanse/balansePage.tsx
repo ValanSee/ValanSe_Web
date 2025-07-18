@@ -3,7 +3,7 @@ import Header from './header'
 import MockPollCard from './mockPollCard'
 import FilterTabs from './filtertabs'
 import BalanceList from './balanseList'
-import { fetchVotes } from '@/api/pages/valanse/balanseListApi'
+import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import { useEffect, useState } from 'react'
 import { Vote } from '@/types/balanse/vote'
 
