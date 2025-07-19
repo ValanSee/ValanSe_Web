@@ -67,7 +67,11 @@ authApi.interceptors.response.use(
       try {
         // 리프레시 토큰 가져오기
         const refreshToken = getRefreshToken()
-        if (!refreshToken) throw new Error('Refresh token not found')
+        if (!refreshToken) {
+          clearTokens()
+          store.dispatch(logout())
+          return Promise.reject(error)
+        }
 
         // 새로운 accessToken 발급 요청
         const newAccessToken = await reissue(refreshToken)
