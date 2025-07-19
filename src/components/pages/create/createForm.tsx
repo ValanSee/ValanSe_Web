@@ -119,7 +119,7 @@ const CreateForm = () => {
         </div>
 
         {/* 선택지 추가 버튼 */}
-        {options.length < 5 && (
+        {options.length < 4 && (
           <button
             className="flex items-center pt-4 ml-auto gap-3 text-[#555555] text-[14px] font-[400] leading-none"
             onClick={() => {
@@ -162,11 +162,13 @@ const CreateForm = () => {
           </button>
           <button
             onClick={async () => {
-              const voteId = await onSubmit()
-              console.log(voteId)
-              alert(voteId)
-              if (voteId) {
-                router.push(`/poll/${voteId}`)
+              try {
+                const voteId = await onSubmit()
+                if (voteId) {
+                  router.push(`/poll/${voteId}`)
+                }
+              } catch {
+                alert('업로드 실패')
               }
             }}
             className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#839DB7] rounded-lg text-[18px] text-white font-[400]"
