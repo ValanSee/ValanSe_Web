@@ -164,8 +164,9 @@ const CreateForm = () => {
             onClick={async () => {
               const voteId = await onSubmit()
               console.log(voteId)
+              alert(voteId)
               if (voteId) {
-                router.push('/poll')
+                router.push(`/poll/${voteId}`)
               }
             }}
             className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#839DB7] rounded-lg text-[18px] text-white font-[400]"

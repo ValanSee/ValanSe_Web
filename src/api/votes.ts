@@ -30,7 +30,7 @@ export interface BestVoteResponse {
 export const createVote = async (voteData: CreateVoteData) => {
   try {
     const response = await authApi.post('/votes', voteData)
-    return response.data
+    return response.data.voteId
   } catch (error) {
     throw error
   }
