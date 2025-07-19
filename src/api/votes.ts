@@ -1,4 +1,6 @@
+import { CreateVoteData } from '@/types/api/votes'
 import { authApi } from './instance/authApi'
+import { VoteCategory } from '@/types/_shared/vote'
 
 export const fetchBestVote = async () => {
   try {
@@ -25,4 +27,11 @@ export interface BestVoteResponse {
   options: VoteOption[]
 }
 
-export type VoteCategory = 'FOOD' | 'LOVE' | 'ETC' | 'ALL'
+export const createVote = async (voteData: CreateVoteData) => {
+  try {
+    const response = await authApi.post('/votes', voteData)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}

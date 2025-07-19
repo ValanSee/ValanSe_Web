@@ -1,5 +1,6 @@
+import { VoteCategory } from '@/types/_shared/vote'
 import { publicApi } from '../../instance/publicApi'
-import { VoteCategory, VoteOption } from '../../votes'
+import { VoteOption } from '../../votes'
 import { VoteListResponse } from '@/types/balanse/vote'
 
 export interface VoteResponse {
