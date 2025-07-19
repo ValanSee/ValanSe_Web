@@ -119,7 +119,7 @@ const CreateForm = () => {
         </div>
 
         {/* 선택지 추가 버튼 */}
-        {options.length < 5 && (
+        {options.length < 4 && (
           <button
             className="flex items-center pt-4 ml-auto gap-3 text-[#555555] text-[14px] font-[400] leading-none"
             onClick={() => {
