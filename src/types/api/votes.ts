@@ -12,4 +12,5 @@ export type MineVotesResponse = {
   category: string
   totalVoteCount: number
   createdAt: string
+  options: string[]
 }[]

@@ -3,6 +3,7 @@ import { UserCircle } from 'lucide-react'
 import { MyVoteHistoryItem } from '@/types/my/history'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import Image from 'next/image'
+import { numberToAlphabet } from '@/utils/map'
 
 export default function BalanceList({ data }: { data: MyVoteHistoryItem }) {
   const nickname = useAppSelector((state) => state.member.profile?.nickname)
@@ -17,6 +18,13 @@ export default function BalanceList({ data }: { data: MyVoteHistoryItem }) {
       </CardHeader>
       <CardContent className="pt-2 pb-4">
         <p className="font-semibold mb-2">{data.title}</p>
+        <div className="text-sm text-gray-700 space-y-1">
+          {data.options.map((opt, index) => (
+            <div key={index} className="text-[16px] font-[400] text-[#555555]">
+              {numberToAlphabet(index)} {opt}
+            </div>
+          ))}
+        </div>
         <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
           <span>전체 · {data.category}</span>
           <div className="flex gap-4">
