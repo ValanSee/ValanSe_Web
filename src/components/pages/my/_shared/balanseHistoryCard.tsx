@@ -5,7 +5,11 @@ import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import Image from 'next/image'
 import { numberToAlphabet } from '@/utils/map'
 
-export default function BalanceList({ data }: { data: MyVoteHistoryItem }) {
+export default function BalanceHistoryCard({
+  data,
+}: {
+  data: MyVoteHistoryItem
+}) {
   const nickname = useAppSelector((state) => state.member.profile?.nickname)
 
   return (

@@ -115,15 +115,9 @@ const EditPage = () => {
 
   const handleSubmit = async () => {
     const refinedForm = refineForm()
-    const res = await checkNickname(nickname as string)
 
-    // TODO: 닉네임 사용 가능성 체크, response 요소 3개 적절히 판정
-    if (!res.isAvailable) {
-      alert('이미 사용 중인 닉네임입니다.')
-    } else if (!res.isMeaningful) {
-      alert('의미 있는 닉네임을 입력해주세요.')
-    } else if (!res.isClean) {
-      alert('욕설을 포함한 닉네임은 사용할 수 없습니다.')
+    if (nickNameMessage) {
+      alert(nickNameMessage)
     } else {
       dispatch(updateProfileThunk(refinedForm))
       router.push('/my')
