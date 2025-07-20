@@ -45,3 +45,28 @@ export async function fetchMBTIStatistics(
   )
   return res.data
 }
+
+// 성별 투표 결과
+export interface GenderOption {
+  label: string
+  content: string
+  voteCount: number
+  ratio: number
+}
+
+export interface GenderStatisticsResponse {
+  voteId: number
+  gender: string
+  totalCount: number
+  options: GenderOption[]
+}
+
+export async function fetchGenderStatistics(
+  voteId: number | string,
+  gender: 'male' | 'female',
+): Promise<GenderStatisticsResponse> {
+  const res = await authApi.get<GenderStatisticsResponse>(
+    `/votes/${voteId}/gender/${gender}`,
+  )
+  return res.data
+}
