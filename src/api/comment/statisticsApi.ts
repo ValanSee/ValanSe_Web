@@ -1,4 +1,4 @@
-import { publicApi } from '../instance/publicApi'
+import { authApi } from '../instance/authApi'
 
 // 연령별 투표 결과
 export interface AgeGroup {
@@ -18,7 +18,7 @@ export interface AgeStatisticsResponse {
 export async function fetchAgeStatistics(
   voteId: number | string,
 ): Promise<AgeStatisticsResponse> {
-  const res = await publicApi.get<AgeStatisticsResponse>(`/votes/${voteId}/age`)
+  const res = await authApi.get<AgeStatisticsResponse>(`/votes/${voteId}/age`)
   return res.data
 }
 
@@ -39,8 +39,8 @@ export async function fetchMBTIStatistics(
   voteId: number | string,
   mbtiType: string,
 ): Promise<MBTIStatisticsResponse> {
-  const res = await publicApi.get<MBTIStatisticsResponse>(
-    `/votes/${voteId}/mbti`,
+  const res = await authApi.get<MBTIStatisticsResponse>(
+    `/votes/votes/${voteId}/mbti`,
     { params: { mbti_type: mbtiType } },
   )
   return res.data

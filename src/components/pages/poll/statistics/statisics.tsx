@@ -51,8 +51,7 @@ export default function VoteChart({
   useEffect(() => {
     if (!ageChartVisible) return
     const fetchData = async () => {
-      // TODO: voteId 전달
-      const res: AgeStatisticsResponse = await fetchAgeStatistics(1)
+      const res: AgeStatisticsResponse = await fetchAgeStatistics(voteId)
       const firstKey = Object.keys(res.ageRatios)[0]
       const ageGroups = res.ageRatios[firstKey]?.ageGroups || {}
       setPieData({
@@ -73,8 +72,10 @@ export default function VoteChart({
     if (ageChartVisible) return
     const fetchData = async () => {
       const mbtiType = activeTab === 'A' ? 'ie' : 'tf'
-      // TODO: voteId 전달
-      const res: MBTIStatisticsResponse = await fetchMBTIStatistics(1, mbtiType)
+      const res: MBTIStatisticsResponse = await fetchMBTIStatistics(
+        voteId,
+        mbtiType,
+      )
       const firstKey = Object.keys(res.mbti_ratios)[0]
       const mbtiArr = res.mbti_ratios[firstKey] || []
       setBarData({
