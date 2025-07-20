@@ -10,8 +10,12 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { checkNickname } from '@/api/member'
-import { updateProfileThunk } from '@/store/thunks/memberThunks'
+import {
+  fetchMypageDataThunk,
+  updateProfileThunk,
+} from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
+import { useDebounce } from '@/hooks/useDebounce'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
@@ -46,6 +50,9 @@ const EditPage = () => {
   const router = useRouter()
   const myPageData = useAppSelector((state) => state.member.mypageData)
   const [nickname, setNickname] = useState(myPageData?.nickname)
+  const debouncedNickname = useDebounce<string>(nickname || '', 500)
+  const [isDirty, setIsDirty] = useState(false)
+  const [nickNameMessage, setNickNameMessage] = useState<string | null>(null)
   const [isNicknameEditing, setIsNicknameEditing] = useState(false)
   const [gender, setGender] = useState<string | null>(
     myPageData?.gender as string,
@@ -56,6 +63,24 @@ const EditPage = () => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
+    if (debouncedNickname && debouncedNickname.length > 0) {
+      async function validateNickname() {
+        const res = await checkNickname(debouncedNickname)
+        if (!res.isAvailable) {
+          setNickNameMessage('이미 사용 중인 닉네임입니다.')
+        } else if (!res.isMeaningful) {
+          setNickNameMessage('의미 있는 닉네임을 입력해주세요.')
+        } else if (!res.isClean) {
+          setNickNameMessage('욕설을 포함한 닉네임은 사용할 수 없습니다.')
+        } else {
+          setNickNameMessage(null)
+        }
+      }
+      validateNickname()
+    }
+  }, [debouncedNickname])
+
+  useEffect(() => {
     console.log('전역 상태 nickname', myPageData?.nickname)
     console.log('로컬 상태 nickname', nickname)
     if (myPageData) {
@@ -63,6 +88,8 @@ const EditPage = () => {
       setGender(myPageData.gender)
       setAge(myPageData.age)
       setMbti(myPageData.mbti as MBTI)
+    } else {
+      dispatch(fetchMypageDataThunk())
     }
   }, [myPageData])
 
@@ -88,16 +115,19 @@ const EditPage = () => {
 
   const handleSubmit = async () => {
     const refinedForm = refineForm()
-    const nicknameCheck = await checkNickname(nickname as string)
+    const res = await checkNickname(nickname as string)
 
     // TODO: 닉네임 사용 가능성 체크, response 요소 3개 적절히 판정
-    if (!nicknameCheck.isAvailable) {
+    if (!res.isAvailable) {
       alert('이미 사용 중인 닉네임입니다.')
-      return
+    } else if (!res.isMeaningful) {
+      alert('의미 있는 닉네임을 입력해주세요.')
+    } else if (!res.isClean) {
+      alert('욕설을 포함한 닉네임은 사용할 수 없습니다.')
+    } else {
+      dispatch(updateProfileThunk(refinedForm))
+      router.push('/my')
     }
-
-    dispatch(updateProfileThunk(refinedForm))
-    router.push('/my')
   }
 
   if (!myPageData) {
@@ -127,7 +157,10 @@ const EditPage = () => {
             <>
               <div className="text-md text-[#1D1D1D]">{nickname}</div>
               <button
-                onClick={() => setIsNicknameEditing(true)}
+                onClick={() => {
+                  setIsNicknameEditing(true)
+                  setIsDirty(true)
+                }}
                 className="text-[#8E8E8E]"
               >
                 수정
@@ -143,13 +176,17 @@ const EditPage = () => {
               />
               <div className="flex gap-2 text-md">
                 <button
-                  onClick={() => setIsNicknameEditing(false)}
+                  onClick={() => {
+                    setIsNicknameEditing(false)
+                  }}
                   className="text-[#8E8E8E]"
                 >
                   취소
                 </button>
                 <button
-                  onClick={() => setIsNicknameEditing(false)}
+                  onClick={() => {
+                    setIsNicknameEditing(false)
+                  }}
                   className="text-[#4D7298]"
                 >
                   완료
@@ -158,6 +195,9 @@ const EditPage = () => {
             </>
           )}
         </div>
+        {nickNameMessage && isDirty && (
+          <div className="text-red-500 text-sm">{nickNameMessage}</div>
+        )}
       </div>
 
       <div className="flex flex-col gap-4 mb-6">
