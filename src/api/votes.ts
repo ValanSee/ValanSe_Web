@@ -57,9 +57,21 @@ export const fetchMineVotesCreated = async (
   }
 }
 
-export const fetchMineVotesVoted = async () => {
+export const fetchMineVotesVoted = async (
+  category?: string,
+  sort: string = 'latest',
+) => {
   try {
-    const response = await authApi.get<MineVotesResponse>('/votes/mine/voted')
+    const params = new URLSearchParams()
+
+    if (category) {
+      params.append('category', category)
+    }
+    params.append('sort', sort)
+
+    const response = await authApi.get<MineVotesResponse>(
+      `/votes/mine/voted?${params.toString()}`,
+    )
     return response.data
   } catch (error) {
     throw error
