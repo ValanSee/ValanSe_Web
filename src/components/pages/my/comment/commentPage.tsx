@@ -45,9 +45,9 @@ const CommentPage = () => {
 
   const handleDeleteComments = async () => {
     try {
-      selectedComments.forEach((commentId) => {
-        deleteMyComments(commentId)
-      })
+      await Promise.all(
+        selectedComments.map((commentId) => deleteMyComments(commentId)),
+      )
       const updated = await fetchMyComments(sort)
       setComments(updated)
       setSelectedComments([])
@@ -83,7 +83,7 @@ const CommentPage = () => {
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <Image
-                  src={`${memberState?.profile_image_url}`}
+                  src={memberState?.profile_image_url || ''}
                   alt="profile"
                   width={32}
                   height={32}
@@ -111,7 +111,7 @@ const CommentPage = () => {
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center gap-2">
                   <Image
-                    src={`${memberState?.profile_image_url}`}
+                    src={memberState?.profile_image_url || ''}
                     alt="profile"
                     width={24}
                     height={24}
