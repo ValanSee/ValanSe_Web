@@ -65,15 +65,19 @@ const EditPage = () => {
   useEffect(() => {
     if (debouncedNickname && debouncedNickname.length > 0) {
       async function validateNickname() {
-        const res = await checkNickname(debouncedNickname)
-        if (!res.isAvailable) {
-          setNickNameMessage('이미 사용 중인 닉네임입니다.')
-        } else if (!res.isMeaningful) {
-          setNickNameMessage('의미 있는 닉네임을 입력해주세요.')
-        } else if (!res.isClean) {
-          setNickNameMessage('욕설을 포함한 닉네임은 사용할 수 없습니다.')
-        } else {
-          setNickNameMessage(null)
+        try {
+          const res = await checkNickname(debouncedNickname)
+          if (!res.isAvailable) {
+            setNickNameMessage('이미 사용 중인 닉네임입니다.')
+          } else if (!res.isMeaningful) {
+            setNickNameMessage('의미 있는 닉네임을 입력해주세요.')
+          } else if (!res.isClean) {
+            setNickNameMessage('욕설을 포함한 닉네임은 사용할 수 없습니다.')
+          } else {
+            setNickNameMessage(null)
+          }
+        } catch {
+          setNickNameMessage('닉네임 체크 중 오류가 발생했습니다.')
         }
       }
       validateNickname()
@@ -154,6 +158,7 @@ const EditPage = () => {
                 onClick={() => {
                   setIsNicknameEditing(true)
                   setIsDirty(true)
+                  setNickNameMessage(null)
                 }}
                 className="text-[#8E8E8E]"
               >
@@ -171,6 +176,9 @@ const EditPage = () => {
               <div className="flex gap-2 text-md">
                 <button
                   onClick={() => {
+                    setNickname(myPageData?.nickname || '')
+                    setIsDirty(false)
+                    setNickNameMessage(null)
                     setIsNicknameEditing(false)
                   }}
                   className="text-[#8E8E8E]"
@@ -179,7 +187,13 @@ const EditPage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    setIsNicknameEditing(false)
+                    if (nickNameMessage) {
+                      alert(nickNameMessage)
+                    } else {
+                      setIsDirty(false)
+                      setNickNameMessage(null)
+                      setIsNicknameEditing(false)
+                    }
                   }}
                   className="text-[#4D7298]"
                 >
