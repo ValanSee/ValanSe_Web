@@ -5,3 +5,11 @@ export type CreateVoteData = {
   options: string[]
   category: VoteCategory
 }
+
+export type MineVotesResponse = {
+  voteId: number
+  title: string
+  category: string
+  totalVoteCount: number
+  createdAt: string
+}[]
