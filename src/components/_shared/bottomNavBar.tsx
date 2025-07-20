@@ -13,7 +13,7 @@ const navOptions = [
     label: '인기',
     icon: 'hotissue.svg',
     activeIcon: 'hotissue-blue.svg',
-    route: '/hotissue',
+    route: '/poll/hot',
   },
   {
     label: '밸런스',
