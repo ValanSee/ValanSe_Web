@@ -13,7 +13,7 @@ export default function MyActivitySection() {
         <Link href="/my/voted" className="h-10 font-bold">
           내가 투표한 밸런스 게임
         </Link>
-        <Link href="/my/commented" className="h-10 font-bold">
+        <Link href="/my/comment" className="h-10 font-bold">
           내가 작성한 댓글
         </Link>
       </div>

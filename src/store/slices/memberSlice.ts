@@ -21,6 +21,7 @@ const memberSlice = createSlice({
     },
     setMypageData(state, action: PayloadAction<MypageData>) {
       state.mypageData = action.payload
+      console.log('mypageData:', state.mypageData)
     },
   },
 })
