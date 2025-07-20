@@ -26,29 +26,19 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
     mode === 'created' ? '내가 만든 밸런스 게임' : '내가 투표한 밸런스 게임'
 
   useEffect(() => {
-    if (mode === 'created') {
-      const getVotes = async () => {
-        try {
-          const data = await fetchMineVotesCreated(category, sort)
-          setVotes(data)
-        } catch {
-          setError('불러오기 실패')
-        }
+    const getVotes = async () => {
+      try {
+        const data = mode === 'created'
+          ? await fetchMineVotesCreated(category, sort)
+          : await fetchMineVotesVoted(category, sort)
+        setVotes(data)
+        setError(null)
+      } catch {
+        setError('불러오기 실패')
       }
-      getVotes()
     }
-    if (mode === 'voted') {
-      const getVotes = async () => {
-        try {
-          const data = await fetchMineVotesVoted(category, sort)
-          setVotes(data)
-        } catch {
-          setError('불러오기 실패')
-        }
-      }
-      getVotes()
-    }
-  }, [category, sort])
+    getVotes()
+  }, [category, sort, mode])
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
