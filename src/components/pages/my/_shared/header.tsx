@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const Header = ({ title }: HeaderProps) => {
   return (
-    <div className="flex items-center px-4 pt-6 gap-2">
+    <div className="flex items-center w-full px-4 pt-6 gap-2">
       <BackToMypage />
       <div className="text-[20px] font-[700] leading-none">{title}</div>
     </div>

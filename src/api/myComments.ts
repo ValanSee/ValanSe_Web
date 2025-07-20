@@ -11,3 +11,11 @@ export const fetchMyComments = async (sort: string = 'latest') => {
     throw error
   }
 }
+
+export const deleteMyComments = async (commentId: number) => {
+  try {
+    await authApi.delete(`/comments/${commentId}`)
+  } catch (error) {
+    throw error
+  }
+}

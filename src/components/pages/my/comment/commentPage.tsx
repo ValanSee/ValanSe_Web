@@ -3,7 +3,7 @@
 import Header from '../_shared/header'
 import { useState } from 'react'
 import { MyCommentsResponse } from '@/types/api/myComments'
-import { fetchMyComments } from '@/api/myComments'
+import { deleteMyComments, fetchMyComments } from '@/api/myComments'
 import { useEffect } from 'react'
 import Image from 'next/image'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
@@ -43,10 +43,24 @@ const CommentPage = () => {
     getComments()
   }, [sort])
 
+  const handleDeleteComments = async () => {
+    try {
+      selectedComments.forEach((commentId) => {
+        deleteMyComments(commentId)
+      })
+      const updated = await fetchMyComments(sort)
+      setComments(updated)
+      setSelectedComments([])
+    } catch (error) {
+      console.error('댓글 삭제 실패', error)
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex flex-col items-center min-h-screen bg-white">
       <Header title="내가 작성한 댓글" />
-      <div className="flex justify-between px-4 pt-10">
+
+      <div className="flex justify-between w-full px-4 pt-10">
         <div>
           {selectedComments.length > 0 ? selectedComments.length : ''} 선택
         </div>
@@ -62,7 +76,8 @@ const CommentPage = () => {
           ))}
         </select>
       </div>
-      <div className="px-4 pt-4 space-y-4 pb-28">
+
+      <div className="w-full px-4 pt-4 space-y-4 pb-28">
         {comments.map((comment) => (
           <div key={comment.id}>
             <div className="flex flex-col gap-4">
@@ -111,6 +126,17 @@ const CommentPage = () => {
           </div>
         ))}
       </div>
+
+      {selectedComments.length > 0 && (
+        <div className="self-end w-full px-4">
+          <button
+            className="w-full border border-1 border-[#EB5E28] rounded-md h-[60px] text-[18px] font-[500] text-[#EB5E28]"
+            onClick={handleDeleteComments}
+          >
+            삭제
+          </button>
+        </div>
+      )}
     </div>
   )
 }
