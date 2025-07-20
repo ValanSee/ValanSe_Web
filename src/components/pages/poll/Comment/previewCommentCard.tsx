@@ -1,6 +1,5 @@
 'use client'
 import { Dispatch, SetStateAction } from 'react'
-import CommentDetail from './commentDetail'
 
 interface CommentCardProps {
   content: string
@@ -28,7 +27,6 @@ const PreviewCommentCard = ({
         </div>
         <p className="mt-1">{content}</p>
       </div>
-      {open && <CommentDetail />}
     </>
   )
 }

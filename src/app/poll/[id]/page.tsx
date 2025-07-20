@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { authApi } from '@/api/instance/authApi'
 import PollCard from '@/components/pages/poll/pollCard'
 import PreviewCommentCard from '@/components/pages/poll/Comment/previewCommentCard'
@@ -12,21 +12,23 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
+import { fetchBestVote } from '@/api/votes'
+import Header from '@/components/_shared/header'
 
 interface PollOption {
-  id: number
+  optionId: number
   content: string
-  vote_count: number
+  voteCount: number
+  label: string
 }
 
 interface PollDetail {
-  id: number
+  voteId: number
   title: string
   category: string
-  nickname: string
-  created_at: string
-  total_vote_count: number
-  total_comment_count: number
+  creatorNickname: string
+  createdAt: string
+  totalVoteCount: number
   options: PollOption[]
 }
 
@@ -39,8 +41,28 @@ export default function PollDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [showStats, setShowStats] = useState(false)
+  const [isFromHot, setIsFromHot] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
+    if (id === 'hot') {
+      setIsFromHot(true)
+      const loadBestVote = async () => {
+        try {
+          const response = await fetchBestVote()
+          router.replace(`/poll/${response.voteId}`)
+        } catch (error) {
+          console.error('Failed to fetch best vote:', error)
+          router.replace('/main')
+        }
+      }
+      loadBestVote()
+    }
+  }, [id, router])
+
+  useEffect(() => {
+    if (id === 'hot') return
+
     const fetchDetail = async () => {
       try {
         setLoading(true)
@@ -56,6 +78,8 @@ export default function PollDetailPage() {
   }, [id])
 
   useEffect(() => {
+    if (id === 'hot') return
+
     const fetchAll = async () => {
       try {
         setLoading(true)
@@ -70,43 +94,77 @@ export default function PollDetailPage() {
         setLoading(false)
       }
     }
+
     fetchAll()
   }, [id])
 
-  if (loading) return <div className="p-4">로딩 중...</div>
-  if (error) return <div className="p-4 text-red-500">{error}</div>
+  // 인기 탭에서 로딩 중일 때
+  if (id === 'hot') {
+    return (
+      <div>
+        <Header title="오늘의 핫이슈" />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">
+              가장 인기 있는 투표를 불러오는 중...
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (loading)
+    return (
+      <div>
+        <Header title={isFromHot ? '오늘의 핫이슈' : '밸런스게임'} />
+        <div className="p-4">로딩 중...</div>
+      </div>
+    )
+  if (error)
+    return (
+      <div>
+        <Header title={isFromHot ? '오늘의 핫이슈' : '밸런스게임'} />
+        <div className="p-4 text-red-500">{error}</div>
+      </div>
+    )
   if (!data) return null
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      {data && (
-        <PollCard
-          createdBy={data.nickname}
-          title={data.title}
-          options={data.options.map((opt) => ({
-            optionId: opt.id,
-            content: opt.content,
-            vote_count: opt.vote_count,
-          }))}
-          totalParticipants={data.total_vote_count}
-        />
-      )}
-      {bestComment && (
-        <PreviewCommentCard
-          content={bestComment.content}
-          commentsNumber={bestComment.totalCommentCount}
-          open={open}
-          setOpen={setOpen}
-        />
-      )}
-      {open && <CommentDetail comments={comments} />}
-      {data && (
-        <VoteChart
-          voteId={data.id}
-          showStats={showStats}
-          setShowStatsAction={setShowStats}
-        />
-      )}
+    <div>
+      <Header title={isFromHot ? '오늘의 핫이슈' : '밸런스게임'} />
+      <div className="max-w-xl mx-auto p-4 pb-24">
+        {data && (
+          <PollCard
+            voteId={data.voteId}
+            createdBy={data.creatorNickname}
+            title={data.title}
+            options={data.options.map((opt) => ({
+              optionId: opt.optionId,
+              content: opt.content,
+              vote_count: opt.voteCount,
+            }))}
+            totalParticipants={data.totalVoteCount}
+          />
+        )}
+        {bestComment && (
+          <PreviewCommentCard
+            content={bestComment.content}
+            commentsNumber={bestComment.totalCommentCount}
+            open={open}
+            setOpen={setOpen}
+          />
+        )}
+        {open && <CommentDetail comments={comments} voteId={data.voteId} />}
+        {data && (
+          <VoteChart
+            voteId={data.voteId}
+            showStats={showStats}
+            setShowStatsAction={setShowStats}
+          />
+        )}
+      </div>
     </div>
   )
 }

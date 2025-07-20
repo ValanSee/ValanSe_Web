@@ -27,6 +27,29 @@ export interface BestVoteResponse {
   options: VoteOption[]
 }
 
+// 투표 API 응답 타입
+export interface VoteResponse {
+  totalVoteCount: number
+  voteOptionId: number
+  voteOptionCount: number
+  voted: boolean
+}
+
+// 투표/취소/재투표 API
+export const voteOption = async (
+  voteId: number | string,
+  voteOptionId: number,
+): Promise<VoteResponse> => {
+  try {
+    const response = await authApi.post<VoteResponse>(
+      `/votes/${voteId}/vote-options/${voteOptionId}`,
+    )
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const createVote = async (voteData: CreateVoteData) => {
   try {
     const response = await authApi.post('/votes', voteData)
