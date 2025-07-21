@@ -13,6 +13,7 @@ import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { useRouter } from 'next/navigation'
+import { recover } from '@/store/slices/authSlice'
 
 function MyPage() {
   const router = useRouter()
@@ -21,22 +22,26 @@ function MyPage() {
   const isLogined = useAppSelector((state) => state.auth.isLogined)
 
   useEffect(() => {
-    console.log('mypageData:', mypageData)
-  }, [mypageData])
-
-  useEffect(() => {
     // 로그인 안 되어있으면 리디렉션
     if (!isLogined) {
-      router.push('/entry')
-      return
+      const checkLogin = async () => {
+        try {
+          await dispatch(fetchMypageDataThunk())
+          dispatch(recover())
+        } catch (err) {
+          console.error('리뉴얼 실패', err)
+          router.push('/entry')
+          return
+        }
+      }
+      checkLogin()
     }
 
     // 마이페이지 데이터가 없으면 불러오기
     if (!mypageData) {
       const fetchData = async () => {
         try {
-          const res = await dispatch(fetchMypageDataThunk())
-          console.log('mypageData:', res)
+          await dispatch(fetchMypageDataThunk())
         } catch (err) {
           console.error('마이페이지 데이터 가져오기 실패', err)
         }

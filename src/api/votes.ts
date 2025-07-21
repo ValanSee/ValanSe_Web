@@ -1,4 +1,4 @@
-import { CreateVoteData } from '@/types/api/votes'
+import { CreateVoteData, MineVotesResponse } from '@/types/api/votes'
 import { authApi } from './instance/authApi'
 import { VoteCategory } from '@/types/_shared/vote'
 
@@ -54,6 +54,48 @@ export const createVote = async (voteData: CreateVoteData) => {
   try {
     const response = await authApi.post('/votes', voteData)
     return response.data.voteId
+  } catch (error) {
+    throw error
+  }
+}
+
+export const fetchMineVotesCreated = async (
+  category?: string,
+  sort: string = 'latest',
+) => {
+  try {
+    const params = new URLSearchParams()
+
+    if (category) {
+      params.append('category', category)
+    }
+    params.append('sort', sort)
+
+    const response = await authApi.get<MineVotesResponse>(
+      `/votes/mine/created?${params.toString()}`,
+    )
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const fetchMineVotesVoted = async (
+  category?: string,
+  sort: string = 'latest',
+) => {
+  try {
+    const params = new URLSearchParams()
+
+    if (category) {
+      params.append('category', category)
+    }
+    params.append('sort', sort)
+
+    const response = await authApi.get<MineVotesResponse>(
+      `/votes/mine/voted?${params.toString()}`,
+    )
+    return response.data
   } catch (error) {
     throw error
   }

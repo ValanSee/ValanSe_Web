@@ -36,8 +36,12 @@ const authSlice = createSlice({
       state.isLogined = false
       state.userId = null
     },
+    recover(state) {
+      state.isLogined = true
+      // TODO : state.userId = action.payload.userId
+    },
   },
 })
-export const { loginStart, loginSuccess, loginFailure, logout } =
+export const { loginStart, loginSuccess, loginFailure, logout, recover } =
   authSlice.actions
 export default authSlice.reducer

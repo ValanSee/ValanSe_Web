@@ -46,6 +46,8 @@ authApi.interceptors.response.use(
     if (originalRequest.url?.includes('/auth/reissue')) {
       clearTokens()
       store.dispatch(logout())
+      alert('로그인 정보가 만료되었습니다. 다시 로그인해주세요.')
+      window.location.href = '/entry'
       return Promise.reject(error)
     }
 
