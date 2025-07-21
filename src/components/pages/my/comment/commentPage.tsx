@@ -58,7 +58,7 @@ const CommentPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white font-pretendard leading-none">
+    <div className="flex flex-col items-center h-screen bg-white font-pretendard leading-none">
       <Header title="내가 작성한 댓글" />
 
       <div className="flex justify-between w-full px-4 pt-10">
@@ -78,7 +78,7 @@ const CommentPage = () => {
         </select>
       </div>
 
-      <div className="w-full px-4 pt-4 space-y-4 pb-28">
+      <div className="w-full px-4 pt-4 space-y-4 h-[calc(100vh-20rem)] overflow-y-auto">
         {comments.map((comment) => (
           <div key={comment.id}>
             <div className="flex flex-col gap-4">
@@ -133,7 +133,7 @@ const CommentPage = () => {
       </div>
 
       {selectedComments.length > 0 && (
-        <div className="self-end w-full px-4">
+        <div className="self-end w-full mt-auto px-4 pb-20">
           <button
             className="w-full border border-1 border-[#EB5E28] rounded-md h-[60px] text-[18px] font-[500] text-[#EB5E28]"
             onClick={handleDeleteComments}
