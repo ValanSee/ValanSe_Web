@@ -4,6 +4,7 @@ export type MyCommentsResponse = {
   memberId: number
   memberName: string
   createdAt: string
+  voteCreatedAt: string
   voteOwnerId: number
   voteOwnerNickname: string
   voteTitle: string

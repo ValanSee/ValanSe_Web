@@ -88,7 +88,7 @@ const CommentPage = () => {
                   {comment.voteOwnerNickname}
                 </div>
                 <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
-                  {getTimeAgo(comment.createdAt)}
+                  {getTimeAgo(comment.voteCreatedAt)}
                 </div>
               </div>
               <div className="text-[16px] font-[700] leading-none">
