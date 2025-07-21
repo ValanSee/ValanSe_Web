@@ -34,7 +34,7 @@ const MainPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pt-6">
+    <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pb-24">
       <div className="flex flex-col items-center bg-[#839db7] rounded-bl-2xl rounded-br-2xl w-screen px-6 pb-5">
         {/* 상단 */}
         <div className="flex flex-col items-center pt-[98px] leading-none">
