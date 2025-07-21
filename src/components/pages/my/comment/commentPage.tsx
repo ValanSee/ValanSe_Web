@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
+import { getTimeAgo } from '@/utils/getTimeAgo'
 
 const sortOptions = [
   { value: 'latest', label: '최신순' },
@@ -82,17 +83,16 @@ const CommentPage = () => {
           <div key={comment.id}>
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                <Image
-                  src={memberState?.profile_image_url || ''}
-                  alt="profile"
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-                <div>{memberState?.nickname}</div>
+                <div className="w-8 h-8 rounded-full bg-[#C6C6C6]" />
+                <div className="text-[14px] font-[600] leading-none">
+                  {comment.voteOwnerNickname}
+                </div>
+                <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
+                  {getTimeAgo(comment.createdAt)}
+                </div>
               </div>
               <div className="text-[16px] font-[700] leading-none">
-                제목을 불러올 수 없습니다.
+                {comment.voteTitle}
               </div>
             </div>
             <div className="flex items-center gap-4 pt-4">
@@ -117,7 +117,12 @@ const CommentPage = () => {
                     height={24}
                     className="rounded-full"
                   />
-                  <div>{memberState?.nickname}</div>
+                  <div className="text-[14px] font-[600] leading-none text-[#8E8E8E]">
+                    {memberState?.nickname}
+                  </div>
+                  <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
+                    {getTimeAgo(comment.createdAt)}
+                  </div>
                 </div>
                 <div className="pl-8">{comment.content}</div>
               </div>
