@@ -58,7 +58,7 @@ const CommentPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white">
+    <div className="flex flex-col items-center min-h-screen bg-white font-pretendard leading-none">
       <Header title="내가 작성한 댓글" />
 
       <div className="flex justify-between w-full px-4 pt-10">
@@ -84,7 +84,7 @@ const CommentPage = () => {
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-[#C6C6C6]" />
-                <div className="text-[14px] font-[600] leading-none">
+                <div className="text-[14px] font-[500] leading-none">
                   {comment.voteOwnerNickname}
                 </div>
                 <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
@@ -117,7 +117,7 @@ const CommentPage = () => {
                     height={24}
                     className="rounded-full"
                   />
-                  <div className="text-[14px] font-[600] leading-none text-[#8E8E8E]">
+                  <div className="text-[14px] font-[500] leading-none text-[#8E8E8E]">
                     {memberState?.nickname}
                   </div>
                   <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
