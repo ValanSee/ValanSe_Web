@@ -1,6 +1,7 @@
 // utils/getTimeAgo.ts
-export const getTimeAgo = (date: Date | string): string => {
-  const d = typeof date === 'string' ? new Date(date) : date
+export const getTimeAgo = (utcDate: Date | string): string => {
+  const utc = typeof utcDate === 'string' ? new Date(utcDate) : utcDate
+  const d = new Date(utc.getTime() + 9 * 60 * 60 * 1000)
   const now = new Date()
   const diff = Math.floor((now.getTime() - d.getTime()) / 1000)
 
