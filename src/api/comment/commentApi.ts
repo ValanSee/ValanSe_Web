@@ -102,3 +102,7 @@ export async function toggleCommentLike(
   )
   return res.data
 }
+
+export async function deleteComment(commentId: number | string): Promise<void> {
+  await authApi.delete(`/comments/${commentId}`)
+}

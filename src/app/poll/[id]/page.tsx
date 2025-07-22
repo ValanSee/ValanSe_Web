@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { authApi } from '@/api/instance/authApi'
 import PollCard from '@/components/pages/poll/pollCard'
 import PreviewCommentCard from '@/components/pages/poll/Comment/previewCommentCard'
@@ -14,6 +14,7 @@ import {
 import VoteChart from '@/components/pages/poll/statistics/statisics'
 import { fetchBestVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
+import BottomNavBar from '@/components/_shared/bottomNavBar'
 
 interface PollOption {
   optionId: number
@@ -34,6 +35,7 @@ interface PollDetail {
 
 export default function PollDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const searchParams = useSearchParams()
   const [data, setData] = useState<PollDetail | null>(null)
   const [bestComment, setBestComment] = useState<BestComment | null>(null)
   const [comments, setComments] = useState<Comment[]>([])
@@ -44,13 +46,16 @@ export default function PollDetailPage() {
   const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
 
+  // URL 파라미터에서 출처 확인
+  const source = searchParams.get('source')
+
   useEffect(() => {
     if (id === 'hot') {
       setIsFromHot(true)
       const loadBestVote = async () => {
         try {
           const response = await fetchBestVote()
-          router.replace(`/poll/${response.voteId}`)
+          router.replace(`/poll/${response.voteId}?source=hot`)
         } catch (error) {
           console.error('Failed to fetch best vote:', error)
           router.replace('/main')
@@ -115,17 +120,23 @@ export default function PollDetailPage() {
     )
   }
 
+  const getHeaderTitle = () => {
+    if (source === 'hot' || isFromHot) return '오늘의 핫이슈'
+    if (source === 'balance') return '밸런스게임'
+    return '밸런스게임' // 기본값
+  }
+
   if (loading)
     return (
       <div>
-        <Header title={isFromHot ? '오늘의 핫이슈' : '밸런스게임'} />
+        <Header title={getHeaderTitle()} />
         <div className="p-4">로딩 중...</div>
       </div>
     )
   if (error)
     return (
       <div>
-        <Header title={isFromHot ? '오늘의 핫이슈' : '밸런스게임'} />
+        <Header title={getHeaderTitle()} />
         <div className="p-4 text-red-500">{error}</div>
       </div>
     )
@@ -133,7 +144,7 @@ export default function PollDetailPage() {
 
   return (
     <div>
-      <Header title={isFromHot ? '오늘의 핫이슈' : '밸런스게임'} />
+      <Header title={getHeaderTitle()} />
       <div className="max-w-xl mx-auto p-4 pb-24">
         {data && (
           <PollCard
@@ -165,6 +176,7 @@ export default function PollDetailPage() {
           />
         )}
       </div>
+      {(source === 'hot' || isFromHot) && <BottomNavBar />}
     </div>
   )
 }

@@ -5,32 +5,32 @@ import { usePathname } from 'next/navigation'
 const navOptions = [
   {
     label: '홈',
-    icon: 'home.svg',
-    activeIcon: 'home-blue.svg',
+    icon: '/home.svg',
+    activeIcon: '/home-blue.svg',
     route: '/main',
   },
   {
     label: '인기',
-    icon: 'hotissue.svg',
-    activeIcon: 'hotissue-blue.svg',
+    icon: '/hotissue.svg',
+    activeIcon: '/hotissue-blue.svg',
     route: '/poll/hot',
   },
   {
     label: '밸런스',
     route: '/balanse',
-    icon: 'poll.svg',
-    activeIcon: 'poll-blue.svg',
+    icon: '/poll.svg',
+    activeIcon: '/poll-blue.svg',
   },
   {
     label: '만들기',
-    icon: 'create.svg',
-    activeIcon: 'create-blue.svg',
+    icon: '/create.svg',
+    activeIcon: '/create-blue.svg',
     route: '/create',
   },
   {
     label: '내 정보',
-    icon: 'mypage.svg',
-    activeIcon: 'mypage-blue.svg',
+    icon: '/mypage.svg',
+    activeIcon: '/mypage-blue.svg',
     route: '/my',
   },
 ]

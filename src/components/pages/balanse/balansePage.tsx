@@ -6,6 +6,8 @@ import BalanceList from './balanseList'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import { useEffect, useState } from 'react'
 import { Vote } from '@/types/balanse/vote'
+import { useRouter, useSearchParams } from 'next/navigation'
+import BottomNavBar from '@/components/_shared/bottomNavBar'
 
 const sortOptions = [
   { label: '최신순', value: 'latest' },
@@ -13,18 +15,50 @@ const sortOptions = [
 ]
 
 export default function BalancePage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [votes, setVotes] = useState<Vote[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [category, setCategory] = useState('ALL')
-  const [sort, setSort] = useState<'latest' | 'popular'>('latest')
+  const [loading, setLoading] = useState(false)
+
+  // URL에서 카테고리와 정렬 옵션 가져오기
+  const category = searchParams.get('category') || 'ALL'
+  const sort = (searchParams.get('sort') as 'latest' | 'popular') || 'latest'
+
+  // URL 업데이트 함수
+  const updateURL = (newCategory?: string, newSort?: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (newCategory) {
+      params.set('category', newCategory)
+    }
+    if (newSort) {
+      params.set('sort', newSort)
+    }
+
+    router.push(`?${params.toString()}`)
+  }
+
+  // 카테고리 변경
+  const handleCategoryChange = (newCategory: string) => {
+    updateURL(newCategory)
+  }
+
+  // 정렬 변경
+  const handleSortChange = (newSort: 'latest' | 'popular') => {
+    updateURL(undefined, newSort)
+  }
 
   useEffect(() => {
     const getVotes = async () => {
       try {
+        setLoading(true)
         const data = await fetchVotes({ category, sort })
         setVotes(data.votes)
       } catch {
         setError('불러오기 실패')
+      } finally {
+        setLoading(false)
       }
     }
     getVotes()
@@ -37,11 +71,16 @@ export default function BalancePage() {
         <MockPollCard />
       </div>
       <div className="flex items-center gap-2 px-4 mt-2">
-        <FilterTabs selected={category} onChangeCategory={setCategory} />
+        <FilterTabs
+          selected={category}
+          onChangeCategory={handleCategoryChange}
+        />
         <select
           className="ml-auto border rounded px-2 py-1 text-sm"
           value={sort}
-          onChange={(e) => setSort(e.target.value as 'latest' | 'popular')}
+          onChange={(e) =>
+            handleSortChange(e.target.value as 'latest' | 'popular')
+          }
         >
           {sortOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -51,11 +90,18 @@ export default function BalancePage() {
         </select>
       </div>
       <div className="px-4 mt-4 space-y-4 pb-28">
-        {error && <div>{error}</div>}
-        {votes.map((vote) => (
-          <BalanceList key={vote.id} data={vote} />
-        ))}
+        {loading && (
+          <div className="text-center py-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="text-sm text-gray-500 mt-2">투표를 불러오는 중...</p>
+          </div>
+        )}
+        {error && <div className="text-red-500 text-center">{error}</div>}
+        {!loading &&
+          !error &&
+          votes.map((vote) => <BalanceList key={vote.id} data={vote} />)}
       </div>
+      <BottomNavBar />
     </div>
   )
 }
