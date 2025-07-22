@@ -4,7 +4,7 @@ import MockPollCard from './mockPollCard'
 import FilterTabs from './filtertabs'
 import BalanceList from './balanseList'
 import { fetchVotes } from '../../../api/pages/valanse/balanseListapi'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { Vote } from '@/types/balanse/vote'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/bottomNavBar'
@@ -14,7 +14,7 @@ const sortOptions = [
   { label: '인기순', value: 'popular' },
 ]
 
-export default function BalancePage() {
+function BalancePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [votes, setVotes] = useState<Vote[]>([])
@@ -103,5 +103,25 @@ export default function BalancePage() {
       </div>
       <BottomNavBar />
     </div>
+  )
+}
+
+export default function BalancePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col min-h-screen bg-white">
+          <Header />
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">페이지를 불러오는 중...</p>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <BalancePageContent />
+    </Suspense>
   )
 }
