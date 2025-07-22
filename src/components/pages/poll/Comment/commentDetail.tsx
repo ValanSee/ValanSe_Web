@@ -6,6 +6,7 @@ import {
   fetchReplies,
   Reply,
   toggleCommentLike,
+  deleteComment,
 } from '@/api/comment/commentApi'
 import CommentInput from './commentInput'
 import {
@@ -14,6 +15,7 @@ import {
   ThumbsUp,
   MessageCircle,
   MoreVertical,
+  Trash2,
 } from 'lucide-react'
 
 interface CommentDetailProps {
@@ -32,15 +34,29 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
   const [repliesLoading, setRepliesLoading] = useState<Record<number, boolean>>(
     {},
   )
+  const [openMenus, setOpenMenus] = useState<Record<number, boolean>>({})
 
   // 초기 댓글 설정
   useEffect(() => {
     setLocalComments(comments)
   }, [comments])
 
-  const toggleReplies = async (commentId: number) => {
-    console.log('Toggling replies for commentId:', commentId)
+  // 메뉴 외부 클릭 시 메뉴 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (!target.closest('.menu-container')) {
+        setOpenMenus({})
+      }
+    }
 
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const toggleReplies = async (commentId: number) => {
     // 이미 열려있으면 닫기
     if (openReplies[commentId]) {
       setOpenReplies((prev) => ({
@@ -133,8 +149,6 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
             : comment,
         ),
       )
-
-      console.log('좋아요 토글 결과:', response.message)
     } catch (error) {
       console.error('좋아요 토글 실패:', error)
       alert('좋아요 처리에 실패했습니다.')
@@ -157,12 +171,31 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
               : reply,
           ) || [],
       }))
-
-      console.log('대댓글 좋아요 토글 결과:', response.message)
     } catch (error) {
       console.error('대댓글 좋아요 토글 실패:', error)
       alert('좋아요 처리에 실패했습니다.')
     }
+  }
+
+  const handleCommentDelete = async (commentId: number) => {
+    if (!confirm('정말로 이 댓글을 삭제하시겠습니까?')) return
+
+    try {
+      await deleteComment(commentId)
+      setLocalComments((prev) =>
+        prev.filter((comment) => comment.commentId !== commentId),
+      )
+    } catch (error) {
+      console.error('댓글 삭제 실패:', error)
+      alert('댓글 삭제에 실패했습니다.')
+    }
+  }
+
+  const toggleMenu = (commentId: number) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }))
   }
 
   const formatTimeAgo = (dateString: string) => {
@@ -241,9 +274,28 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
                     </div>
                   </div>
                 </div>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <MoreVertical size={16} />
-                </button>
+                <div className="relative menu-container">
+                  <button
+                    className="text-gray-400 hover:text-gray-600 p-1"
+                    onClick={() => toggleMenu(comment.commentId)}
+                  >
+                    <MoreVertical size={16} />
+                  </button>
+                  {openMenus[comment.commentId] && (
+                    <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                      <button
+                        className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                        onClick={() => {
+                          handleCommentDelete(comment.commentId)
+                          toggleMenu(comment.commentId)
+                        }}
+                      >
+                        <Trash2 size={14} />
+                        삭제
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <p className="text-sm text-gray-800 whitespace-pre-wrap">

@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default function BalanceList({ data }: { data: Vote }) {
   return (
-    <Link href={`/poll/${data.id}`} passHref legacyBehavior>
+    <Link href={`/poll/${data.id}?source=balance`} passHref legacyBehavior>
       <a className="block">
         <Card className="rounded-xl cursor-pointer hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center gap-2 pb-0">
