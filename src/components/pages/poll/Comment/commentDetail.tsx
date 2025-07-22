@@ -57,8 +57,6 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
   }, [])
 
   const toggleReplies = async (commentId: number) => {
-    console.log('Toggling replies for commentId:', commentId)
-
     // 이미 열려있으면 닫기
     if (openReplies[commentId]) {
       setOpenReplies((prev) => ({
@@ -151,8 +149,6 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
             : comment,
         ),
       )
-
-      console.log('좋아요 토글 결과:', response.message)
     } catch (error) {
       console.error('좋아요 토글 실패:', error)
       alert('좋아요 처리에 실패했습니다.')
@@ -175,8 +171,6 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
               : reply,
           ) || [],
       }))
-
-      console.log('대댓글 좋아요 토글 결과:', response.message)
     } catch (error) {
       console.error('대댓글 좋아요 토글 실패:', error)
       alert('좋아요 처리에 실패했습니다.')
@@ -188,7 +182,6 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
 
     try {
       await deleteComment(commentId)
-      console.log('댓글 삭제 성공')
       setLocalComments((prev) =>
         prev.filter((comment) => comment.commentId !== commentId),
       )
