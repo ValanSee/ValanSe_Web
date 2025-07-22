@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { BestVoteResponse, fetchBestVote } from '@/api/votes'
 import VoteOptionGrid from './voteOptionGrid'
+import Link from 'next/link'
 
 // 테스트 데이터
 const categories = [
@@ -33,7 +34,7 @@ const MainPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pt-6">
+    <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pb-24">
       <div className="flex flex-col items-center bg-[#839db7] rounded-bl-2xl rounded-br-2xl w-screen px-6 pb-5">
         {/* 상단 */}
         <div className="flex flex-col items-center pt-[98px] leading-none">
@@ -55,21 +56,25 @@ const MainPage = () => {
 
       <div className="flex flex-col items-center w-full gap-10 pt-8">
         {/* 밸런스 게임 만들기 */}
-        <button className="flex items-center justify-between w-full h-[120px] pl-5 pr-4 py-3 bg-white rounded-lg text-2xl font-bold">
+        <Link
+          href="/create"
+          className="flex items-center justify-between w-full h-[120px] pl-5 pr-4 py-3 bg-white rounded-lg text-2xl font-bold"
+        >
           밸런스 게임 만들기
           <Image src="/create.svg" alt="create" width={28} height={28} />
-        </button>
+        </Link>
 
         {/* 카테고리 */}
         <div className="flex justify-around w-full gap-2">
           {categories.map((c) => (
-            <div
+            <Link
+              href="/balanse"
               key={c.label}
               className="flex flex-col items-center w-full p-4 pt-7 pb-5 rounded-lg bg-white"
             >
               <Image src={c.icon} alt={c.label} width={48} height={48} />
               <div className="text-md mt-1 font-semibold">{c.label}</div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
