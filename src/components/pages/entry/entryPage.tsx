@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Divider from './_components/divider'
+// import Divider from './_components/divider'
 import KakaoLoginButton from './_components/kakaoLoginButton'
 
 function EntryPage() {
@@ -29,14 +29,13 @@ function EntryPage() {
       <div className="w-full max-w-xs">
         {/* 카카오 로그인 버튼 */}
         <KakaoLoginButton />
-
-        {/* 구분선 텍스트 */}
+        {/*
         <Divider />
 
-        {/* 로그인 없이 시작하기 */}
         <button className="w-full max-w-xs bg-white/60 text-gray-600 border border-gray-300 py-3 rounded-xl font-medium hover:bg-white/80">
           로그인 없이 시작하기
         </button>
+        */}
       </div>
     </div>
   )
