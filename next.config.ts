@@ -2,7 +2,7 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['img1.kakaocdn.net'],
+    domains: ['k.kakaocdn.net', 'img1.kakaocdn.net', 'img2.kakaocdn.net'],
   },
 }
 
