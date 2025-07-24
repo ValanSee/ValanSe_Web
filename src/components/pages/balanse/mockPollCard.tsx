@@ -39,7 +39,7 @@ function MockPollCard() {
 
   return (
     <Link href={`/poll/${data.voteId}`} passHref legacyBehavior>
-      <a className="block mx-auto p-4 space-y-4 rounded-xl shadow cursor-pointer hover:shadow-lg transition-shadow">
+      <a className="block mx-auto p-4 mt-6 space-y-4 rounded-xl bg-[#F0F0F0] cursor-pointer">
         <div className="text-sm font-medium text-gray-700">
           {data.createdBy}
         </div>
@@ -49,7 +49,7 @@ function MockPollCard() {
           {data.options.map((option, idx) => {
             return (
               <div
-                className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ring-blue-500`}
+                className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ring-blue-500 bg-white`}
                 key={option.optionId}
               >
                 <div className="flex justify-between relative z-10 font-medium">

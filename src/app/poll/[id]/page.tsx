@@ -159,7 +159,7 @@ export default function PollDetailPage() {
             totalParticipants={data.totalVoteCount}
           />
         )}
-        {bestComment && (
+        {bestComment && !open && (
           <PreviewCommentCard
             content={bestComment.content}
             commentsNumber={bestComment.totalCommentCount}
@@ -167,7 +167,13 @@ export default function PollDetailPage() {
             setOpen={setOpen}
           />
         )}
-        {open && <CommentDetail comments={comments} voteId={data.voteId} />}
+        {open && (
+          <CommentDetail
+            comments={comments}
+            voteId={data.voteId}
+            onClose={() => setOpen(false)}
+          />
+        )}
         {data && (
           <VoteChart
             voteId={data.voteId}

@@ -8,6 +8,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { Vote } from '@/types/balanse/vote'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/bottomNavBar'
+import React from 'react'
 
 const sortOptions = [
   { label: '최신순', value: 'latest' },
@@ -65,7 +66,7 @@ function BalancePageContent() {
   }, [category, sort])
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-[#ffffff]">
       <Header />
       <div className="px-4">
         <MockPollCard />
@@ -76,7 +77,7 @@ function BalancePageContent() {
           onChangeCategory={handleCategoryChange}
         />
         <select
-          className="ml-auto border rounded px-2 py-1 text-sm"
+          className="ml-auto rounded px-2 py-1 text-sm"
           value={sort}
           onChange={(e) =>
             handleSortChange(e.target.value as 'latest' | 'popular')
@@ -99,7 +100,14 @@ function BalancePageContent() {
         {error && <div className="text-red-500 text-center">{error}</div>}
         {!loading &&
           !error &&
-          votes.map((vote) => <BalanceList key={vote.id} data={vote} />)}
+          votes.map((vote, idx) => (
+            <React.Fragment key={vote.id}>
+              <BalanceList data={vote} />
+              {idx !== votes.length - 1 && (
+                <div className="h-px bg-[#E5E5E5] w-full my-2" />
+              )}
+            </React.Fragment>
+          ))}
       </div>
       <BottomNavBar />
     </div>
