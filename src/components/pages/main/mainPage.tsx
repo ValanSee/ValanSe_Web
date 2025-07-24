@@ -9,9 +9,9 @@ import Link from 'next/link'
 
 // 테스트 데이터
 const categories = [
-  { label: '음식', icon: '/category-food.svg' },
-  { label: '연애', icon: '/category-love.svg' },
-  { label: '기타', icon: '/category-etc.svg' },
+  { label: '음식', icon: '/category-food.svg', param: 'FOOD' },
+  { label: '연애', icon: '/category-love.svg', param: 'LOVE' },
+  { label: '기타', icon: '/category-etc.svg', param: 'ETC' },
 ]
 
 const MainPage = () => {
@@ -68,7 +68,7 @@ const MainPage = () => {
         <div className="flex justify-around w-full gap-2">
           {categories.map((c) => (
             <Link
-              href="/balanse"
+              href={`/balanse?category=${c.param}`}
               key={c.label}
               className="flex flex-col items-center w-full p-4 pt-7 pb-5 rounded-lg bg-white"
             >
