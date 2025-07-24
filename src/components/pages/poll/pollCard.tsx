@@ -96,7 +96,7 @@ function PollCard({
   }
 
   return (
-    <div className="mx-auto p-4 space-y-4 rounded-xl shadow">
+    <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
       <div className="text-sm font-medium text-gray-700">{createdBy}</div>
       <div className="text-base font-semibold">{title}</div>
       <div className="space-y-2">
@@ -116,6 +116,12 @@ function PollCard({
               } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
               style={{
                 borderColor: isSelected ? optionColor : undefined,
+                backgroundColor: isSelected
+                  ? optionColor // 선택된 옵션은 진한 색상
+                  : voted
+                    ? optionLightColor // 투표된 옵션은 연한 색상
+                    : undefined,
+                color: isSelected ? '#fff' : undefined, // 선택된 옵션은 글씨 흰색
               }}
               onClick={() => handleClickPercentage(option.optionId)}
               key={option.optionId ?? idx}
@@ -127,7 +133,8 @@ function PollCard({
                 </span>
                 {voted && <span>{percentage}%</span>}
               </div>
-              {voted && (
+              {/* 선택된 옵션이 아니고, 투표가 완료된 경우에만 퍼센트 바 표시 */}
+              {voted && !isSelected && (
                 <div
                   className="absolute left-0 top-0 h-full rounded-md -z-10 transition-all duration-500 ease-in-out"
                   style={{

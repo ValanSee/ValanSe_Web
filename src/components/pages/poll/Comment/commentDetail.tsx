@@ -21,9 +21,14 @@ import {
 interface CommentDetailProps {
   comments?: Comment[]
   voteId?: number | string
+  onClose?: () => void
 }
 
-const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
+const CommentDetail = ({
+  comments = [],
+  voteId,
+  onClose,
+}: CommentDetailProps) => {
   const [openReplies, setOpenReplies] = useState<Record<number, boolean>>({})
   const [currentSort, setCurrentSort] = useState<'popular' | 'latest'>(
     'popular',
@@ -211,8 +216,8 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
   }
 
   return (
-    <div className="mt-4 rounded-lg bg-gray-50 space-y-6 p-4">
-      <div className="flex items-center justify-between">
+    <div className="bg-white rounded-xl shadow p-6 mt-4 mb-4">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">댓글 {localComments.length}</h3>
         <div className="flex gap-2">
           <button
@@ -254,10 +259,7 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
           const isRepliesLoading = repliesLoading[comment.commentId] || false
 
           return (
-            <div
-              key={commentKey}
-              className="border-b pb-4 last:border-none last:pb-0 space-y-3"
-            >
+            <div key={commentKey} className="pb-4 last:pb-0 space-y-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -401,10 +403,20 @@ const CommentDetail = ({ comments = [], voteId }: CommentDetailProps) => {
             </div>
           )
         })}
-
-      {/* 댓글 입력 */}
-      {voteId && (
-        <CommentInput voteId={voteId} onCommentCreated={handleCommentCreated} />
+      {/* 최상위 댓글 입력창 - 접기 버튼 바로 위 */}
+      <div className="mt-4">
+        <CommentInput
+          voteId={voteId as number}
+          onCommentCreated={handleCommentCreated}
+        />
+      </div>
+      {onClose && (
+        <button
+          className="w-full py-2 mt-4 rounded bg-gray-100 text-gray-600 text-sm"
+          onClick={onClose}
+        >
+          접기
+        </button>
       )}
     </div>
   )

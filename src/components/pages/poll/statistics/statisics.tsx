@@ -261,7 +261,7 @@ export default function VoteChart({
         {showStats ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
       {showStats && (
-        <>
+        <div className="bg-white rounded-xl shadow p-6">
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -401,7 +401,7 @@ export default function VoteChart({
               </div>
             </>
           )}
-        </>
+        </div>
       )}
     </div>
   )
