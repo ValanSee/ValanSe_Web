@@ -132,6 +132,7 @@ export default function PollDetailPage() {
         <Header
           title={getHeaderTitle()}
           showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+          bgGray={true}
         />
         <div className="p-4">로딩 중...</div>
       </div>
@@ -142,6 +143,7 @@ export default function PollDetailPage() {
         <Header
           title={getHeaderTitle()}
           showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+          bgGray={true}
         />
         <div className="p-4 text-red-500">{error}</div>
       </div>
@@ -153,6 +155,7 @@ export default function PollDetailPage() {
       <Header
         title={getHeaderTitle()}
         showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+        bgGray={true}
       />
       <div className="max-w-xl mx-auto p-4 pb-24">
         {data && (

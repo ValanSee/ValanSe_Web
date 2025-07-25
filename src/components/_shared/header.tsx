@@ -5,12 +5,15 @@ import { useRouter } from 'next/navigation'
 interface HeaderProps {
   title: string
   showBackButton?: boolean
+  bgGray?: boolean
 }
 
-export default function Header({ title, showBackButton }: HeaderProps) {
+export default function Header({ title, showBackButton, bgGray }: HeaderProps) {
   const router = useRouter()
   return (
-    <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center">
+    <div
+      className={`border-b border-gray-200 px-4 py-3 flex items-center ${bgGray ? 'bg-background' : 'bg-white'}`}
+    >
       {showBackButton && (
         <button
           className="mr-2 p-2"

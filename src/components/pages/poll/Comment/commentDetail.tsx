@@ -325,7 +325,7 @@ const CommentDetail = ({
                 onClick={() => toggleReplies(comment.commentId)}
                 className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
               >
-                {comment.replyCount > 0 ? '답글 더보기' : '답글 남기기'}
+                {comment.replyCount > 0 ? '대댓글 더보기' : '대댓글 남기기'}
                 {openReplies[comment.commentId] ? (
                   <ChevronUp size={14} />
                 ) : (
@@ -395,7 +395,7 @@ const CommentDetail = ({
                       onCommentCreated={() =>
                         handleReplyCreated(comment.commentId)
                       }
-                      placeholder="대댓글을 남겨주세요"
+                      placeholder="대댓글을 남겨보세요"
                     />
                   )}
                 </div>
