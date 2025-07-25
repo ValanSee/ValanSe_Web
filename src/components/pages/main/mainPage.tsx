@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { BestVoteResponse, fetchBestVote } from '@/api/votes'
 import VoteOptionGrid from './voteOptionGrid'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 // 테스트 데이터
 const categories = [
@@ -15,6 +16,7 @@ const categories = [
 ]
 
 const MainPage = () => {
+  const router = useRouter()
   const [voteData, setVoteData] = useState<BestVoteResponse | null>(null)
 
   useEffect(() => {
@@ -48,10 +50,20 @@ const MainPage = () => {
           <div className="pt-4 text-white text-lg font-bold">
             {voteData.totalParticipants.toLocaleString()}명 참여
           </div>
+          <div className="pt-4 text-white text-lg font-bold">
+            [ {voteData.title} ]
+          </div>
         </div>
 
         {/* 선택지 */}
-        <VoteOptionGrid options={voteData.options} />
+        <div
+          onClick={() => {
+            router.push('/poll/hot')
+          }}
+          className="w-full cursor-pointer"
+        >
+          <VoteOptionGrid options={voteData.options} />
+        </div>
       </div>
 
       <div className="flex flex-col items-center w-full gap-10 pt-8">
