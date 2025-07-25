@@ -3,6 +3,13 @@ import { UserCircle, Share2, MessageCircle } from 'lucide-react'
 import { Vote } from '@/types/balanse/vote'
 import Link from 'next/link'
 
+const categoryMap: Record<string, string> = {
+  FOOD: '음식',
+  LOVE: '연애',
+  ETC: '기타',
+  ALL: '전체',
+}
+
 export default function BalanceList({ data }: { data: Vote }) {
   return (
     <Link href={`/poll/${data.id}?source=balance`} passHref legacyBehavior>
@@ -24,7 +31,7 @@ export default function BalanceList({ data }: { data: Vote }) {
               ))}
             </div>
             <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-              <span>{data.category}</span>
+              <span>{categoryMap[data.category] ?? data.category}</span>
               <div className="flex gap-4">
                 <div className="flex items-center gap-1">
                   <Share2 className="w-4 h-4" />

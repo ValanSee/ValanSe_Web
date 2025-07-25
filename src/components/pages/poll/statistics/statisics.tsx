@@ -218,6 +218,8 @@ export default function VoteChart({
             ],
             backgroundColor: tabColors[index] || tabColors[0],
             borderRadius: 4,
+            barPercentage: 0.5,
+            categoryPercentage: 0.6,
           }
         })
 
@@ -225,8 +227,7 @@ export default function VoteChart({
           labels: [firstKey, secondKey], // E, I 또는 T, F
           datasets: datasets.map((ds) => ({
             ...ds,
-            barThickness: 24,
-            maxBarThickness: 30,
+            barThickness: 36,
           })),
         })
       }
@@ -306,7 +307,7 @@ export default function VoteChart({
         {showStats ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
       {showStats && (
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-xl shadow p-6 h-[700px]">
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -315,9 +316,7 @@ export default function VoteChart({
                 onCheckedChange={() => setChartType('gender')}
                 className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
               />
-              <label htmlFor="gender" className="font-semibold">
-                남자/여자 투표 결과 보기
-              </label>
+              <label htmlFor="gender">남자/여자 투표 결과 보기</label>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -327,9 +326,7 @@ export default function VoteChart({
                 onCheckedChange={() => setChartType('age')}
                 className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
               />
-              <label htmlFor="age" className="font-semibold">
-                나이대별 투표 결과 보기
-              </label>
+              <label htmlFor="age">나이대별 투표 결과 보기</label>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -339,9 +336,7 @@ export default function VoteChart({
                 onCheckedChange={() => setChartType('mbti')}
                 className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
               />
-              <label htmlFor="mbti" className="font-semibold">
-                MBTI별 투표 결과 보기
-              </label>
+              <label htmlFor="mbti">MBTI별 투표 결과 보기</label>
             </div>
           </div>
 
@@ -349,14 +344,28 @@ export default function VoteChart({
           {chartType === 'gender' && pieData && (
             <>
               <Pie data={pieData} plugins={[pieCustomPlugin]} />
-              <OptionTabs
-                options={['A', 'B', 'C', 'D'].slice(
-                  0,
-                  pieData.labels?.length || 2,
-                )}
-                active={activeTab}
-                setActive={setActiveTab}
-              />
+              <div className="flex justify-center space-x-4 mt-4">
+                <button
+                  onClick={() => setGenderTab('male')}
+                  className={`px-4 py-1 rounded-full text-sm border ${
+                    genderTab === 'male'
+                      ? 'bg-[#6C8BA7] text-white border-[#6C8BA7]'
+                      : 'bg-white text-gray-600 border-[#B0B0B0]'
+                  }`}
+                >
+                  남자
+                </button>
+                <button
+                  onClick={() => setGenderTab('female')}
+                  className={`px-4 py-1 rounded-full text-sm border ${
+                    genderTab === 'female'
+                      ? 'bg-[#F28C4A] text-white border-[#F28C4A]'
+                      : 'bg-white text-gray-600 border-[#B0B0B0]'
+                  }`}
+                >
+                  여자
+                </button>
+              </div>
             </>
           )}
           {chartType === 'age' && pieData && (
@@ -372,7 +381,7 @@ export default function VoteChart({
           {chartType === 'mbti' && barData && (
             <>
               {/* MBTI 옵션별 색상 legend */}
-              <div className="flex justify-center gap-4 mb-4">
+              <div className="flex justify-center gap-4 mb-4 mt-8">
                 {availableOptions.map((option, idx) => {
                   const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
                   return (
@@ -402,16 +411,9 @@ export default function VoteChart({
                   },
                   scales: {
                     y: {
+                      display: false,
                       beginAtZero: true,
                       max: 100,
-                      ticks: {
-                        callback: function (value) {
-                          return value + '%'
-                        },
-                      },
-                      grid: {
-                        display: false,
-                      },
                     },
                     x: {
                       grid: {

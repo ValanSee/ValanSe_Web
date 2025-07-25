@@ -45,9 +45,6 @@ export default function CommentInput({
   return (
     <div className={`relative bg-white border-t border-gray-200 p-4`}>
       <div className="max-w-xl mx-auto flex items-center gap-3">
-        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-          <span className="text-xs text-gray-600">👤</span>
-        </div>
         <div className="flex-1 relative">
           <input
             type="text"
