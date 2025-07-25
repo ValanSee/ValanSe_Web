@@ -1,8 +1,10 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 
-const navOptions = [
+const navOptions: NavOption[] = [
   {
     label: '홈',
     icon: '/home.svg',
@@ -37,11 +39,12 @@ const navOptions = [
 
 function BottomNavBar() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   return (
     <nav className="fixed bottom-0 w-full h-20 bg-white border-t flex items-center shadow-2xl shadow-black z-50">
       {navOptions.map((option) => {
-        const isActive = pathname.startsWith(option.route)
+        const isActive = isNavActive(pathname, searchParams, option)
 
         return (
           <Link
@@ -66,3 +69,26 @@ function BottomNavBar() {
 }
 
 export default BottomNavBar
+
+type NavOption = {
+  label: string
+  icon: string
+  activeIcon: string
+  route: string
+}
+
+const isNavActive = (
+  pathname: string,
+  searchParams: URLSearchParams,
+  option: NavOption,
+): boolean => {
+  if (option.label === '인기') {
+    const isPollDetail = /^\/poll\/\d+$/.test(pathname)
+    const isSourceHot = searchParams.get('source') === 'hot'
+    return pathname.startsWith('/poll/hot') || (isPollDetail && isSourceHot)
+  }
+
+  const route = option.route
+
+  return pathname.startsWith(route)
+}
