@@ -1,6 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 const navOptions = [
   {
@@ -37,11 +39,22 @@ const navOptions = [
 
 function BottomNavBar() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   return (
     <nav className="fixed bottom-0 w-full h-20 bg-white border-t flex items-center shadow-2xl shadow-black z-50">
       {navOptions.map((option) => {
-        const isActive = pathname.startsWith(option.route)
+        let isActive = false
+
+        if (option.label === '인기') {
+          // 정규표현식으로 `/poll/숫자` 감지하고, source=hot 인지 확인
+          const isPollDetail = /^\/poll\/\d+$/.test(pathname)
+          const isSourceHot = searchParams.get('source') === 'hot'
+          isActive =
+            pathname.startsWith('/poll/hot') || (isPollDetail && isSourceHot)
+        } else {
+          isActive = pathname.startsWith(option.route)
+        }
 
         return (
           <Link
