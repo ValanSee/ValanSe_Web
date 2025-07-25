@@ -107,7 +107,7 @@ export default function PollDetailPage() {
   if (id === 'hot') {
     return (
       <div>
-        <Header title="오늘의 핫이슈" />
+        <Header title="오늘의 핫이슈" showBackButton={false} />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -129,14 +129,20 @@ export default function PollDetailPage() {
   if (loading)
     return (
       <div>
-        <Header title={getHeaderTitle()} />
+        <Header
+          title={getHeaderTitle()}
+          showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+        />
         <div className="p-4">로딩 중...</div>
       </div>
     )
   if (error)
     return (
       <div>
-        <Header title={getHeaderTitle()} />
+        <Header
+          title={getHeaderTitle()}
+          showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+        />
         <div className="p-4 text-red-500">{error}</div>
       </div>
     )
@@ -144,7 +150,10 @@ export default function PollDetailPage() {
 
   return (
     <div>
-      <Header title={getHeaderTitle()} />
+      <Header
+        title={getHeaderTitle()}
+        showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+      />
       <div className="max-w-xl mx-auto p-4 pb-24">
         {data && (
           <PollCard

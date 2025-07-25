@@ -38,6 +38,41 @@ interface VoteChartProps {
   setShowStatsAction: (v: boolean) => void
 }
 
+// 공통 옵션 탭 컴포넌트
+function OptionTabs({
+  options,
+  active,
+  setActive,
+}: {
+  options: string[]
+  active: string
+  setActive: (v: string) => void
+}) {
+  const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
+  return (
+    <div className="flex justify-center space-x-4 mt-4">
+      {options.map((option, idx) => (
+        <button
+          key={option}
+          onClick={() => setActive(option)}
+          className={`px-4 py-1 rounded-full text-sm border ${
+            active === option
+              ? 'text-white'
+              : 'bg-white text-gray-600 border-[#B0B0B0]'
+          }`}
+          style={
+            active === option
+              ? { backgroundColor: tabColors[idx], borderColor: tabColors[idx] }
+              : {}
+          }
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function VoteChart({
   voteId,
   showStats,
@@ -46,31 +81,30 @@ export default function VoteChart({
   const [chartType, setChartType] = useState<'gender' | 'age' | 'mbti'>(
     'gender',
   )
+  const [genderTab, setGenderTab] = useState<'male' | 'female'>('male')
   const [activeTab, setActiveTab] = useState<string>('A')
   const [pieData, setPieData] = useState<ChartData<'pie'> | null>(null)
   const [barData, setBarData] = useState<ChartData<'bar'> | null>(null)
   const [availableOptions, setAvailableOptions] = useState<string[]>([])
+  const [optionLabels, setOptionLabels] = useState<string[]>([])
 
   // 성별 차트 데이터 패칭
   useEffect(() => {
     if (chartType === 'gender') {
       const fetchData = async () => {
-        const gender = activeTab === 'A' ? 'male' : 'female'
+        const gender = genderTab // 'male' 또는 'female'
         const res: GenderStatisticsResponse = await fetchGenderStatistics(
           voteId,
           gender,
         )
 
-        // 사용 가능한 옵션들 설정 (A, B, C, D 등)
-        const options = res.options.map((_, index) =>
-          String.fromCharCode(65 + index),
-        ) // A, B, C, D...
-        setAvailableOptions(options)
-
-        // 첫 번째 옵션을 기본값으로 설정
-        if (options.length > 0 && !options.includes(activeTab)) {
-          setActiveTab(options[0])
+        // 성별 탭은 남자/여자만 사용
+        setAvailableOptions(['A', 'B', 'C', 'D']) // 실제 옵션은 그래프 내부에서만 사용
+        if (genderTab !== 'male' && genderTab !== 'female') {
+          setGenderTab('male')
         }
+        // 옵션명(항목명) 배열 저장 (나이대별 그래프에서도 재사용)
+        setOptionLabels(res.options.map((opt) => opt.content))
 
         // 동적 색상 생성 (2-4개 옵션에 맞는 색상)
         const colors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
@@ -90,7 +124,7 @@ export default function VoteChart({
       }
       fetchData()
     }
-  }, [voteId, chartType, activeTab])
+  }, [voteId, chartType, genderTab])
 
   // 연령별 차트 데이터 패칭
   useEffect(() => {
@@ -121,11 +155,15 @@ export default function VoteChart({
             ratio: ageGroups[age].ratio,
           }))
 
-        // A/B 옵션에 따라 색상 결정
-        const isOptionA = selectedKey === 'A'
-        const colors = isOptionA
-          ? ['#6C8BA7', '#A1B2C3', '#B8C5D1', '#D1DCE6'] // A는 푸른색 계열
-          : ['#F28C4A', '#FFB366', '#FFC085', '#FFD1A3'] // B는 주황색 계열
+        // 옵션별 고유 색상 팔레트
+        const pieColors = [
+          ['#6C8BA7', '#A1B2C3', '#B8C5D1', '#D1DCE6'], // A
+          ['#F28C4A', '#FFB366', '#FFC085', '#FFD1A3'], // B
+          ['#10B981', '#6EE7B7', '#A7F3D0', '#D1FAE5'], // C
+          ['#8B5CF6', '#C4B5FD', '#DDD6FE', '#EDE9FE'], // D
+        ]
+        const tabIdx = ['A', 'B', 'C', 'D'].indexOf(selectedKey)
+        const colors = pieColors[tabIdx] || pieColors[0]
 
         setPieData({
           labels: sortedAgeGroups.map((g) => g.label),
@@ -161,8 +199,11 @@ export default function VoteChart({
 
         // 투표 옵션들 (소개팅 앱, 지인 소개 등)
         const options = firstData.map((item) => item.content)
+        setAvailableOptions(options)
+        setOptionLabels(options)
 
-        // 각 투표 옵션별로 E/I 또는 T/F 성향의 비율을 데이터셋으로 구성
+        // 각 투표 옵션별로 E/I 또는 T/F 성향의 비율을 데이터셋으로 구성 (고유 색상 적용)
+        const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
         const datasets = options.map((option, index) => {
           const firstRatio =
             firstData.find((item) => item.content === option)?.ratio || 0
@@ -175,14 +216,18 @@ export default function VoteChart({
               Math.round(firstRatio * 10) / 10,
               Math.round(secondRatio * 10) / 10,
             ],
-            backgroundColor: index === 0 ? '#6C8BA7' : '#F28C4A',
+            backgroundColor: tabColors[index] || tabColors[0],
             borderRadius: 4,
           }
         })
 
         setBarData({
           labels: [firstKey, secondKey], // E, I 또는 T, F
-          datasets: datasets,
+          datasets: datasets.map((ds) => ({
+            ...ds,
+            barThickness: 24,
+            maxBarThickness: 30,
+          })),
         })
       }
       fetchData()
@@ -280,7 +325,7 @@ export default function VoteChart({
                 id="age"
                 checked={chartType === 'age'}
                 onCheckedChange={() => setChartType('age')}
-                className="w-5 h-5 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
               />
               <label htmlFor="age" className="font-semibold">
                 나이대별 투표 결과 보기
@@ -292,7 +337,7 @@ export default function VoteChart({
                 id="mbti"
                 checked={chartType === 'mbti'}
                 onCheckedChange={() => setChartType('mbti')}
-                className="w-5 h-5 data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
               />
               <label htmlFor="mbti" className="font-semibold">
                 MBTI별 투표 결과 보기
@@ -304,45 +349,45 @@ export default function VoteChart({
           {chartType === 'gender' && pieData && (
             <>
               <Pie data={pieData} plugins={[pieCustomPlugin]} />
-              <div className="flex justify-center space-x-4 mt-4">
-                {availableOptions.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setActiveTab(option)}
-                    className={`px-4 py-1 rounded-full text-sm border ${
-                      activeTab === option
-                        ? 'bg-[#6C8BA7] text-white border-[#6C8BA7]'
-                        : 'bg-white text-gray-600 border-[#B0B0B0]'
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
+              <OptionTabs
+                options={['A', 'B', 'C', 'D'].slice(
+                  0,
+                  pieData.labels?.length || 2,
+                )}
+                active={activeTab}
+                setActive={setActiveTab}
+              />
             </>
           )}
           {chartType === 'age' && pieData && (
             <>
               <Pie data={pieData} plugins={[pieCustomPlugin]} />
-              <div className="flex justify-center space-x-4 mt-4">
-                {availableOptions.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => setActiveTab(option)}
-                    className={`px-4 py-1 rounded-full text-sm border ${
-                      activeTab === option
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-600'
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
+              <OptionTabs
+                options={availableOptions}
+                active={activeTab}
+                setActive={setActiveTab}
+              />
             </>
           )}
           {chartType === 'mbti' && barData && (
             <>
+              {/* MBTI 옵션별 색상 legend */}
+              <div className="flex justify-center gap-4 mb-4">
+                {availableOptions.map((option, idx) => {
+                  const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
+                  return (
+                    <div key={option} className="flex items-center gap-1">
+                      <span
+                        className="inline-block w-12 h-4 "
+                        style={{ backgroundColor: tabColors[idx] }}
+                      />
+                      <span className="text-xs text-gray-600">
+                        {optionLabels[idx]}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
               <Bar
                 data={barData}
                 options={{
