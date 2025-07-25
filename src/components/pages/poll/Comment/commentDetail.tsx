@@ -203,16 +203,10 @@ const CommentDetail = ({
     }))
   }
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
-    )
-
-    if (diffInHours < 1) return '방금 전'
-    if (diffInHours < 24) return `${diffInHours}시간 전`
-    return `${Math.floor(diffInHours / 24)}일 전`
+  // daysAgo, hoursAgo 필드를 사용해 시간 포맷
+  const formatTimeAgo = (daysAgo: number, hoursAgo: number) => {
+    if (daysAgo > 0) return `${daysAgo}일 ${hoursAgo}시간 전`
+    return `${hoursAgo}시간 전`
   }
 
   return (
@@ -272,7 +266,7 @@ const CommentDetail = ({
                       {comment.nickname}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {formatTimeAgo(comment.createdAt)}
+                      {formatTimeAgo(comment.daysAgo, comment.hoursAgo)}
                     </div>
                   </div>
                 </div>
@@ -362,7 +356,7 @@ const CommentDetail = ({
                               {reply.nickname}
                             </span>
                             <span>
-                              {new Date(reply.createdAt).toLocaleDateString()}
+                              {formatTimeAgo(reply.daysAgo, reply.hoursAgo)}
                             </span>
                           </div>
                           <p className="text-sm text-gray-800">
