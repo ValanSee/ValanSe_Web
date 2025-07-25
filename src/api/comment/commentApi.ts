@@ -16,6 +16,8 @@ export interface Comment {
   deletedAt: string | null
   label: string
   deleted: boolean
+  daysAgo: number
+  hoursAgo: number
 }
 
 export interface Reply {
@@ -26,6 +28,8 @@ export interface Reply {
   likeCount: number
   deletedAt: string | null
   deleted: boolean
+  daysAgo: number
+  hoursAgo: number
 }
 
 export interface CommentsResponse {
