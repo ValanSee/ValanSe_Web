@@ -18,4 +18,5 @@ export interface Vote {
 export interface VoteListResponse {
   votes: Vote[]
   has_next_page: boolean
+  next_cursor: string
 }

@@ -12,6 +12,8 @@ interface PollCardProps {
     vote_count: number
   }[]
   totalParticipants: number
+  hasVoted?: boolean
+  votedOptionLabel?: string
 }
 
 function PollCard({
@@ -20,9 +22,19 @@ function PollCard({
   title,
   options = [],
   totalParticipants,
+  hasVoted = false,
+  votedOptionLabel,
 }: PollCardProps) {
-  const [voted, setVoted] = useState(false)
-  const [selectedId, setSelectedId] = useState<number | null>(null)
+  // 초기 상태를 API 응답으로 설정
+  const [voted, setVoted] = useState(hasVoted)
+  const [selectedId, setSelectedId] = useState<number | null>(() => {
+    if (hasVoted && votedOptionLabel) {
+      // votedOptionLabel이 "A", "B", "C" 등이므로 해당 인덱스의 optionId를 찾음
+      const optionIndex = votedOptionLabel.charCodeAt(0) - 65 // 'A' = 0, 'B' = 1, ...
+      return options[optionIndex]?.optionId || null
+    }
+    return null
+  })
   const [localOptions, setLocalOptions] = useState(options)
   const [localTotalParticipants, setLocalTotalParticipants] =
     useState(totalParticipants)

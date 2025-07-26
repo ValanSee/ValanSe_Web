@@ -4,7 +4,7 @@ import MockPollCard from './mockPollCard'
 import FilterTabs from './filtertabs'
 import BalanceList from './balanseList'
 import { fetchVotes } from '../../../api/pages/valanse/balanseListapi'
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense, useCallback, useRef } from 'react'
 import { Vote } from '@/types/balanse/vote'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/bottomNavBar'
@@ -21,6 +21,11 @@ function BalancePageContent() {
   const [votes, setVotes] = useState<Vote[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [hasNextPage, setHasNextPage] = useState(false)
+  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const loadingRef = useRef<HTMLDivElement>(null)
 
   // URL에서 카테고리와 정렬 옵션 가져오기
   const category = searchParams.get('category') || 'ALL'
@@ -50,12 +55,63 @@ function BalancePageContent() {
     updateURL(undefined, newSort)
   }
 
+  // 무한 스크롤 콜백
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasNextPage || !nextCursor) return
+
+    try {
+      setIsLoadingMore(true)
+      const data = await fetchVotes({
+        category,
+        sort,
+        cursor: nextCursor,
+        size: 5,
+      })
+
+      setVotes((prev) => [...prev, ...data.votes])
+      setHasNextPage(data.has_next_page)
+      setNextCursor(data.next_cursor)
+    } catch {
+      setError('추가 데이터를 불러오지 못했습니다.')
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [category, sort, hasNextPage, nextCursor, isLoadingMore])
+
+  // Intersection Observer 설정
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isLoadingMore) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 },
+    )
+
+    if (loadingRef.current) {
+      observer.observe(loadingRef.current)
+    }
+
+    observerRef.current = observer
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+    }
+  }, [loadMore, hasNextPage, isLoadingMore])
+
+  // 초기 데이터 로드
   useEffect(() => {
     const getVotes = async () => {
       try {
         setLoading(true)
-        const data = await fetchVotes({ category, sort })
+        setError(null)
+        const data = await fetchVotes({ category, sort, size: 5 })
         setVotes(data.votes)
+        setHasNextPage(data.has_next_page)
+        setNextCursor(data.next_cursor)
       } catch {
         setError('불러오기 실패')
       } finally {
@@ -108,6 +164,20 @@ function BalancePageContent() {
               )}
             </React.Fragment>
           ))}
+
+        {/* 무한 스크롤 로딩 인디케이터 */}
+        {hasNextPage && !loading && (
+          <div ref={loadingRef} className="text-center py-4">
+            {isLoadingMore && (
+              <>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="text-sm text-gray-500 mt-2">
+                  더 많은 투표를 불러오는 중...
+                </p>
+              </>
+            )}
+          </div>
+        )}
       </div>
       <BottomNavBar />
     </div>

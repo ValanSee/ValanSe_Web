@@ -31,6 +31,8 @@ interface PollDetail {
   createdAt: string
   totalVoteCount: number
   options: PollOption[]
+  hasVoted: boolean
+  votedOptionLabel: string
 }
 
 export default function PollDetailPage() {
@@ -74,7 +76,7 @@ export default function PollDetailPage() {
         const res = await authApi.get<PollDetail>(`/votes/${id}`)
         setData(res.data)
       } catch {
-        setError('투표 정보를 불러오지 못했습니다.')
+        setError('투표 정보를 불러오지 못했.')
       } finally {
         setLoading(false)
       }
@@ -169,6 +171,8 @@ export default function PollDetailPage() {
               vote_count: opt.voteCount,
             }))}
             totalParticipants={data.totalVoteCount}
+            hasVoted={data.hasVoted}
+            votedOptionLabel={data.votedOptionLabel}
           />
         )}
         {bestComment && !open && (
