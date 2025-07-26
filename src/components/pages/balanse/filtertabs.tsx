@@ -19,7 +19,7 @@ export default function FilterTabs({
       {tabs.map((tab) => (
         <button
           key={tab}
-          className={`rounded-full px-5 py-2 text-sm font-medium transition
+          className={`rounded-full px-3 py-2 text-sm font-medium transition whitespace-nowrap
             ${
               selected === tabMap[tab]
                 ? 'bg-[#7A97B8] text-white'

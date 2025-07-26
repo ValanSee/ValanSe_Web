@@ -381,7 +381,7 @@ export default function VoteChart({
           {chartType === 'mbti' && barData && (
             <>
               {/* MBTI 옵션별 색상 legend */}
-              <div className="flex justify-center gap-4 mb-4 mt-8">
+              <div className="flex justify-center gap-4 mb-4 mt-8 flex-wrap">
                 {availableOptions.map((option, idx) => {
                   const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
                   return (
@@ -390,7 +390,7 @@ export default function VoteChart({
                         className="inline-block w-12 h-4 "
                         style={{ backgroundColor: tabColors[idx] }}
                       />
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-gray-600 whitespace-nowrap">
                         {optionLabels[idx]}
                       </span>
                     </div>
