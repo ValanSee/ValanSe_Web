@@ -165,7 +165,7 @@ const CreateForm = () => {
               try {
                 const voteId = await onSubmit()
                 if (voteId) {
-                  router.push(`/poll/${voteId}`)
+                  router.push(`/poll/${voteId}?source=create`)
                 }
               } catch {
                 alert('업로드 실패')

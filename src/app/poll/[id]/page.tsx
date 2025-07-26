@@ -76,7 +76,7 @@ export default function PollDetailPage() {
         const res = await authApi.get<PollDetail>(`/votes/${id}`)
         setData(res.data)
       } catch {
-        setError('투표 정보를 불러오지 못했.')
+        setError('투표 정보를 불러오지 못했습니다.')
       } finally {
         setLoading(false)
       }
@@ -125,7 +125,21 @@ export default function PollDetailPage() {
   const getHeaderTitle = () => {
     if (source === 'hot' || isFromHot) return '오늘의 핫이슈'
     if (source === 'balance') return '밸런스게임'
+    if (source === 'create') return '밸런스게임'
     return '밸런스게임' // 기본값
+  }
+
+  const shouldShowBackButton = () => {
+    if (source === 'hot' || isFromHot) return false
+    return true
+  }
+
+  const handleBackClick = () => {
+    if (source === 'create') {
+      router.push('/main')
+    } else {
+      router.back()
+    }
   }
 
   if (loading)
@@ -133,8 +147,9 @@ export default function PollDetailPage() {
       <div>
         <Header
           title={getHeaderTitle()}
-          showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+          showBackButton={shouldShowBackButton()}
           bgGray={true}
+          onBackClick={handleBackClick}
         />
         <div className="p-4">로딩 중...</div>
       </div>
@@ -144,8 +159,9 @@ export default function PollDetailPage() {
       <div>
         <Header
           title={getHeaderTitle()}
-          showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+          showBackButton={shouldShowBackButton()}
           bgGray={true}
+          onBackClick={handleBackClick}
         />
         <div className="p-4 text-red-500">{error}</div>
       </div>
@@ -156,8 +172,9 @@ export default function PollDetailPage() {
     <div>
       <Header
         title={getHeaderTitle()}
-        showBackButton={getHeaderTitle() !== '오늘의 핫이슈'}
+        showBackButton={shouldShowBackButton()}
         bgGray={true}
+        onBackClick={handleBackClick}
       />
       <div className="max-w-xl mx-auto p-4 pb-24">
         {data && (
