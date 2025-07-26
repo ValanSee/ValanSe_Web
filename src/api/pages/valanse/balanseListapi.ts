@@ -15,16 +15,15 @@ export interface VoteResponse {
 export async function fetchVotes({
   category = 'ALL',
   sort = 'latest',
-  page = 0,
-  size = 20,
+  cursor,
+  size = 5,
 }: {
   category?: string
   sort?: 'latest' | 'popular'
-  page?: number
+  cursor?: string
   size?: number
 }): Promise<VoteListResponse> {
   const params: Record<string, string | number> = {
-    page,
     size,
   }
 
@@ -34,6 +33,10 @@ export async function fetchVotes({
 
   if (sort && sort.trim() !== '') {
     params.sort = sort
+  }
+
+  if (cursor) {
+    params.cursor = cursor
   }
 
   const res = await publicApi.get<VoteListResponse>('/votes', {
