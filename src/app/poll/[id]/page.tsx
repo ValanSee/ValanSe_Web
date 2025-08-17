@@ -57,6 +57,7 @@ export default function PollDetailPage() {
       const loadBestVote = async () => {
         try {
           const response = await fetchBestVote()
+          if (!response) return // [지상] 예외 처리 때문에 잠시 추가
           router.replace(`/poll/${response.voteId}?source=hot`)
         } catch (error) {
           console.error('Failed to fetch best vote:', error)
