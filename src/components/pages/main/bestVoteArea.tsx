@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import VoteOptionGrid from './voteOptionGrid'
 import { BestVoteResponse, fetchBestVote } from '@/api/votes'
