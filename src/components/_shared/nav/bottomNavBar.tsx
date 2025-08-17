@@ -1,7 +1,12 @@
+import { Suspense } from 'react'
 import NavBarContent from './navBarContent'
 
 function BottomNavBar() {
-  return <NavBarContent />
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NavBarContent />
+    </Suspense>
+  )
 }
 
 export default BottomNavBar
