@@ -37,7 +37,7 @@ const navOptions: NavOption[] = [
   },
 ]
 
-function BottomNavBar() {
+function NavBarContent() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -68,7 +68,7 @@ function BottomNavBar() {
   )
 }
 
-export default BottomNavBar
+export default NavBarContent
 
 type NavOption = {
   label: string

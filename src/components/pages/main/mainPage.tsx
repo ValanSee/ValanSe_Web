@@ -1,6 +1,6 @@
 'use client'
 
-import BottomNavBar from '@/components/_shared/bottomNavBar'
+import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Image from 'next/image'
 import Link from 'next/link'
 import BestVoteArea from './bestVoteArea'

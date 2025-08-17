@@ -14,7 +14,7 @@ import {
 import VoteChart from '@/components/pages/poll/statistics/statisics'
 import { fetchBestVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
-import BottomNavBar from '@/components/_shared/bottomNavBar'
+import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 
 interface PollOption {
   optionId: number
