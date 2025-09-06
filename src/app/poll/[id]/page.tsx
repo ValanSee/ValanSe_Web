@@ -58,6 +58,9 @@ export default function PollDetailPage() {
         try {
           const response = await fetchBestVote()
           if (!response) return // [지상] 예외 처리 때문에 잠시 추가
+          // fetchBestVote 호출 결과로 불러올 데이터가 없을 경우 404 에러 발생
+          // -> 404 발생 여부를 반환값이 null 인지 여부로 판정해서 임시로 렌더링 취소하도록 조치함
+          // 이후 세부 기획이 변경되면 이 부분에서 끌어올린 데이터를 기반으로 렌더링하는 로직을 구현하면 됨
           router.replace(`/poll/${response.voteId}?source=hot`)
         } catch (error) {
           console.error('Failed to fetch best vote:', error)
