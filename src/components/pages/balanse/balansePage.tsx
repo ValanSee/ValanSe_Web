@@ -7,7 +7,7 @@ import { fetchVotes } from '../../../api/pages/valanse/balanseListapi'
 import { useEffect, useState, Suspense, useCallback, useRef } from 'react'
 import { Vote } from '@/types/balanse/vote'
 import { useRouter, useSearchParams } from 'next/navigation'
-import BottomNavBar from '@/components/_shared/bottomNavBar'
+import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import React from 'react'
 
 const sortOptions = [

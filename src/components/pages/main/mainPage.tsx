@@ -1,12 +1,9 @@
 'use client'
 
-import BottomNavBar from '@/components/_shared/bottomNavBar'
+import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import { BestVoteResponse, fetchBestVote } from '@/api/votes'
-import VoteOptionGrid from './voteOptionGrid'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import BestVoteArea from './bestVoteArea'
 
 // 테스트 데이터
 const categories = [
@@ -16,55 +13,9 @@ const categories = [
 ]
 
 const MainPage = () => {
-  const router = useRouter()
-  const [voteData, setVoteData] = useState<BestVoteResponse | null>(null)
-
-  useEffect(() => {
-    const loadBestVote = async () => {
-      try {
-        const response = await fetchBestVote()
-        setVoteData(response)
-      } catch (error) {
-        console.error('Failed to fetch best vote:', error)
-      }
-    }
-    loadBestVote()
-  }, [])
-
-  if (!voteData) {
-    return <div>Loading...</div>
-  }
-
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pb-24">
-      <div className="flex flex-col items-center bg-[#839db7] rounded-bl-2xl rounded-br-2xl w-screen px-6 pb-5">
-        {/* 상단 */}
-        <div className="flex flex-col items-center pt-[98px] leading-none">
-          <Image src="/fire.svg" alt="fire" width={40} height={40} />
-          <div className="pt-4 text-white text-3xl font-bold">
-            오늘의 핫이슈
-          </div>
-          <div className="pt-1 text-white text-xs font-normal">
-            24시간 이후 투표 종료
-          </div>
-          <div className="pt-4 text-white text-lg font-bold">
-            {voteData.totalParticipants.toLocaleString()}명 참여
-          </div>
-          <div className="pt-4 text-white text-lg font-bold">
-            [ {voteData.title} ]
-          </div>
-        </div>
-
-        {/* 선택지 */}
-        <div
-          onClick={() => {
-            router.push('/poll/hot')
-          }}
-          className="w-full cursor-pointer"
-        >
-          <VoteOptionGrid options={voteData.options} />
-        </div>
-      </div>
+      <BestVoteArea />
 
       <div className="flex flex-col items-center w-full gap-10 pt-8">
         {/* 밸런스 게임 만들기 */}
