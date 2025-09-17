@@ -82,7 +82,10 @@ export default function PollDetailPage() {
       } catch {
         setError('투표 정보를 불러오지 못했습니다.')
       } finally {
-        setLoading(false)
+        // 3초 지연 후 로딩 완료
+        setTimeout(() => {
+          setLoading(false)
+        }, 3000)
       }
     }
     if (id) fetchDetail()
@@ -102,7 +105,10 @@ export default function PollDetailPage() {
       } catch {
         setError('댓글 정보를 불러오지 못했습니다.')
       } finally {
-        setLoading(false)
+        // 3초 지연 후 로딩 완료
+        setTimeout(() => {
+          setLoading(false)
+        }, 3000)
       }
     }
 
