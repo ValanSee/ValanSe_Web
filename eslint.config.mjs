@@ -1,7 +1,7 @@
 import js from '@eslint/js'
-import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import pluginReact from 'eslint-plugin-react'
+import globals from 'globals'
 import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
@@ -10,8 +10,9 @@ export default defineConfig([
   pluginReact.configs.flat.recommended,
 
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: 2020,
         sourceType: 'module',
@@ -22,6 +23,7 @@ export default defineConfig([
     plugins: {
       js,
       pluginReact,
+      '@typescript-eslint': tseslint.plugin,
     },
     settings: {
       react: {
@@ -29,7 +31,13 @@ export default defineConfig([
       },
     },
     rules: {
-      'react/react-in-jsx-scope': 'off', // ✅ 덮어씌움
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-pascal-case': 'error',
+      'no-useless-catch': 'off',
     },
+  },
+
+  {
+    ignores: ['**/.next/**', 'eslint.config.mjs', 'postcss.config.mjs'],
   },
 ])

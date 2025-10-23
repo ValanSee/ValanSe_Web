@@ -1,0 +1,47 @@
+import { VoteCategory } from '@/types/_shared/vote'
+import { publicApi } from '../../instance/publicApi'
+import { VoteOption } from '../../votes'
+import { VoteListResponse } from '@/types/balanse/vote'
+
+export interface VoteResponse {
+  voteId: number
+  title: string
+  category: VoteCategory
+  totalParticipants: number
+  createdBy: string
+  createdAt: string
+  options: VoteOption[]
+}
+export async function fetchVotes({
+  category = 'ALL',
+  sort = 'latest',
+  cursor,
+  size = 5,
+}: {
+  category?: string
+  sort?: 'latest' | 'popular'
+  cursor?: string
+  size?: number
+}): Promise<VoteListResponse> {
+  const params: Record<string, string | number> = {
+    size,
+  }
+
+  if (category && category.trim() !== '') {
+    params.category = category
+  }
+
+  if (sort && sort.trim() !== '') {
+    params.sort = sort
+  }
+
+  if (cursor) {
+    params.cursor = cursor
+  }
+
+  const res = await publicApi.get<VoteListResponse>('/votes', {
+    params,
+  })
+
+  return res.data
+}
