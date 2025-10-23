@@ -241,7 +241,7 @@ const CommentDetail = ({
 
       {loading && (
         <div className="text-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4D7298] mx-auto"></div>
           <p className="text-sm text-gray-500 mt-2">댓글을 불러오는 중...</p>
         </div>
       )}

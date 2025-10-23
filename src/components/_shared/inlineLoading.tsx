@@ -9,24 +9,17 @@ const messages = [
   '오늘은 어떤 선택을 하시겠어요?',
 ]
 
-export default function Loading() {
-  const [mounted, setMounted] = useState(false)
+export default function InlineLoading() {
   const [message, setMessage] = useState('')
 
   useEffect(() => {
     // 랜덤 메시지 선택
     const randomMessage = messages[Math.floor(Math.random() * messages.length)]
     setMessage(randomMessage)
-    setMounted(true)
-
-    const timer = setTimeout(() => {}, 800)
-    return () => clearTimeout(timer)
   }, [])
 
-  if (!mounted) return null
-
   return (
-    <div className={styles.loadingContainer}>
+    <div className="flex flex-col items-center justify-center">
       <svg
         className={styles.loadingSvg}
         xmlns="http://www.w3.org/2000/svg"
@@ -41,6 +34,7 @@ export default function Loading() {
           fill="#4D7298"
         />
 
+        {/* 왼쪽 말풍선 */}
         <g className={styles.bubble}>
           <path
             d="M38.7295 20.5834C51.1442 20.5836 61.208 30.6481 61.208 43.0629C61.2078 55.3143 51.4069 65.2756 39.2178 65.5355L39.2246 65.5414H16.667L16.2637 43.8002C16.2558 43.5554 16.25 43.3096 16.25 43.0629C16.25 30.648 26.3146 20.5834 38.7295 20.5834Z"
@@ -64,6 +58,7 @@ export default function Loading() {
           />
         </g>
 
+        {/* 오른쪽 하트 */}
         <g className={styles.heart}>
           <path
             d="M91.1809 20.5834C103.596 20.5835 113.659 30.6481 113.659 43.0629C113.659 43.3211 113.653 43.5782 113.645 43.8344L113.242 65.5414H90.6848L90.6906 65.5355C78.5021 65.2749 68.7016 55.3139 68.7014 43.0629C68.7014 30.648 78.766 20.5834 91.1809 20.5834Z"
@@ -75,6 +70,7 @@ export default function Loading() {
           />
         </g>
 
+        {/* 저울 막대 */}
         <rect
           className={styles.beam}
           x="16.25"
@@ -87,7 +83,7 @@ export default function Loading() {
       </svg>
 
       {/* 브랜드 메시지 */}
-      <div className="mt-6 text-center text-lg font-bold text-gray-700">
+      <div className="mt-6 text-center text-lg font-bold text-white">
         {message}
       </div>
     </div>

@@ -4,6 +4,8 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Image from 'next/image'
 import Link from 'next/link'
 import BestVoteArea from './bestVoteArea'
+import Loading from '@/components/_shared/loading'
+import { useEffect, useState } from 'react'
 
 // 테스트 데이터
 const categories = [
@@ -13,6 +15,21 @@ const categories = [
 ]
 
 const MainPage = () => {
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+
+  useEffect(() => {
+    // 최소 0.8초 로딩 시간 보장
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false)
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (isInitialLoading) {
+    return <Loading />
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pb-24">
       <BestVoteArea />

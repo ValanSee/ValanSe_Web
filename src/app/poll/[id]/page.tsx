@@ -15,6 +15,7 @@ import VoteChart from '@/components/pages/poll/statistics/statisics'
 import { fetchBestVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
+import Loading from '@/components/_shared/loading'
 
 interface PollOption {
   optionId: number
@@ -111,19 +112,7 @@ export default function PollDetailPage() {
 
   // 인기 탭에서 로딩 중일 때
   if (id === 'hot') {
-    return (
-      <div>
-        <Header title="오늘의 핫이슈" showBackButton={false} />
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">
-              가장 인기 있는 투표를 불러오는 중...
-            </p>
-          </div>
-        </div>
-      </div>
-    )
+    return <Loading />
   }
 
   const getHeaderTitle = () => {
@@ -146,28 +135,23 @@ export default function PollDetailPage() {
     }
   }
 
-  if (loading)
-    return (
-      <div>
-        <Header
-          title={getHeaderTitle()}
-          showBackButton={shouldShowBackButton()}
-          bgGray={true}
-          onBackClick={handleBackClick}
-        />
-        <div className="p-4">로딩 중...</div>
-      </div>
-    )
+  if (loading) return <Loading />
   if (error)
     return (
-      <div>
+      <div className="flex flex-col min-h-screen bg-[#f0f0f0]">
         <Header
           title={getHeaderTitle()}
           showBackButton={shouldShowBackButton()}
           bgGray={true}
           onBackClick={handleBackClick}
         />
-        <div className="p-4 text-red-500">{error}</div>
+        <div className="flex flex-col items-center justify-center flex-1 p-4">
+          <div className="text-center">
+            <p className="text-xl font-bold text-red-500 mb-2">⚠️</p>
+            <p className="text-lg font-semibold text-gray-700 mb-2">{error}</p>
+            <p className="text-sm text-gray-500">다시 시도해주세요</p>
+          </div>
+        </div>
       </div>
     )
   if (!data) return null

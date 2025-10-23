@@ -7,19 +7,30 @@
 import MyProfileSection from './myProfileSection'
 import MyActivitySection from './myActivitySection'
 import AccountControlSection from './accountControlSection'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { useRouter } from 'next/navigation'
 import { recover } from '@/store/slices/authSlice'
+import Loading from '@/components/_shared/loading'
 
 function MyPage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const mypageData = useAppSelector((state) => state.member.mypageData)
   const isLogined = useAppSelector((state) => state.auth.isLogined)
+  const [minLoadingComplete, setMinLoadingComplete] = useState(false)
+
+  useEffect(() => {
+    // 최소 0.8초 로딩 시간 보장
+    const timer = setTimeout(() => {
+      setMinLoadingComplete(true)
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     // 로그인 안 되어있으면 리디렉션
@@ -51,12 +62,8 @@ function MyPage() {
     }
   }, [dispatch, isLogined, mypageData, router])
 
-  if (!mypageData) {
-    return (
-      <div className="pt-12 text-center text-gray-500">
-        마이페이지 정보를 불러오는 중입니다...
-      </div>
-    )
+  if (!mypageData || !minLoadingComplete) {
+    return <Loading />
   }
 
   return (
