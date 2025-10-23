@@ -74,10 +74,7 @@ function BalancePageContent() {
     } catch {
       setError('추가 데이터를 불러오지 못했습니다.')
     } finally {
-      // 3초 지연 후 로딩 완료
-      setTimeout(() => {
-        setIsLoadingMore(false)
-      }, 3000)
+      setIsLoadingMore(false)
     }
   }, [category, sort, hasNextPage, nextCursor, isLoadingMore])
 
@@ -118,10 +115,7 @@ function BalancePageContent() {
       } catch {
         setError('불러오기 실패')
       } finally {
-        // 3초 지연 후 로딩 완료
-        setTimeout(() => {
-          setLoading(false)
-        }, 3000)
+        setLoading(false)
       }
     }
     getVotes()
