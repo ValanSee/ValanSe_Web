@@ -40,6 +40,13 @@ const MainPage = () => {
             </Link>
           ))}
         </div>
+
+        <Link
+          href="/balanse"
+          className="flex items-center  w-full h-[120px] bg-white rounded-lg font-bold pl-4 text-2xl text-[#f27f23]"
+        >
+          New 전체보기
+        </Link>
       </div>
 
       {/* 하단 네비게이션 */}
