@@ -16,6 +16,7 @@ import {
 } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { useDebounce } from '@/hooks/useDebounce'
+import Loading from '@/components/_shared/loading'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
@@ -129,11 +130,7 @@ const EditPage = () => {
   }
 
   if (!myPageData) {
-    return (
-      <div className="pt-12 text-center text-gray-500">
-        마이페이지 정보를 불러오는 중입니다...
-      </div>
-    )
+    return <Loading />
   }
 
   return (
