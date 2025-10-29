@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import styles from './loading.module.css'
 
 const messages = [
-  '밸런스게임 플랫폼 ValanSe',
   '당신의 선택을 기다리는 중...',
   '오늘은 어떤 선택을 하시겠어요?',
 ]
@@ -14,7 +13,6 @@ export default function Loading() {
   const [message, setMessage] = useState('')
 
   useEffect(() => {
-    // 랜덤 메시지 선택
     const randomMessage = messages[Math.floor(Math.random() * messages.length)]
     setMessage(randomMessage)
     setMounted(true)
@@ -27,6 +25,10 @@ export default function Loading() {
 
   return (
     <div className={styles.loadingContainer}>
+      <div className="text-center text-xl font-bold text-gray-700 mb-8">
+        밸런스게임 플랫폼 ValanSe
+      </div>
+
       <svg
         className={styles.loadingSvg}
         xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +88,6 @@ export default function Loading() {
         />
       </svg>
 
-      {/* 브랜드 메시지 */}
       <div className="mt-6 text-center text-lg font-bold text-gray-700">
         {message}
       </div>

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import styles from './loading.module.css'
 
 const messages = [
-  '밸런스게임 플랫폼 ValanSe',
   '당신의 선택을 기다리는 중...',
   '오늘은 어떤 선택을 하시겠어요?',
 ]
@@ -13,7 +12,6 @@ export default function InlineLoading() {
   const [message, setMessage] = useState('')
 
   useEffect(() => {
-    // 랜덤 메시지 선택
     const randomMessage = messages[Math.floor(Math.random() * messages.length)]
     setMessage(randomMessage)
   }, [])
