@@ -15,7 +15,11 @@ const ModalOverlay = React.forwardRef<
       'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center',
       className,
     )}
-    onClick={onClose}
+    onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        onClose?.()
+      }
+    }}
     {...props}
   />
 ))
