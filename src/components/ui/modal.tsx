@@ -7,14 +7,15 @@ import { X } from 'lucide-react'
 // Overlay: 모달 배경
 const ModalOverlay = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & { onClose?: () => void }
+>(({ className, onClose, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
       'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center',
       className,
     )}
+    onClick={onClose}
     {...props}
   />
 ))
