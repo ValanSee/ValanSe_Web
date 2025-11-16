@@ -25,7 +25,6 @@ import {
   ModalDescription,
   ModalBody,
   ModalFooter,
-  ModalCloseButton,
 } from '@/components/ui/modal'
 
 interface CommentDetailProps {
@@ -439,11 +438,11 @@ const CommentDetail = ({
 
       {/* 삭제 확인 모달 */}
       {deleteConfirmModal.isOpen && (
-        <ModalOverlay>
+        <ModalOverlay onClose={cancelDelete}>
           <Modal>
             <ModalHeader>
               <ModalTitle>댓글 삭제</ModalTitle>
-              <ModalCloseButton onClick={cancelDelete} />
+              <ModalTitle></ModalTitle>
             </ModalHeader>
             <ModalBody>
               <ModalDescription>
