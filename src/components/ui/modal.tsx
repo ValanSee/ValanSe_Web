@@ -32,7 +32,10 @@ const ModalHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex items-start justify-end p-6 border-border', className)}
+    className={cn(
+      'flex items-start justify-between p-6 border-border',
+      className,
+    )}
     {...props}
   />
 ))
@@ -45,10 +48,7 @@ const ModalTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h2
     ref={ref}
-    className={cn(
-      'text-lg px-6 font-semibold text-foreground text-left',
-      className,
-    )}
+    className={cn('text-lg font-semibold text-foreground text-left', className)}
     {...props}
   />
 ))
