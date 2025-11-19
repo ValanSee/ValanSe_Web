@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import {
-  fetchMostVotedVote,
-  MostVotedVoteResponse,
-} from '@/api/comment/mostVotedVoteApi'
+  fetchTrendingVotes,
+  type TrendingVoteResponse,
+} from '@/api/pages/valanse/trendinVoteApi'
 import Link from 'next/link'
 
 const categoryMap: Record<string, string> = {
@@ -14,7 +14,7 @@ const categoryMap: Record<string, string> = {
 }
 
 function MockPollCard() {
-  const [data, setData] = useState<MostVotedVoteResponse | null>(null)
+  const [data, setData] = useState<TrendingVoteResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,7 +22,7 @@ function MockPollCard() {
     const getData = async () => {
       try {
         setLoading(true)
-        const res = await fetchMostVotedVote()
+        const res = await fetchTrendingVotes()
         setData(res)
       } catch {
         setError('불러오기 실패')
