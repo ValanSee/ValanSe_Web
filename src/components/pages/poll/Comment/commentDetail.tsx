@@ -17,6 +17,15 @@ import {
   MoreVertical,
   Trash2,
 } from 'lucide-react'
+import {
+  Modal,
+  ModalOverlay,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalBody,
+  ModalFooter,
+} from '@/components/ui/modal'
 
 interface CommentDetailProps {
   comments?: Comment[]
@@ -40,6 +49,10 @@ const CommentDetail = ({
     {},
   )
   const [openMenus, setOpenMenus] = useState<Record<number, boolean>>({})
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState<{
+    isOpen: boolean
+    commentId: number | null
+  }>({ isOpen: false, commentId: null })
 
   // 초기 댓글 설정
   useEffect(() => {
@@ -183,17 +196,27 @@ const CommentDetail = ({
   }
 
   const handleCommentDelete = async (commentId: number) => {
-    if (!confirm('정말로 이 댓글을 삭제하시겠습니까?')) return
+    setDeleteConfirmModal({ isOpen: true, commentId })
+  }
+
+  const confirmDelete = async () => {
+    const { commentId } = deleteConfirmModal
+    if (!commentId) return
 
     try {
       await deleteComment(commentId)
       setLocalComments((prev) =>
         prev.filter((comment) => comment.commentId !== commentId),
       )
+      setDeleteConfirmModal({ isOpen: false, commentId: null })
     } catch (error) {
       console.error('댓글 삭제 실패:', error)
       alert('댓글 삭제에 실패했습니다.')
     }
+  }
+
+  const cancelDelete = () => {
+    setDeleteConfirmModal({ isOpen: false, commentId: null })
   }
 
   const toggleMenu = (commentId: number) => {
@@ -411,6 +434,38 @@ const CommentDetail = ({
         >
           접기
         </button>
+      )}
+
+      {/* 삭제 확인 모달 */}
+      {deleteConfirmModal.isOpen && (
+        <ModalOverlay onClose={cancelDelete}>
+          <Modal>
+            <ModalHeader>
+              <ModalTitle>댓글 삭제</ModalTitle>
+              <ModalTitle></ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <ModalDescription>
+                정말로 이 댓글을 삭제하시겠습니까? <br /> 이 작업은 되돌릴 수
+                없습니다.
+              </ModalDescription>
+            </ModalBody>
+            <ModalFooter>
+              <button
+                className="px-4 py-2 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                onClick={cancelDelete}
+              >
+                취소
+              </button>
+              <button
+                className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-700"
+                onClick={confirmDelete}
+              >
+                삭제
+              </button>
+            </ModalFooter>
+          </Modal>
+        </ModalOverlay>
       )}
     </div>
   )
