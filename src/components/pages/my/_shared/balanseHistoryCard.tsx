@@ -5,15 +5,20 @@ import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import Image from 'next/image'
 import { numberToAlphabet } from '@/utils/map'
 
-export default function BalanceHistoryCard({
+export default function BalanseHistoryCard({
   data,
+  onClick,
 }: {
   data: MyVoteHistoryItem
+  onClick?: () => void
 }) {
   const nickname = useAppSelector((state) => state.member.profile?.nickname)
 
   return (
-    <Card className="rounded-xl cursor-pointer hover:shadow-lg transition-shadow">
+    <Card
+      className="rounded-xl cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center gap-2 pb-0">
         <UserCircle className="text-gray-400 w-5 h-5" />
         <span className="text-sm text-gray-600">
@@ -30,7 +35,7 @@ export default function BalanceHistoryCard({
           ))}
         </div>
         <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-          <span>전체 · {data.category}</span>
+          <span>{data.category}</span>
           <div className="flex gap-4">
             <div className="flex items-center gap-1">
               <Image
