@@ -12,10 +12,11 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
-import { fetchBestVote } from '@/api/votes'
+import { deleteVote, fetchBestVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
+import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
 
 interface PollOption {
   optionId: number
@@ -156,6 +157,22 @@ export default function PollDetailPage() {
     )
   if (!data) return null
 
+  // mock data
+  const isAdmin = true
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm('게시글을 삭제하시겠습니까?')
+    if (!confirmed) return
+
+    try {
+      await deleteVote(data.voteId)
+      router.back()
+    } catch (error) {
+      console.error('게시글 삭제 실패:', error)
+      alert('게시글 삭제에 실패했습니다.')
+    }
+  }
+
   return (
     <div>
       <Header
@@ -204,6 +221,7 @@ export default function PollDetailPage() {
         )}
       </div>
       {(source === 'hot' || isFromHot) && <BottomNavBar />}
+      {isAdmin && <AdminFloatingButton onDelete={handleDelete} />}
     </div>
   )
 }

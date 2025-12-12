@@ -104,3 +104,12 @@ export const fetchMineVotesVoted = async (
     throw error
   }
 }
+
+// 투표 삭제 API
+export const deleteVote = async (voteId: number) => {
+  try {
+    await authApi.delete(`/votes/${voteId}`)
+  } catch (error) {
+    throw error
+  }
+}
