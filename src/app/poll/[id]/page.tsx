@@ -17,6 +17,7 @@ import Header from '@/components/_shared/header'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
+import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
 
 interface PollOption {
   optionId: number
@@ -49,6 +50,7 @@ export default function PollDetailPage() {
   const [showStats, setShowStats] = useState(false)
   const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
   // URL 파라미터에서 출처 확인
   const source = searchParams.get('source')
@@ -166,6 +168,7 @@ export default function PollDetailPage() {
 
     try {
       await deleteVote(data.voteId)
+      setDeleteModalOpen(false)
       router.back()
     } catch (error) {
       console.error('게시글 삭제 실패:', error)
@@ -221,7 +224,14 @@ export default function PollDetailPage() {
         )}
       </div>
       {(source === 'hot' || isFromHot) && <BottomNavBar />}
-      {isAdmin && <AdminFloatingButton onDelete={handleDelete} />}
+      {isAdmin && (
+        <AdminFloatingButton onDelete={() => setDeleteModalOpen(true)} />
+      )}
+      <DeleteConfirmModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+      />
     </div>
   )
 }
