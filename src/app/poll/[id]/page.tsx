@@ -18,6 +18,7 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
 import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
+import { useAppSelector } from '@/hooks/utils/useAppSelector'
 
 interface PollOption {
   optionId: number
@@ -51,6 +52,9 @@ export default function PollDetailPage() {
   const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+  // 관리자 여부 파악을 위한 profile 조회
+  const profile = useAppSelector((state) => state.member.profile)
 
   // URL 파라미터에서 출처 확인
   const source = searchParams.get('source')
@@ -159,13 +163,10 @@ export default function PollDetailPage() {
     )
   if (!data) return null
 
-  // mock data
-  const isAdmin = true
+  // 관리자인지 여부 판단
+  const isAdmin = profile?.role === 'ADMIN'
 
   const handleDelete = async () => {
-    const confirmed = window.confirm('게시글을 삭제하시겠습니까?')
-    if (!confirmed) return
-
     try {
       await deleteVote(data.voteId)
       setDeleteModalOpen(false)
