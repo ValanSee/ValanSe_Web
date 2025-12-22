@@ -27,13 +27,14 @@ interface PollOption {
 interface PollDetail {
   voteId: number
   title: string
+  content: string | null
   category: string
   creatorNickname: string
   createdAt: string
   totalVoteCount: number
   options: PollOption[]
   hasVoted: boolean
-  votedOptionLabel: string
+  votedOptionLabel: string | null
 }
 
 export default function PollDetailPage() {
@@ -170,6 +171,7 @@ export default function PollDetailPage() {
             voteId={data.voteId}
             createdBy={data.creatorNickname}
             title={data.title}
+            content={data.content}
             options={data.options.map((opt) => ({
               optionId: opt.optionId,
               content: opt.content,
@@ -177,7 +179,7 @@ export default function PollDetailPage() {
             }))}
             totalParticipants={data.totalVoteCount}
             hasVoted={data.hasVoted}
-            votedOptionLabel={data.votedOptionLabel}
+            votedOptionLabel={data.votedOptionLabel ?? undefined}
           />
         )}
         {bestComment && !open && (
