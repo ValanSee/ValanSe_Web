@@ -12,10 +12,13 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
-import { fetchBestVote } from '@/api/votes'
+import { deleteVote, fetchBestVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
+import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
+import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
+import { useAppSelector } from '@/hooks/utils/useAppSelector'
 
 interface PollOption {
   optionId: number
@@ -49,6 +52,10 @@ export default function PollDetailPage() {
   const [showStats, setShowStats] = useState(false)
   const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+  // 관리자 여부 파악을 위한 profile 조회
+  const profile = useAppSelector((state) => state.member.profile)
 
   // URL 파라미터에서 출처 확인
   const source = searchParams.get('source')
@@ -157,6 +164,20 @@ export default function PollDetailPage() {
     )
   if (!data) return null
 
+  // 관리자인지 여부 판단
+  const isAdmin = profile?.role === 'ADMIN'
+
+  const handleDelete = async () => {
+    try {
+      await deleteVote(data.voteId)
+      setDeleteModalOpen(false)
+      router.back()
+    } catch (error) {
+      console.error('게시글 삭제 실패:', error)
+      alert('게시글 삭제에 실패했습니다.')
+    }
+  }
+
   return (
     <div>
       <Header
@@ -206,6 +227,14 @@ export default function PollDetailPage() {
         )}
       </div>
       {(source === 'hot' || isFromHot) && <BottomNavBar />}
+      {isAdmin && (
+        <AdminFloatingButton onDelete={() => setDeleteModalOpen(true)} />
+      )}
+      <DeleteConfirmModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+      />
     </div>
   )
 }

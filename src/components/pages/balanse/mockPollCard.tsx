@@ -49,7 +49,9 @@ function MockPollCard() {
         <div className="text-sm font-medium text-gray-700">
           {data.createdBy}
         </div>
-        <div className="text-base font-semibold">{data.title}</div>
+        <div className="flex justify-between items-center">
+          <div className="text-base font-semibold">{data.title}</div>
+        </div>
 
         <div className="space-y-2">
           {data.options.map((option, idx) => {

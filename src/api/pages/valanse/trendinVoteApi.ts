@@ -1,4 +1,5 @@
 import { authApi } from '../../instance/authApi'
+import { PinType } from '@/types/api/votes'
 
 export type TrendingVoteResponse = {
   voteId: number
@@ -8,6 +9,7 @@ export type TrendingVoteResponse = {
   totalParticipants: number
   createdBy: string
   createdAt: string
+  pinType: PinType
   options: {
     optionId: number
     content: string
