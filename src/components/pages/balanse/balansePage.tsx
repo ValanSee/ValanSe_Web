@@ -12,6 +12,8 @@ import Loading from '@/components/_shared/loading'
 import React from 'react'
 import { SectionHeader } from './trending-section/sectionHeader'
 import { PinButton } from './trending-section/pinButton'
+import { fetchTrendingVotes } from '@/api/pages/valanse/trendingVoteApi'
+import { TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
 
 const sortOptions = [
   { label: '최신순', value: 'latest' },
@@ -22,6 +24,7 @@ function BalancePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [votes, setVotes] = useState<Vote[]>([])
+  const [trendingVote, setTrendingVote] = useState<TrendingVoteResponse>()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [hasNextPage, setHasNextPage] = useState(false)
@@ -132,8 +135,25 @@ function BalancePageContent() {
     getVotes()
   }, [category, sort])
 
+  useEffect(() => {
+    const getTrendingVote = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        const data = await fetchTrendingVotes()
+        setTrendingVote(data)
+      } catch (_) {
+        setError('불러오기 실패')
+      } finally {
+        setLoading(false)
+      }
+    }
+    getTrendingVote()
+  }, [])
+
   // 초기 로딩 중일 때는 전체 화면 로딩
-  if (loading && votes.length === 0) {
+  if (loading || votes.length === 0 || !trendingVote) {
     return <Loading />
   }
 
@@ -147,7 +167,7 @@ function BalancePageContent() {
           <SectionHeader />
           <PinButton pinType="TRENDING" />
         </div>
-        <MockPollCard />
+        <MockPollCard data={trendingVote} />
       </div>
 
       {/* 투표 목록 섹션 */}

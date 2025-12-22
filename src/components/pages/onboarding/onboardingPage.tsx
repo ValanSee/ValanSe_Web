@@ -47,6 +47,7 @@ const OnboardingPage = () => {
       mbtiIe: mbtiIe,
       mbtiTf: mbtiTf,
       mbti: mbti,
+      role: 'USER',
     }
   }
 

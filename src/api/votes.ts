@@ -1,4 +1,5 @@
-import { CreateVoteData, MineVotesResponse, PinType } from '@/types/api/votes'
+import { CreateVoteData, MineVotesResponse } from '@/types/api/votes'
+import type { PinType } from '@/types/balanse/vote'
 import { authApi } from './instance/authApi'
 import { VoteCategory } from '@/types/_shared/vote'
 import { isAxiosError } from 'axios'

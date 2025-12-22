@@ -4,7 +4,14 @@
 
 import { useState, useEffect } from 'react'
 import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
-import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
+import {
+  MBTI,
+  mbtiIe,
+  mbtiTf,
+  Age,
+  Gender,
+  UserRole,
+} from '@/types/_shared/profile'
 import { Profile } from '@/types/_shared/profile'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'

@@ -1,9 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
-import {
-  fetchTrendingVotes,
-  type TrendingVoteResponse,
-} from '@/api/pages/valanse/trendinVoteApi'
+import { type TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
 import Link from 'next/link'
 
 const categoryMap: Record<string, string> = {
@@ -13,28 +9,11 @@ const categoryMap: Record<string, string> = {
   ALL: '전체',
 }
 
-function MockPollCard() {
-  const [data, setData] = useState<TrendingVoteResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+interface Props {
+  data: TrendingVoteResponse
+}
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true)
-        const res = await fetchTrendingVotes()
-        setData(res)
-      } catch {
-        setError('불러오기 실패')
-      } finally {
-        setLoading(false)
-      }
-    }
-    getData()
-  }, [])
-
-  if (loading) return <div className="p-4">로딩 중...</div>
-  if (error) return <div className="p-4 text-red-500">{error}</div>
+function MockPollCard({ data }: Props) {
   if (!data) return null
 
   return (
