@@ -1,5 +1,5 @@
 import { authApi } from '../../instance/authApi'
-import { PinType } from '@/types/api/votes'
+import { PinType } from '@/types/balanse/vote'
 
 export type TrendingVoteResponse = {
   voteId: number

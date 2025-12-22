@@ -1,6 +1,6 @@
 'use client'
 import Header from './header'
-import MockPollCard from './mockPollCard'
+import MockPollCard from './trending-section/mockPollCard'
 import FilterTabs from './filtertabs'
 import BalanceList from './balanseList'
 import { fetchVotes } from '../../../api/pages/valanse/balanseListapi'
@@ -10,6 +10,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import React from 'react'
+import { SectionHeader } from './trending-section/sectionHeader'
+import { PinButton } from './trending-section/pinButton'
 
 const sortOptions = [
   { label: '최신순', value: 'latest' },
@@ -138,9 +140,17 @@ function BalancePageContent() {
   return (
     <div className="flex flex-col min-h-screen bg-[#ffffff]">
       <Header />
+
+      {/* 인기 급상승 토픽 섹션 */}
       <div className="px-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader />
+          <PinButton pinType="TRENDING" />
+        </div>
         <MockPollCard />
       </div>
+
+      {/* 투표 목록 섹션 */}
       <div className="flex items-center gap-2 px-4 mt-2">
         <FilterTabs
           selected={category}

@@ -14,5 +14,3 @@ export type MineVotesResponse = {
   createdAt: string
   options: string[]
 }[]
-
-export type PinType = 'HOT' | 'TRENDING' | 'NONE'

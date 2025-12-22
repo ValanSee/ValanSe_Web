@@ -20,3 +20,5 @@ export interface VoteListResponse {
   has_next_page: boolean
   next_cursor: string
 }
+
+export type PinType = 'HOT' | 'TRENDING' | 'NONE'
