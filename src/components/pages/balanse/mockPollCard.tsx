@@ -5,7 +5,6 @@ import {
   type TrendingVoteResponse,
 } from '@/api/pages/valanse/trendinVoteApi'
 import Link from 'next/link'
-import { pinVote } from '@/api/votes'
 
 const categoryMap: Record<string, string> = {
   ETC: '기타',
@@ -18,13 +17,6 @@ function MockPollCard() {
   const [data, setData] = useState<TrendingVoteResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const toggleFixed = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!data) return
-    await pinVote(data.voteId, 'TRENDING')
-  }
 
   useEffect(() => {
     const getData = async () => {
@@ -53,15 +45,6 @@ function MockPollCard() {
         </div>
         <div className="flex justify-between items-center">
           <div className="text-base font-semibold">{data.title}</div>
-          <button
-            onClick={toggleFixed}
-            className={`flex items-center justify-center gap-1 text-md font-semibold rounded-full border-2 border-black px-3 py-1 ${data.pinType === 'TRENDING' ? 'bg-blue-300' : 'bg-gray-200'}`}
-          >
-            <div className="w-6 h-6 rounded-full border-2 border-black flex items-center justify-center">
-              {data.pinType === 'TRENDING' ? '✓' : '✕'}
-            </div>
-            <div>{data.pinType === 'TRENDING' ? '고정됨' : '비었음'}</div>
-          </button>
         </div>
 
         <div className="space-y-2">
