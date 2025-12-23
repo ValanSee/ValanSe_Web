@@ -16,6 +16,7 @@ import { fetchTrendingVotes } from '@/api/pages/valanse/trendingVoteApi'
 import { TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
 import ConfirmModal from '@/components/ui/modal/confirmModal'
 import { pinVote } from '@/api/votes'
+import { useAppSelector } from '@/hooks/utils/useAppSelector'
 
 const sortOptions = [
   { label: '최신순', value: 'latest' },
@@ -36,6 +37,11 @@ function BalancePageContent() {
   const loadingRef = useRef<HTMLDivElement>(null)
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+
+  // 관리자 여부 판단
+  const profile = useAppSelector((state) => state.member.profile)
+  if (!profile) return <Loading />
+  const isAdmin = profile.role === 'ADMIN'
 
   // URL에서 카테고리와 정렬 옵션 가져오기
   const category = searchParams.get('category') || 'ALL'
@@ -176,10 +182,12 @@ function BalancePageContent() {
       <div className="px-4">
         <div className="flex items-center justify-between">
           <SectionHeader />
-          <PinButton
-            pinType={trendingVote.pinType}
-            onClick={() => setShowConfirmModal(true)}
-          />
+          {isAdmin && (
+            <PinButton
+              pinType={trendingVote.pinType}
+              onClick={() => setShowConfirmModal(true)}
+            />
+          )}
         </div>
         <MockPollCard data={trendingVote} />
       </div>

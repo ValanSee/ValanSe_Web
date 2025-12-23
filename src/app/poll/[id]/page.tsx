@@ -19,6 +19,7 @@ import Loading from '@/components/_shared/loading'
 import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
 import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import { SectionHeader } from '@/components/pages/poll/sectionHeader'
 
 interface PollOption {
   optionId: number
@@ -163,8 +164,9 @@ export default function PollDetailPage() {
     )
   if (!data) return null
 
-  // 관리자인지 여부 판단
-  const isAdmin = profile?.role === 'ADMIN'
+  // 관리자 여부 판단
+  if (!profile) return <Loading />
+  const isAdmin = profile.role === 'ADMIN'
 
   const handleDelete = async () => {
     try {
@@ -186,6 +188,9 @@ export default function PollDetailPage() {
         onBackClick={handleBackClick}
       />
       <div className="max-w-xl mx-auto p-4 pb-24">
+        {/* 관리자 계정이면 섹션 헤더에 고정 버튼 표시 */}
+        {isAdmin && <SectionHeader />}
+
         {data && (
           <PollCard
             voteId={data.voteId}
