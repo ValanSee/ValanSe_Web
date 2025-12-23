@@ -1,11 +1,9 @@
 import { authApi } from '../instance/authApi'
-import { Profile } from '@/types/_shared/profile'
 import {
   CreateMemberProfileRequest,
   FetchMemberProfileResponse,
   UpdateMemberProfileRequest,
 } from './types'
-import { Update } from '@reduxjs/toolkit'
 
 export const createMemberProfile = async (
   profile: CreateMemberProfileRequest,
