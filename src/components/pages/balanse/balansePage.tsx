@@ -2,7 +2,7 @@
 import Header from './header'
 import MockPollCard from './trending-section/mockPollCard'
 import FilterTabs from './filtertabs'
-import BalanceList from './balanseList'
+import BalanceList from './balanse-list-section/balanseList'
 import { fetchVotes } from '../../../api/pages/valanse/balanseListapi'
 import { useEffect, useState, Suspense, useCallback, useRef } from 'react'
 import { Vote } from '@/types/balanse/vote'
