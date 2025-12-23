@@ -16,7 +16,7 @@ import { Profile } from '@/types/_shared/profile'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
-import { checkNickname } from '@/api/member'
+import { checkNickname } from '@/api/member/member'
 import {
   fetchMypageDataThunk,
   updateProfileThunk,

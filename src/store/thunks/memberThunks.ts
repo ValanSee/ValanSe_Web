@@ -2,7 +2,7 @@ import {
   fetchMemberMypage,
   fetchMemberProfile,
   updateMemberProfile,
-} from '@/api/member'
+} from '@/api/member/member'
 import { setProfile, setMypageData } from '../slices/memberSlice'
 import { AppDispatch } from '../store'
 import { Profile } from '@/types/_shared/profile'

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
-import { createMemberProfile } from '@/api/member'
+import { createMemberProfile } from '@/api/member/member'
 import { useRouter } from 'next/navigation'
 import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
 import { Profile } from '@/types/_shared/profile'
