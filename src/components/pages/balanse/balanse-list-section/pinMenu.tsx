@@ -4,7 +4,7 @@ import { pinVote } from '@/api/votes'
 import { PinType } from '@/types/balanse/vote'
 
 type Props = {
-  onPinChange?: (type: PinType) => void
+  onPinChange?: () => void
   voteId: number
 }
 
@@ -45,7 +45,7 @@ export const PinMenu = ({ onPinChange, voteId }: Props) => {
       console.error('Failed to pin vote:', error)
     }
 
-    if (onPinChange) onPinChange(type)
+    if (onPinChange) onPinChange()
     setIsOpen(false) // 선택 후 닫기
   }
 

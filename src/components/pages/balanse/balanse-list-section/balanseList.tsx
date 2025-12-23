@@ -11,7 +11,12 @@ const categoryMap: Record<string, string> = {
   ALL: '전체',
 }
 
-export default function BalanceList({ data }: { data: Vote }) {
+type Props = {
+  data: Vote
+  onPinChange?: () => void
+}
+
+export default function BalanceList({ data, onPinChange }: Props) {
   return (
     <Link href={`/poll/${data.id}?source=balance`} passHref legacyBehavior>
       <a className="block">
@@ -23,7 +28,7 @@ export default function BalanceList({ data }: { data: Vote }) {
                 {data.nickname} • {data.created_at}
               </span>
             </div>
-            <PinMenu voteId={data.id} />
+            <PinMenu voteId={data.id} onPinChange={onPinChange} />
           </CardHeader>
           <CardContent className="pt-2 pb-4">
             <p className="font-semibold mb-2">{data.title}</p>

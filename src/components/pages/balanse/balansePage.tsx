@@ -32,6 +32,7 @@ function BalancePageContent() {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
 
   // URL에서 카테고리와 정렬 옵션 가져오기
   const category = searchParams.get('category') || 'ALL'
@@ -151,7 +152,8 @@ function BalancePageContent() {
       }
     }
     getTrendingVote()
-  }, [])
+    setIsRefreshing(false)
+  }, [isRefreshing])
 
   // 초기 로딩 중일 때는 전체 화면 로딩
   if (loading || votes.length === 0 || !trendingVote) {
@@ -201,7 +203,10 @@ function BalancePageContent() {
         {!error &&
           votes.map((vote, idx) => (
             <React.Fragment key={vote.id}>
-              <BalanceList data={vote} />
+              <BalanceList
+                data={vote}
+                onPinChange={() => setIsRefreshing(true)}
+              />
               {idx !== votes.length - 1 && (
                 <div className="h-px bg-[#E5E5E5] w-full my-2" />
               )}
