@@ -135,6 +135,7 @@ function BalancePageContent() {
     getVotes()
   }, [category, sort])
 
+  // 인기 급상승 토픽 불러오기
   useEffect(() => {
     const getTrendingVote = async () => {
       try {
@@ -165,7 +166,7 @@ function BalancePageContent() {
       <div className="px-4">
         <div className="flex items-center justify-between">
           <SectionHeader />
-          <PinButton pinType="TRENDING" />
+          <PinButton pinType={trendingVote.pinType} />
         </div>
         <MockPollCard data={trendingVote} />
       </div>
