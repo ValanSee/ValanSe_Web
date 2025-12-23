@@ -23,7 +23,7 @@ export default function BalanceList({ data }: { data: Vote }) {
                 {data.nickname} • {data.created_at}
               </span>
             </div>
-            <PinMenu />
+            <PinMenu voteId={data.id} />
           </CardHeader>
           <CardContent className="pt-2 pb-4">
             <p className="font-semibold mb-2">{data.title}</p>

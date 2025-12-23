@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { MoreVertical, Flame, TrendingUp, PinOff } from 'lucide-react'
-
-type PinType = 'HOT' | 'RISING' | 'NONE'
+import { pinVote } from '@/api/votes'
+import { PinType } from '@/types/balanse/vote'
 
 type Props = {
   onPinChange?: (type: PinType) => void
+  voteId: number
 }
 
-export const PinMenu = ({ onPinChange }: Props) => {
+export const PinMenu = ({ onPinChange, voteId }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -34,9 +35,15 @@ export const PinMenu = ({ onPinChange }: Props) => {
     setIsOpen(!isOpen)
   }
 
-  const handleItemClick = (e: React.MouseEvent, type: PinType) => {
+  const handleItemClick = async (e: React.MouseEvent, type: PinType) => {
     e.preventDefault()
     e.stopPropagation()
+
+    try {
+      await pinVote(voteId, type)
+    } catch (error) {
+      console.error('Failed to pin vote:', error)
+    }
 
     if (onPinChange) onPinChange(type)
     setIsOpen(false) // 선택 후 닫기
@@ -70,7 +77,7 @@ export const PinMenu = ({ onPinChange }: Props) => {
           </li>
           <li>
             <button
-              onClick={(e) => handleItemClick(e, 'RISING')}
+              onClick={(e) => handleItemClick(e, 'TRENDING')}
               className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <TrendingUp className="w-4 h-4 mr-3 text-blue-500" />
