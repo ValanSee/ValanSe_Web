@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Profile } from '@/types/_shared/profile'
+import { Profile } from '@/types/member'
 import { MypageData } from '@/types/_shared/mypageData'
 
 interface MemberState {

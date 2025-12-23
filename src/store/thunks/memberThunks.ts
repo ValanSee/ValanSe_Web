@@ -5,7 +5,7 @@ import {
 } from '@/api/member/member'
 import { setProfile, setMypageData } from '../slices/memberSlice'
 import { AppDispatch } from '../store'
-import { Profile } from '@/types/_shared/profile'
+import { Profile } from '@/types/member'
 
 // 프로필을 가져오고 store에 저장
 export const fetchProfileThunk = () => async (dispatch: AppDispatch) => {
