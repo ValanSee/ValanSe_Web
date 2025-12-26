@@ -5,6 +5,7 @@ import {
   type TrendingVoteResponse,
 } from '@/api/pages/valanse/trendinVoteApi'
 import Link from 'next/link'
+import InlineLoading from '@/components/_shared/inlineLoading'
 
 const categoryMap: Record<string, string> = {
   ETC: '기타',
@@ -33,7 +34,12 @@ function MockPollCard() {
     getData()
   }, [])
 
-  if (loading) return <div className="p-4">로딩 중...</div>
+  if (loading)
+    return (
+      <div className="p-4 flex justify-center items-center">
+        <InlineLoading />
+      </div>
+    )
   if (error) return <div className="p-4 text-red-500">{error}</div>
   if (!data) return null
 

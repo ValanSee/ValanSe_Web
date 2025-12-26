@@ -18,6 +18,7 @@ const CreateForm = () => {
   const [title, setTitle] = useState<string>('')
   const [category, setCategory] = useState<string | null>(null)
   const [options, setOptions] = useState<string[]>(['', '']) // A, B
+  const [content, setContent] = useState<string>('')
 
   const isFormValid = () => {
     if (title.trim() === '') return false
@@ -37,6 +38,9 @@ const CreateForm = () => {
       title,
       options,
       category: category as VoteCategory,
+      ...(content.trim()
+        ? ({ content: content.trim() } as Pick<CreateVoteData, 'content'>)
+        : {}),
     }
     const voteId = await createVote(voteData)
     return voteId
@@ -46,8 +50,9 @@ const CreateForm = () => {
     <div className="flex flex-col items-center gap-10">
       {/* 질문 */}
       <div className="flex flex-col items-center gap-3 w-full">
-        <div className="w-full text-[18px] font-[700] leading-none">
-          질문을 작성해주세요
+        <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
+          <div>질문을 작성해주세요</div>
+          <div className="text-[#FF3B30]">*</div>
         </div>
         <div className="w-full border border-[#C6C6C6] rounded-lg px-5 py-3">
           <input
@@ -60,10 +65,39 @@ const CreateForm = () => {
         </div>
       </div>
 
+      {/* 썰(경험담) */}
+      <div className="flex flex-col items-center gap-2 w-full">
+        <div className="w-full flex items-center gap-2">
+          <div className="text-[18px] font-[700] leading-none">
+            썰(경험담)을 들려주세요
+          </div>
+          <div className="px-2 py-[2px] rounded-md border border-[#E4E4E4] text-[12px] text-[#8E8E8E] leading-none">
+            선택사항
+          </div>
+        </div>
+        <div className="w-full border border-[#C6C6C6] rounded-lg px-5 py-3">
+          <textarea
+            className="w-full h-[120px] resize-none text-[16px] text-[#1D1D1D] font-[400] outline-none"
+            placeholder="예시: 어제 점심시간에 동료들과 뭘 먹을지 정하랴다가 시간을 다 쓰고 결국 편의점 도시락을 먹게 되었는데,, 여러분이라면 어떤 선택을 하실건가요?"
+            value={content}
+            onChange={(e) => setContent(e.target.value.slice(0, 500))}
+          />
+        </div>
+        <div className="w-full flex items-center justify-between">
+          <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
+            썰을 추가하면 더 많은 공감과 댓글을 받을 수 있어요!
+          </div>
+          <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
+            {content.length}/500
+          </div>
+        </div>
+      </div>
+
       {/* 주제 */}
       <div className="flex flex-col items-center gap-3 w-full">
-        <div className="w-full text-[18px] font-[700] leading-none">
-          주제를 선택해주세요
+        <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
+          <div>주제를 선택해주세요</div>
+          <div className="text-[#FF3B30]">*</div>
         </div>
         <div className="flex gap-2 w-full">
           {categories.map((c) => (
@@ -90,8 +124,9 @@ const CreateForm = () => {
 
       {/* 선택지 */}
       <div className="flex flex-col items-center w-full">
-        <div className="w-full text-[18px] font-[700] leading-none">
-          선택지를 작성해주세요
+        <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
+          <div>선택지를 작성해주세요</div>
+          <div className="text-[#FF3B30]">*</div>
         </div>
 
         {/* 선택지 input들 */}
@@ -123,7 +158,7 @@ const CreateForm = () => {
           <button
             className="flex items-center pt-4 ml-auto gap-3 text-[#555555] text-[14px] font-[400] leading-none"
             onClick={() => {
-              if (options.length < 5) {
+              if (options.length < 4) {
                 setOptions([...options, ''])
               }
             }}
