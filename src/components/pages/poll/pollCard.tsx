@@ -6,6 +6,7 @@ interface PollCardProps {
   voteId: number | string
   createdBy: string
   title: string
+  content?: string | null
   options: {
     optionId: number
     content: string
@@ -13,13 +14,14 @@ interface PollCardProps {
   }[]
   totalParticipants: number
   hasVoted?: boolean
-  votedOptionLabel?: string
+  votedOptionLabel?: string | null
 }
 
 function PollCard({
   voteId,
   createdBy,
   title,
+  content,
   options = [],
   totalParticipants,
   hasVoted = false,
@@ -111,6 +113,11 @@ function PollCard({
     <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
       <div className="text-sm font-medium text-gray-700">{createdBy}</div>
       <div className="text-base font-semibold">{title}</div>
+      {content && (
+        <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+          {content}
+        </div>
+      )}
       <div className="space-y-2">
         {localOptions.map((option, idx) => {
           const isSelected = selectedId === option.optionId

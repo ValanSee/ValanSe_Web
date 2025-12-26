@@ -23,6 +23,11 @@ export default function BalanceList({ data }: { data: Vote }) {
           </CardHeader>
           <CardContent className="pt-2 pb-4">
             <p className="font-semibold mb-2">{data.title}</p>
+            {data.content && (
+              <p className="text-sm text-gray-600 mb-3 leading-relaxed whitespace-pre-wrap">
+                {data.content}
+              </p>
+            )}
             <div className="text-sm text-gray-700 space-y-1">
               {data.options.map((opt) => (
                 <div key={opt.id} className="bg-white">

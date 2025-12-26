@@ -6,6 +6,7 @@ import BalanseHistoryCard from '@/components/pages/my/_shared/balanseHistoryCard
 import FilterTabs from '@/components/pages/balanse/filtertabs'
 import { fetchMineVotesCreated, fetchMineVotesVoted } from '@/api/votes'
 import { MyVoteHistoryItem } from '@/types/my/history'
+import { useRouter } from 'next/navigation'
 
 const sortOptions = [
   { label: '최신순', value: 'latest' },
@@ -17,10 +18,15 @@ interface HistoryPageProps {
 }
 
 const HistoryPage = ({ mode }: HistoryPageProps) => {
+  const router = useRouter()
   const [category, setCategory] = useState('ALL')
   const [sort, setSort] = useState<'latest' | 'popular'>('latest')
   const [votes, setVotes] = useState<MyVoteHistoryItem[]>([])
   const [error, setError] = useState<string | null>(null)
+
+  const handleVoteClick = (voteId: string) => {
+    router.push(`/poll/${voteId}`)
+  }
 
   const title =
     mode === 'created' ? '내가 만든 밸런스 게임' : '내가 투표한 밸런스 게임'
@@ -28,9 +34,10 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
   useEffect(() => {
     const getVotes = async () => {
       try {
-        const data = mode === 'created'
-          ? await fetchMineVotesCreated(category, sort)
-          : await fetchMineVotesVoted(category, sort)
+        const data =
+          mode === 'created'
+            ? await fetchMineVotesCreated(category, sort)
+            : await fetchMineVotesVoted(category, sort)
         setVotes(data)
         setError(null)
       } catch {
@@ -60,7 +67,11 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
       <div className="px-4 mt-4 space-y-4 pb-28">
         {error && <div>{error}</div>}
         {votes.map((vote) => (
-          <BalanseHistoryCard key={vote.voteId} data={vote} />
+          <BalanseHistoryCard
+            key={vote.voteId}
+            data={vote}
+            onClick={() => handleVoteClick(String(vote.voteId))}
+          />
         ))}
       </div>
     </div>

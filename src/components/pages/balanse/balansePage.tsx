@@ -8,6 +8,7 @@ import { useEffect, useState, Suspense, useCallback, useRef } from 'react'
 import { Vote } from '@/types/balanse/vote'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
+import Loading from '@/components/_shared/loading'
 import React from 'react'
 
 const sortOptions = [
@@ -108,7 +109,15 @@ function BalancePageContent() {
       try {
         setLoading(true)
         setError(null)
+
+        // 최소 0.8초 로딩 시간 보장
+        const startTime = Date.now()
         const data = await fetchVotes({ category, sort, size: 5 })
+        const elapsedTime = Date.now() - startTime
+        const remainingTime = Math.max(0, 800 - elapsedTime)
+
+        await new Promise((resolve) => setTimeout(resolve, remainingTime))
+
         setVotes(data.votes)
         setHasNextPage(data.has_next_page)
         setNextCursor(data.next_cursor)
@@ -120,6 +129,11 @@ function BalancePageContent() {
     }
     getVotes()
   }, [category, sort])
+
+  // 초기 로딩 중일 때는 전체 화면 로딩
+  if (loading && votes.length === 0) {
+    return <Loading />
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#ffffff]">
@@ -147,15 +161,13 @@ function BalancePageContent() {
         </select>
       </div>
       <div className="px-4 mt-4 space-y-4 pb-28">
-        {loading && (
-          <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="text-sm text-gray-500 mt-2">투표를 불러오는 중...</p>
+        {error && (
+          <div className="flex flex-col items-center justify-center py-8">
+            <p className="text-xl font-bold text-red-500 mb-2">⚠️</p>
+            <p className="text-lg font-semibold text-gray-700">{error}</p>
           </div>
         )}
-        {error && <div className="text-red-500 text-center">{error}</div>}
-        {!loading &&
-          !error &&
+        {!error &&
           votes.map((vote, idx) => (
             <React.Fragment key={vote.id}>
               <BalanceList data={vote} />
@@ -166,11 +178,11 @@ function BalancePageContent() {
           ))}
 
         {/* 무한 스크롤 로딩 인디케이터 */}
-        {hasNextPage && !loading && (
+        {hasNextPage && (
           <div ref={loadingRef} className="text-center py-4">
             {isLoadingMore && (
               <>
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4D7298] mx-auto"></div>
                 <p className="text-sm text-gray-500 mt-2">
                   더 많은 투표를 불러오는 중...
                 </p>
@@ -186,19 +198,7 @@ function BalancePageContent() {
 
 export default function BalancePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col min-h-screen bg-white">
-          <Header />
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">페이지를 불러오는 중...</p>
-            </div>
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<Loading />}>
       <BalancePageContent />
     </Suspense>
   )

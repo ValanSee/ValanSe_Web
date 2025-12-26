@@ -1,0 +1,214 @@
+@media (min-width: 600px) {
+  .hotIssueTitle {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+  }
+  .hotIssueBar {
+    padding-top: 32px;
+    padding-left: 32px;
+  }
+  .hotIssueDivider {
+    height: 3px;
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+}
+
+.loadingContainer {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f0f0f0;
+  font-family: 'Noto Sans KR', sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+}
+
+@media (max-width: 415px), (max-height: 903px) {
+  .hotIssueBar {
+    padding-left: 4vw;
+    padding-top: 2vw;
+  }
+  .hotIssueTitle {
+    font-size: 1rem;
+  }
+  .hotIssueDivider {
+    margin-top: 2vw;
+    margin-bottom: 4vw;
+  }
+  .loadingText {
+    font-size: 0.95rem;
+  }
+  .loadingSvg {
+    width: 28vw;
+    height: 28vw;
+    min-width: 100px;
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hotIssueBar {
+    padding: 10px 0 0 8px;
+  }
+  .hotIssueTitle {
+    font-size: 1rem;
+  }
+  .hotIssueDivider {
+    height: 1px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+  }
+  .loadingText {
+    font-size: 1rem;
+  }
+  .loadingSvg {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.hotIssueDivider {
+  position: fixed;
+  top: 60px;
+  left: 20px;
+  width: calc(100% - 40px);
+  height: 2px;
+  background: #e0e0e0;
+  border-radius: 1px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border: none;
+}
+
+.hotIssueBar {
+  position: fixed;
+  top: 20px;
+  left: 10px;
+  color: #0e0e0e;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 8px 18px;
+  border-radius: 70px;
+  z-index: 100000;
+}
+
+.loadingSvg {
+  width: 200px;
+  height: 200px;
+}
+
+/* 저울 막대 흔들기 */
+.beam {
+  transform-origin: 65px 73px;
+  animation: swing 3s ease-in-out infinite;
+}
+
+/* 말풍선 위아래 */
+.bubble {
+  animation: bubbleMove 3s ease-in-out infinite;
+}
+
+/* 하트 위아래 + pulse */
+.heart {
+  animation: heartPulse 3s ease-in-out infinite;
+}
+
+@keyframes swing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(6deg);
+  }
+  75% {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes bubbleMove {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-4px);
+  }
+  75% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes heartPulse {
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+  }
+  25% {
+    transform: scale(1.1) translateY(4px);
+  }
+  75% {
+    transform: scale(1.1) translateY(-3px);
+  }
+}
+
+/* 텍스트 순환 */
+.loadingText {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  height: 1.5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.loadingText span {
+  position: absolute;
+  opacity: 0;
+  animation: fadeText 9s linear infinite;
+}
+
+.loadingText span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loadingText span:nth-child(2) {
+  animation-delay: 3s;
+}
+
+.loadingText span:nth-child(3) {
+  animation-delay: 6s;
+}
+
+@keyframes fadeText {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}

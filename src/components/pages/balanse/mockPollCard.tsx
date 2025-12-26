@@ -1,10 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
 import {
-  fetchMostVotedVote,
-  MostVotedVoteResponse,
-} from '@/api/comment/mostVotedVoteApi'
+  fetchTrendingVotes,
+  type TrendingVoteResponse,
+} from '@/api/pages/valanse/trendinVoteApi'
 import Link from 'next/link'
+import InlineLoading from '@/components/_shared/inlineLoading'
 
 const categoryMap: Record<string, string> = {
   ETC: '기타',
@@ -14,7 +15,7 @@ const categoryMap: Record<string, string> = {
 }
 
 function MockPollCard() {
-  const [data, setData] = useState<MostVotedVoteResponse | null>(null)
+  const [data, setData] = useState<TrendingVoteResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,7 +23,7 @@ function MockPollCard() {
     const getData = async () => {
       try {
         setLoading(true)
-        const res = await fetchMostVotedVote()
+        const res = await fetchTrendingVotes()
         setData(res)
       } catch {
         setError('불러오기 실패')
@@ -33,7 +34,12 @@ function MockPollCard() {
     getData()
   }, [])
 
-  if (loading) return <div className="p-4">로딩 중...</div>
+  if (loading)
+    return (
+      <div className="p-4 flex justify-center items-center">
+        <InlineLoading />
+      </div>
+    )
   if (error) return <div className="p-4 text-red-500">{error}</div>
   if (!data) return null
 

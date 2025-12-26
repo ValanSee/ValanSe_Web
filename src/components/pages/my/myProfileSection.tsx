@@ -4,17 +4,14 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import Loading from '@/components/_shared/loading'
 
 export default function MyProfileSection() {
   const router = useRouter()
   const { mypageData } = useAppSelector((state) => state.member)
 
   if (!mypageData) {
-    return (
-      <div className="pt-12 text-center text-gray-500">
-        마이페이지 정보를 불러오는 중입니다...
-      </div>
-    )
+    return <Loading />
   }
 
   const parseGender = (gender: string) => {
