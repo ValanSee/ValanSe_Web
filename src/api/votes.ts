@@ -30,6 +30,8 @@ export interface BestVoteResponse {
   createdBy: string
   createdAt: string
   options: VoteOption[]
+  content: string
+  pinType: PinType
 }
 
 // 투표 API 응답 타입

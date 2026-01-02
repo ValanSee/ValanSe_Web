@@ -20,6 +20,7 @@ import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingBut
 import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { SectionHeader } from '@/components/pages/poll/sectionHeader'
+import { PinType } from '@/types/balanse/vote'
 
 interface PollOption {
   optionId: number
@@ -59,6 +60,7 @@ export default function PollDetailPage() {
 
   // URL 파라미터에서 출처 확인
   const source = searchParams.get('source')
+  const pin = searchParams.get('pin') as PinType
 
   useEffect(() => {
     if (id === 'hot') {
@@ -70,7 +72,9 @@ export default function PollDetailPage() {
           // fetchBestVote 호출 결과로 불러올 데이터가 없을 경우 404 에러 발생
           // -> 404 발생 여부를 반환값이 null 인지 여부로 판정해서 임시로 렌더링 취소하도록 조치함
           // 이후 세부 기획이 변경되면 이 부분에서 끌어올린 데이터를 기반으로 렌더링하는 로직을 구현하면 됨
-          router.replace(`/poll/${response.voteId}?source=hot`)
+          router.replace(
+            `/poll/${response.voteId}?source=hot&pin=${response.pinType}`,
+          )
         } catch (error) {
           console.error('Failed to fetch best vote:', error)
           router.replace('/main')
@@ -189,7 +193,7 @@ export default function PollDetailPage() {
       />
       <div className="max-w-xl mx-auto p-4 pb-24">
         {/* 관리자 계정이면 섹션 헤더에 고정 버튼 표시 */}
-        {isAdmin && <SectionHeader />}
+        {isAdmin && <SectionHeader pinType={pin as PinType} />}
 
         {data && (
           <PollCard
