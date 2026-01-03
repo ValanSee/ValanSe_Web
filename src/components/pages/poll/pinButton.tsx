@@ -18,14 +18,17 @@ export const PinButton = ({ pinType, onClick }: Props) => {
 
   return (
     <button
-      className={`flex items-center gap-1 border border-gray-300 rounded-full px-3 py-1 text-sm text-gray-600 
-        ${isPinned ? 'bg-blue-100 border-blue-400 text-blue-600' : 'bg-white'}`}
+      className={`flex items-center gap-1 border border-2 border-black rounded-full px-3 py-1 text-black text-sm font-semibold
+        ${isPinned ? 'bg-blue-300' : 'bg-gray-200'}`}
       disabled={!isPinned}
       onClick={onClick}
     >
-      {isPinned && (
-        <img src="/check-circle.svg" alt="pin" width={16} height={16} />
-      )}
+      <img
+        src={isPinned ? '/check-circle.svg' : '/letter-x-circle.svg'}
+        alt="pin"
+        width={20}
+        height={20}
+      />
       <span>{PIN_LABELS[pinType]}</span>
     </button>
   )
