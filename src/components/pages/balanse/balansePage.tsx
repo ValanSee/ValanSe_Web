@@ -40,8 +40,7 @@ function BalancePageContent() {
 
   // 관리자 여부 판단
   const profile = useAppSelector((state) => state.member.profile)
-  if (!profile) return <Loading />
-  const isAdmin = profile.role === 'ADMIN'
+  const isAdmin = profile?.role === 'ADMIN'
 
   // URL에서 카테고리와 정렬 옵션 가져오기
   const category = searchParams.get('category') || 'ALL'
@@ -168,6 +167,8 @@ function BalancePageContent() {
   if (loading || votes.length === 0 || !trendingVote) {
     return <Loading />
   }
+
+  if (!profile) return <Loading />
 
   // 고정 해제
   const handleUnpin = async () => {
