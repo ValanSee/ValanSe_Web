@@ -1,11 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
-import {
-  fetchTrendingVotes,
-  type TrendingVoteResponse,
-} from '@/api/pages/valanse/trendinVoteApi'
+import { type TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
 import Link from 'next/link'
-import InlineLoading from '@/components/_shared/inlineLoading'
 
 const categoryMap: Record<string, string> = {
   ETC: '기타',
@@ -14,33 +9,11 @@ const categoryMap: Record<string, string> = {
   ALL: '전체',
 }
 
-function MockPollCard() {
-  const [data, setData] = useState<TrendingVoteResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+type Props = {
+  data: TrendingVoteResponse
+}
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true)
-        const res = await fetchTrendingVotes()
-        setData(res)
-      } catch {
-        setError('불러오기 실패')
-      } finally {
-        setLoading(false)
-      }
-    }
-    getData()
-  }, [])
-
-  if (loading)
-    return (
-      <div className="p-4 flex justify-center items-center">
-        <InlineLoading />
-      </div>
-    )
-  if (error) return <div className="p-4 text-red-500">{error}</div>
+function MockPollCard({ data }: Props) {
   if (!data) return null
 
   return (
@@ -49,7 +22,9 @@ function MockPollCard() {
         <div className="text-sm font-medium text-gray-700">
           {data.createdBy}
         </div>
-        <div className="text-base font-semibold">{data.title}</div>
+        <div className="flex justify-between items-center">
+          <div className="text-base font-semibold">{data.title}</div>
+        </div>
 
         <div className="space-y-2">
           {data.options.map((option, idx) => {

@@ -4,12 +4,11 @@
 
 import { useState, useEffect } from 'react'
 import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
-import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
-import { Profile } from '@/types/_shared/profile'
+import { Profile, MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/member'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
-import { checkNickname } from '@/api/member'
+import { checkNickname } from '@/api/member/member'
 import {
   fetchMypageDataThunk,
   updateProfileThunk,
@@ -49,19 +48,24 @@ const genderMap = (label: string) => {
 
 const EditPage = () => {
   const router = useRouter()
-  const myPageData = useAppSelector((state) => state.member.mypageData)
-  const [nickname, setNickname] = useState(myPageData?.nickname)
-  const debouncedNickname = useDebounce<string>(nickname || '', 500)
-  const [isDirty, setIsDirty] = useState(false)
-  const [nickNameMessage, setNickNameMessage] = useState<string | null>(null)
-  const [isNicknameEditing, setIsNicknameEditing] = useState(false)
-  const [gender, setGender] = useState<string | null>(
-    myPageData?.gender as string,
-  )
-  const [age, setAge] = useState<string | null>(myPageData?.age as string)
-  const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
-  const [mbti, setMbti] = useState<MBTI | null>(myPageData?.mbti as MBTI)
   const dispatch = useAppDispatch()
+  const myPageData = useAppSelector((state) => state.member.mypageData)
+
+  // 로컬 상태 관리
+  const [nickname, setNickname] = useState<string | null>(
+    myPageData?.nickname || '',
+  )
+  const [gender, setGender] = useState<Gender | null>(
+    myPageData?.gender as Gender,
+  )
+  const [age, setAge] = useState<Age | null>(myPageData?.age as Age)
+  const [mbti, setMbti] = useState<MBTI | null>(myPageData?.mbti as MBTI)
+
+  const [isDirty, setIsDirty] = useState(false)
+  const [isNicknameEditing, setIsNicknameEditing] = useState(false)
+  const [nickNameMessage, setNickNameMessage] = useState<string | null>(null)
+  const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
+  const debouncedNickname = useDebounce<string>(nickname || '', 500)
 
   useEffect(() => {
     if (debouncedNickname && debouncedNickname.length > 0) {
@@ -90,8 +94,8 @@ const EditPage = () => {
     console.log('로컬 상태 nickname', nickname)
     if (myPageData) {
       setNickname(myPageData.nickname)
-      setGender(myPageData.gender)
-      setAge(myPageData.age)
+      setGender(myPageData.gender as Gender)
+      setAge(myPageData.age as Age)
       setMbti(myPageData.mbti as MBTI)
     } else {
       dispatch(fetchMypageDataThunk())
@@ -115,6 +119,7 @@ const EditPage = () => {
       mbtiIe: mbtiIe,
       mbtiTf: mbtiTf,
       mbti: mbti,
+      role: 'USER',
     }
   }
 
@@ -166,7 +171,7 @@ const EditPage = () => {
             <>
               <input
                 type="text"
-                value={nickname}
+                value={nickname || ''}
                 onChange={(e) => setNickname(e.target.value)}
                 className="text-md text-[#1D1D1D] flex-1"
               />
@@ -211,7 +216,7 @@ const EditPage = () => {
           {genderOptions.map((option) => (
             <button
               key={genderMap(option)}
-              onClick={() => setGender(genderMap(option))}
+              onClick={() => setGender(genderMap(option) as Gender)}
               className={`flex-1 border py-2 rounded-md 
                ${gender === genderMap(option) ? 'text-[#4D7298] border-[#4D7298]' : 'text-[#8E8E8E] border-[#C6C6C6]'}`}
             >
@@ -227,7 +232,7 @@ const EditPage = () => {
           {ageOptions.map((option) => (
             <button
               key={option}
-              onClick={() => setAge(ageMap(option))}
+              onClick={() => setAge(ageMap(option) as Age)}
               className={`flex-1 border py-2 rounded-md
                  ${age === ageMap(option) ? 'text-[#4D7298] border-[#4D7298]' : 'text-[#8E8E8E] border-[#C6C6C6]'}`}
             >

@@ -5,10 +5,18 @@ export type Profile = {
   mbtiIe: mbtiIe
   mbtiTf: mbtiTf
   mbti: MBTI
+  role: UserRole
 }
 
-export type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
 export type Gender = 'FEMALE' | 'MALE'
+
+export type Age = 'TEN' | 'TWENTY' | 'THIRTY' | 'OVER_FOURTY'
+
+export type mbtiIe = 'I' | 'E'
+export type mbtiNs = 'N' | 'S'
+export type mbtiTf = 'T' | 'F'
+export type mbtiPj = 'P' | 'J'
+
 export type MBTI =
   | 'ISTJ'
   | 'ISTP'
@@ -27,7 +35,4 @@ export type MBTI =
   | 'ENFJ'
   | 'ENFP'
 
-export type mbtiIe = 'I' | 'E'
-export type mbtiNs = 'N' | 'S'
-export type mbtiTf = 'T' | 'F'
-export type mbtiPj = 'P' | 'J'
+export type UserRole = 'USER' | 'ADMIN'

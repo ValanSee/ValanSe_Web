@@ -1,4 +1,5 @@
 import { CreateVoteData, MineVotesResponse } from '@/types/api/votes'
+import type { PinType } from '@/types/balanse/vote'
 import { authApi } from './instance/authApi'
 import { VoteCategory } from '@/types/_shared/vote'
 import { isAxiosError } from 'axios'
@@ -30,6 +31,7 @@ export interface BestVoteResponse {
   createdBy: string
   createdAt: string
   options: VoteOption[]
+  pinType: PinType
 }
 
 // 투표 API 응답 타입
@@ -100,6 +102,25 @@ export const fetchMineVotesVoted = async (
     const response = await authApi.get<MineVotesResponse>(
       `/votes/mine/voted?${params.toString()}`,
     )
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+// 투표 삭제 API
+export const deleteVote = async (voteId: number) => {
+  try {
+    await authApi.delete(`/votes/${voteId}`)
+  } catch (error) {
+    throw error
+  }
+}
+
+// 투표 고정 API
+export const pinVote = async (voteId: number, pinType: PinType) => {
+  try {
+    const response = await authApi.patch(`/votes/${voteId}/pin`, { pinType })
     return response.data
   } catch (error) {
     throw error

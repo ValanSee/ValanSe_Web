@@ -2,7 +2,7 @@
 
 import Modal from '@/components/_shared/modal'
 import { useState } from 'react'
-import { MBTI } from '@/types/_shared/profile'
+import { MBTI } from '@/types/member'
 
 interface MBTIBottomSheetProps {
   onClose: () => void

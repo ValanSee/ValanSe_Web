@@ -1,7 +1,13 @@
-import { authApi } from './instance/authApi'
-import { Profile } from '@/types/_shared/profile'
+import { authApi } from '../instance/authApi'
+import {
+  CreateMemberProfileRequest,
+  FetchMemberProfileResponse,
+  UpdateMemberProfileRequest,
+} from './types'
 
-export const createMemberProfile = async (profile: Profile) => {
+export const createMemberProfile = async (
+  profile: CreateMemberProfileRequest,
+) => {
   try {
     await authApi.post('/member/profile', profile)
   } catch (error) {
@@ -9,17 +15,29 @@ export const createMemberProfile = async (profile: Profile) => {
   }
 }
 
-export const fetchMemberProfile = async (): Promise<Profile | null> => {
+export const fetchMemberProfile = async (): Promise<
+  FetchMemberProfileResponse['profile']
+> => {
   try {
-    const response = await authApi.get<{ profile: Profile | null }>(
-      '/member/profile',
-    )
+    const response =
+      await authApi.get<FetchMemberProfileResponse>('/member/profile')
     return response.data.profile
   } catch (error) {
     throw error
   }
 }
 
+export const updateMemberProfile = async (
+  profile: UpdateMemberProfileRequest,
+) => {
+  try {
+    await authApi.post('/member/profile', profile)
+  } catch (error) {
+    throw error
+  }
+}
+
+// TODO : 마이페이지 타입 정리
 export type fetchMemberMypageResponse = {
   profile: {
     profile_image_url: string
@@ -42,14 +60,7 @@ export const fetchMemberMypage = async () => {
   }
 }
 
-export const updateMemberProfile = async (profile: Profile) => {
-  try {
-    await authApi.post('/member/profile', profile)
-  } catch (error) {
-    throw error
-  }
-}
-
+// TODO : 닉네임 체크 응답 타입 정리
 export const checkNickname = async (nickname: string) => {
   try {
     const response = await authApi.get<checkNicknameResponse>(
