@@ -25,12 +25,12 @@ export interface VoteOption {
 export interface BestVoteResponse {
   voteId: number
   title: string
+  content: string | null
   category: VoteCategory
   totalParticipants: number
   createdBy: string
   createdAt: string
   options: VoteOption[]
-  content: string
   pinType: PinType
 }
 

@@ -6,6 +6,7 @@ export interface VoteOption {
 export interface Vote {
   id: number
   title: string
+  content: string | null
   category: string
   member_id: number
   nickname: string

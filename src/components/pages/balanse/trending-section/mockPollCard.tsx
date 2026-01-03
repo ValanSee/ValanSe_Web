@@ -9,7 +9,7 @@ const categoryMap: Record<string, string> = {
   ALL: '전체',
 }
 
-interface Props {
+type Props = {
   data: TrendingVoteResponse
 }
 
