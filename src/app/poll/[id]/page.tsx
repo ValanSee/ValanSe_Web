@@ -12,7 +12,7 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
-import { deleteVote, fetchBestVote } from '@/api/votes'
+import { deleteVote, fetchBestVote, pinVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
@@ -21,6 +21,7 @@ import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { SectionHeader } from '@/components/pages/poll/sectionHeader'
 import { PinType } from '@/types/balanse/vote'
+import ConfirmModal from '@/components/ui/modal/confirmModal'
 
 interface PollOption {
   optionId: number
@@ -54,6 +55,7 @@ export default function PollDetailPage() {
   const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   // 관리자 여부 파악을 위한 profile 조회
   const profile = useAppSelector((state) => state.member.profile)
@@ -147,6 +149,16 @@ export default function PollDetailPage() {
     }
   }
 
+  const handlePinButtonClick = () => {
+    setShowConfirmModal(true)
+  }
+
+  // 고정 해제
+  const handleUnpin = async () => {
+    await pinVote(Number(id), 'NONE')
+    router.replace(`/poll/${id}?source=hot&pin=${'NONE'}`)
+  }
+
   if (loading) return <Loading />
   if (error)
     return (
@@ -193,7 +205,24 @@ export default function PollDetailPage() {
       />
       <div className="max-w-xl mx-auto p-4 pb-24">
         {/* 관리자 계정이면 섹션 헤더에 고정 버튼 표시 */}
-        {isAdmin && <SectionHeader pinType={pin as PinType} />}
+        {isAdmin && (
+          <SectionHeader
+            pinType={pin as PinType}
+            handlePinButtonClick={handlePinButtonClick}
+          />
+        )}
+
+        {/* 고정 해제 확인 모달 */}
+        <ConfirmModal
+          title="고정 해제"
+          description="정말로 고정을 해제하시겠습니까?"
+          open={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={() => {
+            handleUnpin()
+            setShowConfirmModal(false)
+          }}
+        />
 
         {data && (
           <PollCard
