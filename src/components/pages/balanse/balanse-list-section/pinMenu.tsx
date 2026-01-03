@@ -41,11 +41,12 @@ export const PinMenu = ({ onPinChange, voteId }: Props) => {
 
     try {
       await pinVote(voteId, type)
+      if (onPinChange) onPinChange()
     } catch (error) {
       console.error('Failed to pin vote:', error)
+      return
     }
 
-    if (onPinChange) onPinChange()
     setIsOpen(false) // 선택 후 닫기
   }
 
