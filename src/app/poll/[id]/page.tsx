@@ -158,7 +158,7 @@ export default function PollDetailPage() {
   const handleUnpin = async () => {
     try {
       await pinVote(Number(id), 'NONE')
-      router.replace(`/poll/${id}?source=hot&pin=$NONE`)
+      router.replace('/poll/hot')
     } catch (error) {
       console.error('Failed to unpin vote:', error)
       alert('고정 해제에 실패했습니다.')
