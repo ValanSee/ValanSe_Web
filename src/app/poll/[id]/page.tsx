@@ -155,8 +155,13 @@ export default function PollDetailPage() {
 
   // 고정 해제
   const handleUnpin = async () => {
-    await pinVote(Number(id), 'NONE')
-    router.replace(`/poll/${id}?source=hot&pin=${'NONE'}`)
+    try {
+      await pinVote(Number(id), 'NONE')
+      router.replace(`/poll/${id}?source=hot&pin=$NONE`)
+    } catch (error) {
+      console.error('Failed to unpin vote:', error)
+      alert('고정 해제에 실패했습니다.')
+    }
   }
 
   if (loading) return <Loading />
