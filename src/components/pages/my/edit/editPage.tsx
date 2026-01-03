@@ -51,17 +51,15 @@ const EditPage = () => {
   const dispatch = useAppDispatch()
   const myPageData = useAppSelector((state) => state.member.mypageData)
 
-  if (!myPageData) {
-    return <Loading />
-  }
-
   // 로컬 상태 관리
-  const [nickname, setNickname] = useState<string | null>(myPageData.nickname)
-  const [gender, setGender] = useState<Gender | null>(
-    myPageData.gender as Gender,
+  const [nickname, setNickname] = useState<string | null>(
+    myPageData?.nickname || '',
   )
-  const [age, setAge] = useState<Age | null>(myPageData.age as Age)
-  const [mbti, setMbti] = useState<MBTI | null>(myPageData.mbti as MBTI)
+  const [gender, setGender] = useState<Gender | null>(
+    myPageData?.gender as Gender,
+  )
+  const [age, setAge] = useState<Age | null>(myPageData?.age as Age)
+  const [mbti, setMbti] = useState<MBTI | null>(myPageData?.mbti as MBTI)
 
   const [isDirty, setIsDirty] = useState(false)
   const [isNicknameEditing, setIsNicknameEditing] = useState(false)
