@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
-import { createMemberProfile } from '@/api/member'
+import { createMemberProfile } from '@/api/member/member'
 import { useRouter } from 'next/navigation'
-import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/_shared/profile'
-import { Profile } from '@/types/_shared/profile'
+import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/member'
+import { Profile } from '@/types/member'
 
 const ageOptions = ['10대', '20대', '30대', '40대']
 const genderOptions = ['여성', '남성']
@@ -47,6 +47,7 @@ const OnboardingPage = () => {
       mbtiIe: mbtiIe,
       mbtiTf: mbtiTf,
       mbti: mbti,
+      role: 'USER',
     }
   }
 
