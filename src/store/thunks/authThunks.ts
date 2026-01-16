@@ -9,7 +9,7 @@ import { AppDispatch } from '../store'
 import { getRefreshToken } from '@/utils/tokenUtils'
 import { saveTokens, clearTokens } from '@/utils/tokenUtils'
 import { reissue } from '@/api/auth'
-import { logout as logoutApi } from '@/api/auth'
+import { logout as logoutApi, signout as signoutApi } from '@/api/auth'
 import { login } from '@/api/auth'
 
 export const loginThunk = (code: string) => async (dispatch: AppDispatch) => {
@@ -47,6 +47,16 @@ export const reissueThunk = () => async (dispatch: AppDispatch) => {
 export const logoutThunk = () => async (dispatch: AppDispatch) => {
   try {
     await logoutApi()
+    dispatch(logout())
+    clearTokens()
+  } catch (err) {
+    throw err
+  }
+}
+
+export const signoutThunk = () => async (dispatch: AppDispatch) => {
+  try {
+    await signoutApi()
     dispatch(logout())
     clearTokens()
   } catch (err) {
