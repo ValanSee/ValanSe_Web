@@ -259,6 +259,7 @@ export default function PollDetailPage() {
             comments={comments}
             voteId={data.voteId}
             onClose={() => setOpen(false)}
+            profile={profile}
           />
         )}
         {data && (
