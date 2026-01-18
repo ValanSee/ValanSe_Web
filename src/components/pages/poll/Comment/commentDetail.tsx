@@ -204,13 +204,12 @@ const CommentDetail = ({
 
   const confirmDelete = async () => {
     const { commentId } = deleteConfirmModal
-    if (!commentId) return
+    if (!commentId || !voteId) return
 
     try {
       await deleteComment(commentId)
-      setLocalComments((prev) =>
-        prev.filter((comment) => comment.commentId !== commentId),
-      )
+      const response = await fetchComments(voteId, { sort: currentSort })
+      setLocalComments(response.comments)
       setDeleteConfirmModal({ isOpen: false, commentId: null })
     } catch (error) {
       console.error('댓글 삭제 실패:', error)
