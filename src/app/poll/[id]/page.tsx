@@ -194,7 +194,7 @@ export default function PollDetailPage() {
     try {
       await deleteVote(data.voteId)
       setDeleteModalOpen(false)
-      router.back()
+      router.push('/balanse')
     } catch (error) {
       console.error('게시글 삭제 실패:', error)
       alert('게시글 삭제에 실패했습니다.')
@@ -259,6 +259,7 @@ export default function PollDetailPage() {
             comments={comments}
             voteId={data.voteId}
             onClose={() => setOpen(false)}
+            profile={profile}
           />
         )}
         {data && (
