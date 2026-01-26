@@ -1,15 +1,17 @@
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
-import { logoutThunk, signoutThunk } from '@/store/thunks/authThunks'
+import { logoutThunk } from '@/store/thunks/authThunks'
+import { useRouter } from 'next/navigation'
 
 export default function AccountControlSection() {
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   const handleLogout = () => {
     dispatch(logoutThunk())
   }
 
   const handleSignout = () => {
-    dispatch(signoutThunk())
+    router.push('/account-deletion')
   }
 
   return (
