@@ -34,6 +34,8 @@ export default defineConfig([
       'react/react-in-jsx-scope': 'off',
       'react/jsx-pascal-case': 'error',
       'no-useless-catch': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'no-unused-vars': 'off',
     },
   },
 

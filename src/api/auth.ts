@@ -33,3 +33,11 @@ export const logout = async () => {
     throw error
   }
 }
+
+export const signout = async () => {
+  try {
+    await authApi.post('/auth/withdraw')
+  } catch (error) {
+    throw error
+  }
+}

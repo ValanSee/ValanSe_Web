@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Profile } from '@/types/_shared/profile'
+import { Profile } from '@/types/member'
 import { MypageData } from '@/types/_shared/mypageData'
 
 interface MemberState {
@@ -16,7 +16,7 @@ const memberSlice = createSlice({
   name: 'member',
   initialState,
   reducers: {
-    setProfile(state, action: PayloadAction<Profile | null>) {
+    setProfile(state, action: PayloadAction<Profile>) {
       state.profile = action.payload
     },
     setMypageData(state, action: PayloadAction<MypageData>) {

@@ -26,17 +26,20 @@ import {
   ModalBody,
   ModalFooter,
 } from '@/components/ui/modal'
+import { Profile } from '@/types/member'
 
 interface CommentDetailProps {
   comments?: Comment[]
   voteId?: number | string
   onClose?: () => void
+  profile: Profile
 }
 
 const CommentDetail = ({
   comments = [],
   voteId,
   onClose,
+  profile,
 }: CommentDetailProps) => {
   const [openReplies, setOpenReplies] = useState<Record<number, boolean>>({})
   const [currentSort, setCurrentSort] = useState<'popular' | 'latest'>(
@@ -201,13 +204,12 @@ const CommentDetail = ({
 
   const confirmDelete = async () => {
     const { commentId } = deleteConfirmModal
-    if (!commentId) return
+    if (!commentId || !voteId) return
 
     try {
       await deleteComment(commentId)
-      setLocalComments((prev) =>
-        prev.filter((comment) => comment.commentId !== commentId),
-      )
+      const response = await fetchComments(voteId, { sort: currentSort })
+      setLocalComments(response.comments)
       setDeleteConfirmModal({ isOpen: false, commentId: null })
     } catch (error) {
       console.error('댓글 삭제 실패:', error)
@@ -294,12 +296,15 @@ const CommentDetail = ({
                   </div>
                 </div>
                 <div className="relative menu-container">
-                  <button
-                    className="text-gray-400 hover:text-gray-600 p-1"
-                    onClick={() => toggleMenu(comment.commentId)}
-                  >
-                    <MoreVertical size={16} />
-                  </button>
+                  {(profile.role === 'ADMIN' ||
+                    comment.nickname === profile.nickname) && (
+                    <button
+                      className="text-gray-400 hover:text-gray-600 p-1"
+                      onClick={() => toggleMenu(comment.commentId)}
+                    >
+                      <MoreVertical size={16} />
+                    </button>
+                  )}
                   {openMenus[comment.commentId] && (
                     <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
                       <button
