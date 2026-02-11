@@ -69,7 +69,7 @@ const EditPage = () => {
 
   useEffect(() => {
     // 닉네임을 입력하지 않았거나 빈 문자열이라면 초기화 후 리턴
-    if (!debouncedNickname || debouncedNickname.length === 0) {
+    if (!debouncedNickname) {
       setNickNameMessage(null)
       return
     }
@@ -97,7 +97,7 @@ const EditPage = () => {
       }
     }
     validateNickname()
-  }, [debouncedNickname])
+  }, [debouncedNickname, myPageData])
 
   useEffect(() => {
     console.log('전역 상태 nickname', myPageData?.nickname)
