@@ -68,25 +68,35 @@ const EditPage = () => {
   const debouncedNickname = useDebounce<string>(nickname || '', 500)
 
   useEffect(() => {
-    if (debouncedNickname && debouncedNickname.length > 0) {
-      async function validateNickname() {
-        try {
-          const res = await checkNickname(debouncedNickname)
-          if (!res.isAvailable) {
-            setNickNameMessage('이미 사용 중인 닉네임입니다.')
-          } else if (!res.isMeaningful) {
-            setNickNameMessage('의미 있는 닉네임을 입력해주세요.')
-          } else if (!res.isClean) {
-            setNickNameMessage('욕설을 포함한 닉네임은 사용할 수 없습니다.')
-          } else {
-            setNickNameMessage(null)
-          }
-        } catch {
-          setNickNameMessage('닉네임 체크 중 오류가 발생했습니다.')
-        }
-      }
-      validateNickname()
+    // 닉네임을 입력하지 않았거나 빈 문자열이라면 초기화 후 리턴
+    if (!debouncedNickname || debouncedNickname.length === 0) {
+      setNickNameMessage(null)
+      return
     }
+
+    // 현재 내 닉네임과 같다면 중복 체크를 하지 않음
+    if (debouncedNickname === myPageData?.nickname) {
+      setNickNameMessage(null)
+      return
+    }
+
+    async function validateNickname() {
+      try {
+        const res = await checkNickname(debouncedNickname)
+        if (!res.isAvailable) {
+          setNickNameMessage('이미 사용 중인 닉네임입니다.')
+        } else if (!res.isMeaningful) {
+          setNickNameMessage('의미 있는 닉네임을 입력해주세요.')
+        } else if (!res.isClean) {
+          setNickNameMessage('욕설을 포함한 닉네임은 사용할 수 없습니다.')
+        } else {
+          setNickNameMessage(null)
+        }
+      } catch {
+        setNickNameMessage('닉네임 체크 중 오류가 발생했습니다.')
+      }
+    }
+    validateNickname()
   }, [debouncedNickname])
 
   useEffect(() => {
@@ -258,6 +268,7 @@ const EditPage = () => {
         <MBTIBottomSheet
           onClose={() => setMbtiBottomSheetOpen(false)}
           setMbti={setMbti}
+          mbti={mbti as MBTI}
         />
       )}
 
