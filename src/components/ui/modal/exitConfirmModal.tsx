@@ -23,7 +23,7 @@ export default function ExitConfirmModal({
   if (!open) return null
 
   return (
-    <ModalOverlay onClose={onCloseAction}>
+    <ModalOverlay onClose={onCloseAction} className="z-100">
       <Modal className="w-[90vw] max-w-none">
         <ModalHeader>
           <ModalTitle>정말 종료하시겠습니까?</ModalTitle>
