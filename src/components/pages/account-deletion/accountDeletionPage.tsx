@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { signoutThunk } from '@/store/thunks/authThunks'
 import { Checkbox } from '@/components/ui/checkbox'
-
 const AccountDeletionPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
@@ -28,7 +27,7 @@ const AccountDeletionPage = () => {
       setIsDeleting(true)
       await dispatch(signoutThunk())
       alert('계정이 성공적으로 삭제되었습니다.')
-      router.push('/entry')
+      router.replace('/entry')
     } catch (error) {
       console.error('계정 삭제 실패:', error)
       alert('계정 삭제 중 오류가 발생했습니다. 다시 시도해주세요.')

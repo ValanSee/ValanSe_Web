@@ -163,12 +163,10 @@ function BalancePageContent() {
     setIsRefreshing(false)
   }, [isRefreshing])
 
-  // 초기 로딩 중일 때는 전체 화면 로딩
-  if (loading || votes.length === 0 || !trendingVote) {
+  // 초기 로딩(목록·트렌딩). votes 가 비어 있어도 로딩으로 막지 않음(빈 목록 대응)
+  if (loading || !trendingVote) {
     return <Loading />
   }
-
-  if (!profile) return <Loading />
 
   // 고정 해제
   const handleUnpin = async () => {

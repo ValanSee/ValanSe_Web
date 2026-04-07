@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
 import { createMemberProfile } from '@/api/member/member'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import {
+  consumePostAuthRedirect,
+  entryHrefWithRedirect,
+} from '@/utils/authRedirect'
 import { MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/member'
 import { Profile } from '@/types/member'
 
@@ -12,6 +16,7 @@ const genderOptions = ['여성', '남성']
 
 const OnboardingPage = () => {
   const router = useRouter()
+  const pathname = usePathname()
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
@@ -55,11 +60,11 @@ const OnboardingPage = () => {
     const refinedForm = refineForm()
     try {
       await createMemberProfile(refinedForm)
-      router.push('/main')
+      router.replace(consumePostAuthRedirect() ?? '/main')
     } catch (error) {
       console.error('Failed to create member profile:', error)
       alert('회원 정보 생성에 실패했습니다.')
-      router.push('/entry')
+      router.replace(entryHrefWithRedirect(pathname))
     }
   }
 
