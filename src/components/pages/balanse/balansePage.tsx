@@ -192,6 +192,11 @@ function BalancePageContent() {
     )
   }
 
+  // 위 분기 후 논리상 항상 있으나, TS는 `trendingVote`를 좁히지 못함
+  if (!trendingVote) {
+    return <Loading />
+  }
+
   // 고정 해제
   const handleUnpin = async () => {
     await pinVote(trendingVote.voteId, 'NONE')
