@@ -32,7 +32,9 @@ interface CommentDetailProps {
   comments?: Comment[]
   voteId?: number | string
   onClose?: () => void
-  profile: Profile
+  /** 비로그인 시 null — 삭제 메뉴 등은 로그인 사용자에게만 표시 */
+  profile: Profile | null
+  postLoginReturnPath?: string
 }
 
 const CommentDetail = ({
@@ -40,6 +42,7 @@ const CommentDetail = ({
   voteId,
   onClose,
   profile,
+  postLoginReturnPath,
 }: CommentDetailProps) => {
   const [openReplies, setOpenReplies] = useState<Record<number, boolean>>({})
   const [currentSort, setCurrentSort] = useState<'popular' | 'latest'>(
@@ -296,8 +299,8 @@ const CommentDetail = ({
                   </div>
                 </div>
                 <div className="relative menu-container">
-                  {(profile.role === 'ADMIN' ||
-                    comment.nickname === profile.nickname) && (
+                  {(profile?.role === 'ADMIN' ||
+                    (profile && comment.nickname === profile.nickname)) && (
                     <button
                       className="text-gray-400 hover:text-gray-600 p-1"
                       onClick={() => toggleMenu(comment.commentId)}
@@ -418,6 +421,7 @@ const CommentDetail = ({
                         handleReplyCreated(comment.commentId)
                       }
                       placeholder="대댓글을 남겨보세요"
+                      postLoginReturnPath={postLoginReturnPath}
                     />
                   )}
                 </div>
@@ -430,6 +434,7 @@ const CommentDetail = ({
         <CommentInput
           voteId={voteId as number}
           onCommentCreated={handleCommentCreated}
+          postLoginReturnPath={postLoginReturnPath}
         />
       </div>
       {onClose && (

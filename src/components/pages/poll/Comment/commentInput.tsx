@@ -1,13 +1,18 @@
 'use client'
 import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { Send } from 'lucide-react'
 import { createComment } from '@/api/comment/commentApi'
+import { getAccessToken } from '@/utils/tokenUtils'
+import { entryHrefWithRedirect } from '@/utils/authRedirect'
 
 interface CommentInputProps {
   voteId: number | string
   parentId?: number | null
   onCommentCreated?: () => void
   placeholder?: string
+  /** 비로그인 시 로그인 후 복귀할 경로 (예: 현재 투표 상세 full path) */
+  postLoginReturnPath?: string
 }
 
 export default function CommentInput({
@@ -15,12 +20,20 @@ export default function CommentInput({
   parentId,
   onCommentCreated,
   placeholder = '답글을 남겨보세요',
+  postLoginReturnPath,
 }: CommentInputProps) {
+  const router = useRouter()
+  const pathname = usePathname()
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async () => {
     if (!content.trim() || isSubmitting) return
+
+    if (!getAccessToken()) {
+      router.replace(entryHrefWithRedirect(postLoginReturnPath ?? pathname))
+      return
+    }
 
     try {
       setIsSubmitting(true)

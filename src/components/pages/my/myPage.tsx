@@ -12,15 +12,15 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
-import { useRouter } from 'next/navigation'
-import { recover } from '@/store/slices/authSlice'
+import { usePathname, useRouter } from 'next/navigation'
+import { entryHrefWithRedirect } from '@/utils/authRedirect'
 import Loading from '@/components/_shared/loading'
 
 function MyPage() {
   const router = useRouter()
+  const pathname = usePathname()
   const dispatch = useAppDispatch()
   const mypageData = useAppSelector((state) => state.member.mypageData)
-  const isLogined = useAppSelector((state) => state.auth.isLogined)
   const [minLoadingComplete, setMinLoadingComplete] = useState(false)
 
   useEffect(() => {
@@ -33,34 +33,16 @@ function MyPage() {
   }, [])
 
   useEffect(() => {
-    // 로그인 안 되어있으면 리디렉션
-    if (!isLogined) {
-      const checkLogin = async () => {
-        try {
-          await dispatch(fetchMypageDataThunk())
-          dispatch(recover())
-        } catch (err) {
-          console.error('리뉴얼 실패', err)
-          router.push('/entry')
-          return
-        }
-      }
-      checkLogin()
-    }
-
-    // 마이페이지 데이터가 없으면 불러오기
     if (!mypageData) {
-      const fetchData = async () => {
+      void (async () => {
         try {
           await dispatch(fetchMypageDataThunk())
-        } catch (err) {
-          console.error('마이페이지 데이터 가져오기 실패', err)
+        } catch {
+          router.replace(entryHrefWithRedirect(pathname))
         }
-      }
-
-      fetchData()
+      })()
     }
-  }, [dispatch, isLogined, mypageData, router])
+  }, [dispatch, mypageData, pathname, router])
 
   if (!mypageData || !minLoadingComplete) {
     return <Loading />

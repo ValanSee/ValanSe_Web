@@ -1,6 +1,16 @@
 'use client'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { voteOption, VoteResponse } from '@/api/votes'
+import { getAccessToken } from '@/utils/tokenUtils'
+import {
+  clearPendingVote,
+  entryHrefWithRedirect,
+  peekPendingVote,
+  releasePendingVoteClaim,
+  setPendingVote,
+  tryClaimPendingVoteSubmit,
+} from '@/utils/authRedirect'
 
 interface PollCardProps {
   voteId: number | string
@@ -15,6 +25,8 @@ interface PollCardProps {
   totalParticipants: number
   hasVoted?: boolean
   votedOptionLabel?: string | null
+  /** 비로그인 시 로그인 후 돌아올 현재 투표 페이지 경로 */
+  postLoginReturnPath: string
 }
 
 function PollCard({
@@ -26,7 +38,9 @@ function PollCard({
   totalParticipants,
   hasVoted = false,
   votedOptionLabel,
+  postLoginReturnPath,
 }: PollCardProps) {
+  const router = useRouter()
   // 초기 상태를 API 응답으로 설정
   const [voted, setVoted] = useState(hasVoted)
   const [selectedId, setSelectedId] = useState<number | null>(() => {
@@ -42,46 +56,88 @@ function PollCard({
     useState(totalParticipants)
   const [isVoting, setIsVoting] = useState(false)
 
-  const handleClickPercentage = async (id: number) => {
-    if (isVoting) return // 중복 클릭 방지
-
-    try {
-      setIsVoting(true)
-
-      if (selectedId === id) {
-        setSelectedId(null)
-        setVoted(false)
-      } else {
-        // 다른 옵션 클릭 - 재투표
-        setSelectedId(id)
-        setVoted(true)
-      }
-
-      const response: VoteResponse = await voteOption(voteId, id)
-
-      // API 응답으로 최종 상태 업데이트
+  const applyVoteResponse = useCallback(
+    (response: VoteResponse, prevSelectedId: number | null) => {
       setVoted(response.voted)
       setSelectedId(response.voted ? response.voteOptionId : null)
       setLocalTotalParticipants(response.totalVoteCount)
-
-      // 옵션별 투표 수 업데이트
       setLocalOptions((prevOptions) =>
         prevOptions.map((option) => {
           if (option.optionId === response.voteOptionId) {
-            // 새로 선택된 옵션: API 응답으로 업데이트
             return { ...option, vote_count: response.voteOptionCount }
-          } else if (selectedId === option.optionId && response.voted) {
-            // 이전에 선택되었던 옵션 (재투표 시): 투표 수 1 감소
+          }
+          if (prevSelectedId === option.optionId && response.voted) {
             return { ...option, vote_count: Math.max(0, option.vote_count - 1) }
           }
           return option
         }),
       )
+    },
+    [],
+  )
+
+  // 로그인 후 돌아왔을 때, 직전에 눌렀던 옵션으로 자동 투표
+  useEffect(() => {
+    const pending = peekPendingVote()
+    if (!pending || Number(pending.voteId) !== Number(voteId)) return
+    if (!getAccessToken()) return
+    if (hasVoted) {
+      clearPendingVote()
+      return
+    }
+    if (!localOptions.some((o) => o.optionId === pending.optionId)) return
+    if (!tryClaimPendingVoteSubmit(voteId)) return
+
+    let cancelled = false
+    void (async () => {
+      try {
+        setIsVoting(true)
+        const response = await voteOption(voteId, pending.optionId)
+        if (cancelled) return
+        clearPendingVote()
+        applyVoteResponse(response, null)
+      } catch {
+        if (!cancelled) {
+          alert('투표에 실패했습니다.')
+        }
+      } finally {
+        releasePendingVoteClaim()
+        if (!cancelled) setIsVoting(false)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [voteId, hasVoted, localOptions, applyVoteResponse])
+
+  const handleClickPercentage = async (id: number) => {
+    if (isVoting) return // 중복 클릭 방지
+
+    if (!getAccessToken()) {
+      setPendingVote(voteId, id)
+      router.replace(entryHrefWithRedirect(postLoginReturnPath))
+      return
+    }
+
+    const prevSelected = selectedId
+
+    try {
+      setIsVoting(true)
+
+      if (prevSelected === id) {
+        setSelectedId(null)
+        setVoted(false)
+      } else {
+        setSelectedId(id)
+        setVoted(true)
+      }
+
+      const response: VoteResponse = await voteOption(voteId, id)
+      applyVoteResponse(response, prevSelected)
     } catch (error) {
       console.error('투표 실패:', error)
       alert('투표에 실패했습니다.')
-
-      // 에러 발생 시 원래 상태로 되돌리기
       setSelectedId(null)
       setVoted(false)
     } finally {

@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { Suspense } from 'react'
 // import Divider from './_components/divider'
 import KakaoLoginButton from './_components/kakaoLoginButton'
 
@@ -27,8 +28,15 @@ function EntryPage() {
       </p>
 
       <div className="w-full max-w-xs">
-        {/* 카카오 로그인 버튼 */}
-        <KakaoLoginButton />
+        <Suspense
+          fallback={
+            <div className="w-full max-w-xs py-3 rounded-xl bg-[#FEE500]/60 text-center text-sm text-gray-600 mb-4">
+              로그인 준비 중…
+            </div>
+          }
+        >
+          <KakaoLoginButton />
+        </Suspense>
         {/*
         <Divider />
 
