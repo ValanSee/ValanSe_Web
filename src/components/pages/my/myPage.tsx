@@ -14,7 +14,6 @@ import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { usePathname, useRouter } from 'next/navigation'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
-import { getAccessToken } from '@/utils/tokenUtils'
 import Loading from '@/components/_shared/loading'
 
 function MyPage() {
@@ -34,11 +33,6 @@ function MyPage() {
   }, [])
 
   useEffect(() => {
-    if (!getAccessToken()) {
-      router.replace(entryHrefWithRedirect(pathname))
-      return
-    }
-
     if (!mypageData) {
       void (async () => {
         try {

@@ -82,10 +82,7 @@ export function peekPendingVote(): PendingVotePayload | null {
     const raw = sessionStorage.getItem(PENDING_VOTE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as PendingVotePayload
-    if (
-      typeof parsed.voteId !== 'number' ||
-      typeof parsed.optionId !== 'number'
-    ) {
+    if (!Number.isFinite(parsed.voteId) || !Number.isFinite(parsed.optionId)) {
       return null
     }
     return parsed

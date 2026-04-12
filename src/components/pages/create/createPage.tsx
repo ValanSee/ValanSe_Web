@@ -4,15 +4,8 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import CreateForm from './createForm'
 import Loading from '@/components/_shared/loading'
 import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
-import { useAppSelector } from '@/hooks/utils/useAppSelector'
-import { entryHrefWithRedirect } from '@/utils/authRedirect'
-import { getAccessToken } from '@/utils/tokenUtils'
 
 const CreatePage = () => {
-  const router = useRouter()
-  const pathname = usePathname()
-  const isLogined = useAppSelector((state) => state.auth.isLogined)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
@@ -22,13 +15,7 @@ const CreatePage = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  useEffect(() => {
-    if (!getAccessToken()) {
-      router.replace(entryHrefWithRedirect(pathname))
-    }
-  }, [pathname, router])
-
-  if (!isLogined || isInitialLoading) {
+  if (isInitialLoading) {
     return <Loading />
   }
 

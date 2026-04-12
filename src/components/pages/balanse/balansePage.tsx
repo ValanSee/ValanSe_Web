@@ -28,6 +28,7 @@ function BalancePageContent() {
   const searchParams = useSearchParams()
   const [votes, setVotes] = useState<Vote[]>([])
   const [trendingVote, setTrendingVote] = useState<TrendingVoteResponse>()
+  const [trendingError, setTrendingError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [hasNextPage, setHasNextPage] = useState(false)
@@ -149,12 +150,12 @@ function BalancePageContent() {
     const getTrendingVote = async () => {
       try {
         setLoading(true)
-        setError(null)
+        setTrendingError(null)
 
         const data = await fetchTrendingVotes()
         setTrendingVote(data)
       } catch (_) {
-        setError('불러오기 실패')
+        setTrendingError('인기 급상승 토픽을 불러오지 못했습니다.')
       } finally {
         setLoading(false)
       }
@@ -164,8 +165,31 @@ function BalancePageContent() {
   }, [isRefreshing])
 
   // 초기 로딩(목록·트렌딩). votes 가 비어 있어도 로딩으로 막지 않음(빈 목록 대응)
-  if (loading || !trendingVote) {
+  // 트렌딩 API 실패 시 trendingError 로 분기해 무한 로딩(!trendingVote 고정) 방지
+  if (loading || (!trendingVote && !trendingError)) {
     return <Loading />
+  }
+
+  if (trendingError && !trendingVote) {
+    return (
+      <div className="flex flex-col min-h-screen bg-[#ffffff]">
+        <Header />
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-16">
+          <p className="text-xl font-bold text-red-500">⚠️</p>
+          <p className="text-center text-lg font-semibold text-gray-700">
+            {trendingError}
+          </p>
+          <button
+            type="button"
+            className="rounded-lg bg-[#4D7298] px-5 py-2.5 text-sm font-medium text-white"
+            onClick={() => setIsRefreshing(true)}
+          >
+            다시 시도
+          </button>
+        </div>
+        <BottomNavBar />
+      </div>
+    )
   }
 
   // 고정 해제
