@@ -1,4 +1,4 @@
-import { authApi } from '../../instance/authApi'
+import { publicApi } from '../../instance/publicApi'
 import { PinType } from '@/types/balanse/vote'
 
 export type TrendingVoteResponse = {
@@ -18,6 +18,6 @@ export type TrendingVoteResponse = {
 }
 
 export async function fetchTrendingVotes() {
-  const res = await authApi.get<TrendingVoteResponse>('/votes/trending')
+  const res = await publicApi.get<TrendingVoteResponse>('/votes/trending')
   return res.data
 }

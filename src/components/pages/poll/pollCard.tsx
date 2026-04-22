@@ -11,6 +11,7 @@ import {
   setPendingVote,
   tryClaimPendingVoteSubmit,
 } from '@/utils/authRedirect'
+import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
 
 interface PollCardProps {
   voteId: number | string
@@ -55,6 +56,8 @@ function PollCard({
   const [localTotalParticipants, setLocalTotalParticipants] =
     useState(totalParticipants)
   const [isVoting, setIsVoting] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [pendingOptionId, setPendingOptionId] = useState<number | null>(null)
 
   const applyVoteResponse = useCallback(
     (response: VoteResponse, prevSelectedId: number | null) => {
@@ -115,8 +118,8 @@ function PollCard({
     if (isVoting) return // 중복 클릭 방지
 
     if (!getAccessToken()) {
-      setPendingVote(voteId, id)
-      router.replace(entryHrefWithRedirect(postLoginReturnPath))
+      setPendingOptionId(id)
+      setShowLoginModal(true)
       return
     }
 
@@ -166,66 +169,84 @@ function PollCard({
   }
 
   return (
-    <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
-      <div className="text-sm font-medium text-gray-700">{createdBy}</div>
-      <div className="text-base font-semibold">{title}</div>
-      {content && (
-        <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-          {content}
-        </div>
-      )}
-      <div className="space-y-2">
-        {localOptions.map((option, idx) => {
-          const isSelected = selectedId === option.optionId
-          const percentage =
-            localTotalParticipants > 0
-              ? Math.round((option.vote_count / localTotalParticipants) * 100)
-              : 0
-          const optionColor = getOptionColor(idx)
-          const optionLightColor = getOptionLightColor(idx)
+    <>
+      <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
+        <div className="text-sm font-medium text-gray-700">{createdBy}</div>
+        <div className="text-base font-semibold">{title}</div>
+        {content && (
+          <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+            {content}
+          </div>
+        )}
+        <div className="space-y-2">
+          {localOptions.map((option, idx) => {
+            const isSelected = selectedId === option.optionId
+            const percentage =
+              localTotalParticipants > 0
+                ? Math.round((option.vote_count / localTotalParticipants) * 100)
+                : 0
+            const optionColor = getOptionColor(idx)
+            const optionLightColor = getOptionLightColor(idx)
 
-          return (
-            <div
-              className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ${
-                isSelected ? `ring-2` : ''
-              } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
-              style={{
-                borderColor: isSelected ? optionColor : undefined,
-                backgroundColor: isSelected
-                  ? optionColor // 선택된 옵션은 진한 색상
-                  : voted
-                    ? optionLightColor // 투표된 옵션은 연한 색상
-                    : undefined,
-                color: isSelected ? '#fff' : undefined, // 선택된 옵션은 글씨 흰색
-              }}
-              onClick={() => handleClickPercentage(option.optionId)}
-              key={option.optionId ?? idx}
-            >
-              <div className="flex justify-between relative z-10 font-medium">
-                <span>
-                  <strong>{String.fromCharCode(65 + idx)}</strong>{' '}
-                  {option.content}
-                </span>
-                {voted && <span>{percentage}%</span>}
+            return (
+              <div
+                className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ${
+                  isSelected ? `ring-2` : ''
+                } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{
+                  borderColor: isSelected ? optionColor : undefined,
+                  backgroundColor: isSelected
+                    ? optionColor // 선택된 옵션은 진한 색상
+                    : voted
+                      ? optionLightColor // 투표된 옵션은 연한 색상
+                      : undefined,
+                  color: isSelected ? '#fff' : undefined, // 선택된 옵션은 글씨 흰색
+                }}
+                onClick={() => handleClickPercentage(option.optionId)}
+                key={option.optionId ?? idx}
+              >
+                <div className="flex justify-between relative z-10 font-medium">
+                  <span>
+                    <strong>{String.fromCharCode(65 + idx)}</strong>{' '}
+                    {option.content}
+                  </span>
+                  {voted && <span>{percentage}%</span>}
+                </div>
+                {/* 선택된 옵션이 아니고, 투표가 완료된 경우에만 퍼센트 바 표시 */}
+                {voted && !isSelected && (
+                  <div
+                    className="absolute left-0 top-0 h-full rounded-md -z-10 transition-all duration-500 ease-in-out"
+                    style={{
+                      width: `${percentage}%`,
+                      backgroundColor: optionLightColor,
+                    }}
+                  />
+                )}
               </div>
-              {/* 선택된 옵션이 아니고, 투표가 완료된 경우에만 퍼센트 바 표시 */}
-              {voted && !isSelected && (
-                <div
-                  className="absolute left-0 top-0 h-full rounded-md -z-10 transition-all duration-500 ease-in-out"
-                  style={{
-                    width: `${percentage}%`,
-                    backgroundColor: optionLightColor,
-                  }}
-                />
-              )}
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
+        <div className="text-sm text-gray-400 text-right">
+          총 {localTotalParticipants}명 투표
+        </div>
       </div>
-      <div className="text-sm text-gray-400 text-right">
-        총 {localTotalParticipants}명 투표
-      </div>
-    </div>
+
+      <LoginRequiredModal
+        open={showLoginModal}
+        onClose={() => {
+          setShowLoginModal(false)
+          setPendingOptionId(null)
+        }}
+        onLogin={() => {
+          if (pendingOptionId !== null) {
+            setPendingVote(voteId, pendingOptionId)
+          }
+          setShowLoginModal(false)
+          setPendingOptionId(null)
+          router.replace(entryHrefWithRedirect(postLoginReturnPath))
+        }}
+      />
+    </>
   )
 }
 export default PollCard
