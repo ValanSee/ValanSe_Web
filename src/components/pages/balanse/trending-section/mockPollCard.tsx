@@ -1,6 +1,10 @@
 'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { type TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
-import Link from 'next/link'
+import { getAccessToken } from '@/utils/tokenUtils'
+import { entryHrefWithRedirect } from '@/utils/authRedirect'
+import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
 
 const categoryMap: Record<string, string> = {
   ETC: '기타',
@@ -14,11 +18,25 @@ type Props = {
 }
 
 function MockPollCard({ data }: Props) {
+  const router = useRouter()
+  const [showLoginModal, setShowLoginModal] = useState(false)
+
   if (!data) return null
 
+  const handleClick = () => {
+    if (!getAccessToken()) {
+      setShowLoginModal(true)
+      return
+    }
+    router.push(`/poll/${data.voteId}`)
+  }
+
   return (
-    <Link href={`/poll/${data.voteId}`} passHref legacyBehavior>
-      <a className="block mx-auto p-4 mt-6 space-y-4 rounded-xl bg-[#F0F0F0] cursor-pointer">
+    <>
+      <div
+        className="block mx-auto p-4 mt-6 space-y-4 rounded-xl bg-[#F0F0F0] cursor-pointer"
+        onClick={handleClick}
+      >
         <div className="text-sm font-medium text-gray-700">
           {data.createdBy}
         </div>
@@ -51,8 +69,17 @@ function MockPollCard({ data }: Props) {
             총 {data.totalParticipants}명 투표
           </div>
         </div>
-      </a>
-    </Link>
+      </div>
+
+      <LoginRequiredModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={() => {
+          setShowLoginModal(false)
+          router.push(entryHrefWithRedirect(`/poll/${data.voteId}`))
+        }}
+      />
+    </>
   )
 }
 export default MockPollCard
