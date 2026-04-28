@@ -9,11 +9,9 @@ const CreatePage = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
-    // 최소 0.8초 로딩 시간 보장
     const timer = setTimeout(() => {
       setIsInitialLoading(false)
     }, 800)
-
     return () => clearTimeout(timer)
   }, [])
 

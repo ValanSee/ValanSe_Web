@@ -1,6 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation'
 import { authApi } from '@/api/instance/authApi'
 import PollCard from '@/components/pages/poll/pollCard'
 import PreviewCommentCard from '@/components/pages/poll/Comment/previewCommentCard'
@@ -22,6 +27,7 @@ import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { SectionHeader } from '@/components/pages/poll/sectionHeader'
 import { PinType } from '@/types/balanse/vote'
 import ConfirmModal from '@/components/ui/modal/confirmModal'
+import { buildCurrentReturnPath } from '@/utils/authRedirect'
 
 interface PollOption {
   optionId: number
@@ -45,7 +51,9 @@ interface PollDetail {
 
 export default function PollDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
+  const postLoginReturnPath = buildCurrentReturnPath(pathname, searchParams)
   const [data, setData] = useState<PollDetail | null>(null)
   const [bestComment, setBestComment] = useState<BestComment | null>(null)
   const [comments, setComments] = useState<Comment[]>([])
@@ -186,9 +194,8 @@ export default function PollDetailPage() {
     )
   if (!data) return null
 
-  // 관리자 여부 판단
-  if (!profile) return <Loading />
-  const isAdmin = profile.role === 'ADMIN'
+  // 비로그인 시 profile 이 없음 — 관리자 UI만 숨기고 나머지는 그대로 렌더
+  const isAdmin = profile?.role === 'ADMIN'
 
   const handleDelete = async () => {
     try {
@@ -244,6 +251,7 @@ export default function PollDetailPage() {
             totalParticipants={data.totalVoteCount}
             hasVoted={data.hasVoted}
             votedOptionLabel={data.votedOptionLabel ?? undefined}
+            postLoginReturnPath={postLoginReturnPath}
           />
         )}
         {bestComment && !open && (
@@ -260,6 +268,7 @@ export default function PollDetailPage() {
             voteId={data.voteId}
             onClose={() => setOpen(false)}
             profile={profile}
+            postLoginReturnPath={postLoginReturnPath}
           />
         )}
         {data && (

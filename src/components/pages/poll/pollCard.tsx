@@ -1,6 +1,17 @@
 'use client'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { voteOption, VoteResponse } from '@/api/votes'
+import { getAccessToken } from '@/utils/tokenUtils'
+import {
+  clearPendingVote,
+  entryHrefWithRedirect,
+  peekPendingVote,
+  releasePendingVoteClaim,
+  setPendingVote,
+  tryClaimPendingVoteSubmit,
+} from '@/utils/authRedirect'
+import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
 
 interface PollCardProps {
   voteId: number | string
@@ -15,6 +26,8 @@ interface PollCardProps {
   totalParticipants: number
   hasVoted?: boolean
   votedOptionLabel?: string | null
+  /** 비로그인 시 로그인 후 돌아올 현재 투표 페이지 경로 */
+  postLoginReturnPath: string
 }
 
 function PollCard({
@@ -26,7 +39,9 @@ function PollCard({
   totalParticipants,
   hasVoted = false,
   votedOptionLabel,
+  postLoginReturnPath,
 }: PollCardProps) {
+  const router = useRouter()
   // 초기 상태를 API 응답으로 설정
   const [voted, setVoted] = useState(hasVoted)
   const [selectedId, setSelectedId] = useState<number | null>(() => {
@@ -41,47 +56,91 @@ function PollCard({
   const [localTotalParticipants, setLocalTotalParticipants] =
     useState(totalParticipants)
   const [isVoting, setIsVoting] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [pendingOptionId, setPendingOptionId] = useState<number | null>(null)
 
-  const handleClickPercentage = async (id: number) => {
-    if (isVoting) return // 중복 클릭 방지
-
-    try {
-      setIsVoting(true)
-
-      if (selectedId === id) {
-        setSelectedId(null)
-        setVoted(false)
-      } else {
-        // 다른 옵션 클릭 - 재투표
-        setSelectedId(id)
-        setVoted(true)
-      }
-
-      const response: VoteResponse = await voteOption(voteId, id)
-
-      // API 응답으로 최종 상태 업데이트
+  const applyVoteResponse = useCallback(
+    (response: VoteResponse, prevSelectedId: number | null) => {
       setVoted(response.voted)
       setSelectedId(response.voted ? response.voteOptionId : null)
       setLocalTotalParticipants(response.totalVoteCount)
-
-      // 옵션별 투표 수 업데이트
       setLocalOptions((prevOptions) =>
         prevOptions.map((option) => {
           if (option.optionId === response.voteOptionId) {
-            // 새로 선택된 옵션: API 응답으로 업데이트
             return { ...option, vote_count: response.voteOptionCount }
-          } else if (selectedId === option.optionId && response.voted) {
-            // 이전에 선택되었던 옵션 (재투표 시): 투표 수 1 감소
+          }
+          if (prevSelectedId === option.optionId && response.voted) {
             return { ...option, vote_count: Math.max(0, option.vote_count - 1) }
           }
           return option
         }),
       )
+    },
+    [],
+  )
+
+  // 로그인 후 돌아왔을 때, 직전에 눌렀던 옵션으로 자동 투표
+  useEffect(() => {
+    const pending = peekPendingVote()
+    if (!pending || Number(pending.voteId) !== Number(voteId)) return
+    if (!getAccessToken()) return
+    if (hasVoted) {
+      clearPendingVote()
+      return
+    }
+    if (!localOptions.some((o) => o.optionId === pending.optionId)) return
+    if (!tryClaimPendingVoteSubmit(voteId)) return
+
+    let cancelled = false
+    void (async () => {
+      try {
+        setIsVoting(true)
+        const response = await voteOption(voteId, pending.optionId)
+        if (cancelled) return
+        clearPendingVote()
+        applyVoteResponse(response, null)
+      } catch {
+        if (!cancelled) {
+          alert('투표에 실패했습니다.')
+        }
+      } finally {
+        releasePendingVoteClaim()
+        if (!cancelled) setIsVoting(false)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [voteId, hasVoted, localOptions, applyVoteResponse])
+
+  const handleClickPercentage = async (id: number) => {
+    if (isVoting) return // 중복 클릭 방지
+
+    if (!getAccessToken()) {
+      setPendingOptionId(id)
+      setShowLoginModal(true)
+      return
+    }
+
+    const prevSelected = selectedId
+
+    try {
+      setIsVoting(true)
+
+      if (prevSelected === id) {
+        setSelectedId(null)
+        setVoted(false)
+      } else {
+        setSelectedId(id)
+        setVoted(true)
+      }
+
+      const response: VoteResponse = await voteOption(voteId, id)
+      applyVoteResponse(response, prevSelected)
     } catch (error) {
       console.error('투표 실패:', error)
       alert('투표에 실패했습니다.')
-
-      // 에러 발생 시 원래 상태로 되돌리기
       setSelectedId(null)
       setVoted(false)
     } finally {
@@ -110,66 +169,84 @@ function PollCard({
   }
 
   return (
-    <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
-      <div className="text-sm font-medium text-gray-700">{createdBy}</div>
-      <div className="text-base font-semibold">{title}</div>
-      {content && (
-        <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-          {content}
-        </div>
-      )}
-      <div className="space-y-2">
-        {localOptions.map((option, idx) => {
-          const isSelected = selectedId === option.optionId
-          const percentage =
-            localTotalParticipants > 0
-              ? Math.round((option.vote_count / localTotalParticipants) * 100)
-              : 0
-          const optionColor = getOptionColor(idx)
-          const optionLightColor = getOptionLightColor(idx)
+    <>
+      <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
+        <div className="text-sm font-medium text-gray-700">{createdBy}</div>
+        <div className="text-base font-semibold">{title}</div>
+        {content && (
+          <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+            {content}
+          </div>
+        )}
+        <div className="space-y-2">
+          {localOptions.map((option, idx) => {
+            const isSelected = selectedId === option.optionId
+            const percentage =
+              localTotalParticipants > 0
+                ? Math.round((option.vote_count / localTotalParticipants) * 100)
+                : 0
+            const optionColor = getOptionColor(idx)
+            const optionLightColor = getOptionLightColor(idx)
 
-          return (
-            <div
-              className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ${
-                isSelected ? `ring-2` : ''
-              } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
-              style={{
-                borderColor: isSelected ? optionColor : undefined,
-                backgroundColor: isSelected
-                  ? optionColor // 선택된 옵션은 진한 색상
-                  : voted
-                    ? optionLightColor // 투표된 옵션은 연한 색상
-                    : undefined,
-                color: isSelected ? '#fff' : undefined, // 선택된 옵션은 글씨 흰색
-              }}
-              onClick={() => handleClickPercentage(option.optionId)}
-              key={option.optionId ?? idx}
-            >
-              <div className="flex justify-between relative z-10 font-medium">
-                <span>
-                  <strong>{String.fromCharCode(65 + idx)}</strong>{' '}
-                  {option.content}
-                </span>
-                {voted && <span>{percentage}%</span>}
+            return (
+              <div
+                className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ${
+                  isSelected ? `ring-2` : ''
+                } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                style={{
+                  borderColor: isSelected ? optionColor : undefined,
+                  backgroundColor: isSelected
+                    ? optionColor // 선택된 옵션은 진한 색상
+                    : voted
+                      ? optionLightColor // 투표된 옵션은 연한 색상
+                      : undefined,
+                  color: isSelected ? '#fff' : undefined, // 선택된 옵션은 글씨 흰색
+                }}
+                onClick={() => handleClickPercentage(option.optionId)}
+                key={option.optionId ?? idx}
+              >
+                <div className="flex justify-between relative z-10 font-medium">
+                  <span>
+                    <strong>{String.fromCharCode(65 + idx)}</strong>{' '}
+                    {option.content}
+                  </span>
+                  {voted && <span>{percentage}%</span>}
+                </div>
+                {/* 선택된 옵션이 아니고, 투표가 완료된 경우에만 퍼센트 바 표시 */}
+                {voted && !isSelected && (
+                  <div
+                    className="absolute left-0 top-0 h-full rounded-md -z-10 transition-all duration-500 ease-in-out"
+                    style={{
+                      width: `${percentage}%`,
+                      backgroundColor: optionLightColor,
+                    }}
+                  />
+                )}
               </div>
-              {/* 선택된 옵션이 아니고, 투표가 완료된 경우에만 퍼센트 바 표시 */}
-              {voted && !isSelected && (
-                <div
-                  className="absolute left-0 top-0 h-full rounded-md -z-10 transition-all duration-500 ease-in-out"
-                  style={{
-                    width: `${percentage}%`,
-                    backgroundColor: optionLightColor,
-                  }}
-                />
-              )}
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
+        <div className="text-sm text-gray-400 text-right">
+          총 {localTotalParticipants}명 투표
+        </div>
       </div>
-      <div className="text-sm text-gray-400 text-right">
-        총 {localTotalParticipants}명 투표
-      </div>
-    </div>
+
+      <LoginRequiredModal
+        open={showLoginModal}
+        onClose={() => {
+          setShowLoginModal(false)
+          setPendingOptionId(null)
+        }}
+        onLogin={() => {
+          if (pendingOptionId !== null) {
+            setPendingVote(voteId, pendingOptionId)
+          }
+          setShowLoginModal(false)
+          setPendingOptionId(null)
+          router.replace(entryHrefWithRedirect(postLoginReturnPath))
+        }}
+      />
+    </>
   )
 }
 export default PollCard
