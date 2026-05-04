@@ -22,8 +22,11 @@ const memberSlice = createSlice({
     setMypageData(state, action: PayloadAction<MypageData>) {
       state.mypageData = action.payload
     },
+    resetMember() {
+      return initialState
+    },
   },
 })
 
-export const { setProfile, setMypageData } = memberSlice.actions
+export const { setProfile, setMypageData, resetMember } = memberSlice.actions
 export default memberSlice.reducer
