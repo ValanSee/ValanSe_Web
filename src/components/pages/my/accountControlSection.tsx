@@ -6,8 +6,9 @@ export default function AccountControlSection() {
   const dispatch = useAppDispatch()
   const router = useRouter()
 
-  const handleLogout = () => {
-    dispatch(logoutThunk())
+  const handleLogout = async () => {
+    await dispatch(logoutThunk())
+    router.push('/entry')
   }
 
   const handleSignout = () => {

@@ -96,35 +96,23 @@ export default function PollDetailPage() {
   }, [id, router])
 
   useEffect(() => {
-    if (id === 'hot') return
-
-    const fetchDetail = async () => {
-      try {
-        setLoading(true)
-        const res = await authApi.get<PollDetail>(`/votes/${id}`)
-        setData(res.data)
-      } catch {
-        setError('투표 정보를 불러오지 못했습니다.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    if (id) fetchDetail()
-  }, [id])
-
-  useEffect(() => {
-    if (id === 'hot') return
+    if (id === 'hot' || !id) return
 
     const fetchAll = async () => {
       try {
         setLoading(true)
-        if (!id) return
-        const best = await fetchBestComment(id)
+
+        const [detailRes, best, allComments] = await Promise.all([
+          authApi.get<PollDetail>(`/votes/${id}`),
+          fetchBestComment(id),
+          fetchComments(id),
+        ])
+
+        setData(detailRes.data)
         setBestComment(best)
-        const all = await fetchComments(id)
-        setComments(all.comments)
+        setComments(allComments.comments)
       } catch {
-        setError('댓글 정보를 불러오지 못했습니다.')
+        setError('투표 정보를 불러오지 못했습니다.')
       } finally {
         setLoading(false)
       }

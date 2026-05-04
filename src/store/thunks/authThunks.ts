@@ -5,6 +5,7 @@ import {
   loginFailure,
   logout,
 } from '../slices/authSlice'
+import { resetMember } from '../slices/memberSlice'
 import { AppDispatch } from '../store'
 import { getRefreshToken } from '@/utils/tokenUtils'
 import { saveTokens, clearTokens } from '@/utils/tokenUtils'
@@ -47,19 +48,23 @@ export const reissueThunk = () => async (dispatch: AppDispatch) => {
 export const logoutThunk = () => async (dispatch: AppDispatch) => {
   try {
     await logoutApi()
+  } catch {
+    // 로그아웃 API 실패해도 로컬 상태는 정리
+  } finally {
     dispatch(logout())
+    dispatch(resetMember())
     clearTokens()
-  } catch (err) {
-    throw err
   }
 }
 
 export const signoutThunk = () => async (dispatch: AppDispatch) => {
   try {
     await signoutApi()
+  } catch {
+    // 탈퇴 API 실패해도 로컬 상태는 정리
+  } finally {
     dispatch(logout())
+    dispatch(resetMember())
     clearTokens()
-  } catch (err) {
-    throw err
   }
 }
