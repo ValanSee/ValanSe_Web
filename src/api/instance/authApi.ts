@@ -10,6 +10,7 @@ import {
 import { reissue } from '@/api/auth'
 import { store } from '@/store/store'
 import { logout } from '@/store/slices/authSlice'
+import { entryHrefFromCurrentLocation } from '@/utils/authRedirect'
 
 // axios 인스턴스 생성: 인증 관련 요청을 전담
 export const authApi = axios.create({
@@ -47,7 +48,7 @@ authApi.interceptors.response.use(
       clearTokens()
       store.dispatch(logout())
       alert('로그인 정보가 만료되었습니다. 다시 로그인해주세요.')
-      window.location.href = '/entry'
+      window.location.replace(entryHrefFromCurrentLocation())
       return Promise.reject(error)
     }
 

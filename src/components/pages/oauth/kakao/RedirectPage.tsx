@@ -6,6 +6,11 @@ import { loginThunk } from '@/store/thunks/authThunks'
 import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import Loading from '@/components/_shared/loading'
+import {
+  entryHrefWithRedirect,
+  rememberPostAuthRedirect,
+  safeRedirectPath,
+} from '@/utils/authRedirect'
 
 export default function KakaoRedirect() {
   const router = useRouter()
@@ -14,7 +19,10 @@ export default function KakaoRedirect() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get('code')
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+    const oauthState = params.get('state')
+    const redirectAfterLogin = safeRedirectPath(oauthState)
 
     const handleLogin = async () => {
       if (code) {
@@ -35,31 +43,53 @@ export default function KakaoRedirect() {
             await new Promise((resolve) => setTimeout(resolve, remainingTime))
 
             if (profile) {
-              // 프로필이 있으면 main 페이지로 이동
-              router.push('/main')
+              router.replace(redirectAfterLogin ?? '/main')
             } else if (profile === null) {
-              // 프로필이 없으면 onboarding 페이지로 이동
-              router.push('/onboarding')
+              if (redirectAfterLogin) {
+                rememberPostAuthRedirect(redirectAfterLogin)
+              }
+              router.replace('/onboarding')
             } else {
-              // 프로필 조회 실패
-              router.push('/entry')
+              router.replace(
+                redirectAfterLogin
+                  ? entryHrefWithRedirect(redirectAfterLogin)
+                  : '/entry',
+              )
             }
           } catch {
             // fetchProfileThunk 실패
             setError('프로필 조회 실패')
-            setTimeout(() => router.push('/entry'), 2000)
+            setTimeout(
+              () =>
+                router.replace(
+                  redirectAfterLogin
+                    ? entryHrefWithRedirect(redirectAfterLogin)
+                    : '/entry',
+                ),
+              2000,
+            )
           }
         } catch {
           // loginThunk 실패
           setError('로그인 실패')
-          setTimeout(() => router.push('/entry'), 2000)
+          setTimeout(
+            () =>
+              router.replace(
+                redirectAfterLogin
+                  ? entryHrefWithRedirect(redirectAfterLogin)
+                  : '/entry',
+              ),
+            2000,
+          )
         } finally {
           setIsLoading(false)
         }
+      } else {
+        setIsLoading(false)
       }
     }
 
-    handleLogin()
+    void handleLogin()
   }, [dispatch, router])
 
   if (error) {
