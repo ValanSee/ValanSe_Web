@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import {
   useParams,
   usePathname,
@@ -50,6 +50,14 @@ interface PollDetail {
 }
 
 export default function PollDetailPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <PollDetailContent />
+    </Suspense>
+  )
+}
+
+function PollDetailContent() {
   const { id } = useParams<{ id: string }>()
   const pathname = usePathname()
   const searchParams = useSearchParams()
