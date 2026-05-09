@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
-import { UserCircle, Share2, MessageCircle } from 'lucide-react'
+import { UserCircle, ThumbsUp, MessageCircle } from 'lucide-react'
 import { Vote } from '@/types/balanse/vote'
 import Link from 'next/link'
 import { PinMenu } from './pinMenu'
@@ -48,7 +48,7 @@ export default function BalanceList({ data, onPinChange }: Props) {
               <span>{categoryMap[data.category] ?? data.category}</span>
               <div className="flex gap-4">
                 <div className="flex items-center gap-1">
-                  <Share2 className="w-4 h-4" />
+                  <ThumbsUp className="w-4 h-4" />
                   {data.total_vote_count}
                 </div>
                 <div className="flex items-center gap-1">
