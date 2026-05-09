@@ -84,7 +84,7 @@ export const metadata: Metadata = {
   },
   verification: {
     other: {
-      'naver-site-verification': '6a6621b3074bcca5ba6b7eb93930b6ec6759b9d3',
+      'naver-site-verification': '6bdeb6ea89ccbebd02069e32f8286a25518e16fe',
     },
   },
   category: 'entertainment',
