@@ -11,7 +11,7 @@ export default function UsecaseLayout({
 }: {
   children: React.ReactNode
 }) {
-  if (process.env.NODE_ENV === 'production') notFound()
+  if (process.env.NEXT_PUBLIC_NODE_ENV === 'production') notFound()
   return (
     <div
       style={{
