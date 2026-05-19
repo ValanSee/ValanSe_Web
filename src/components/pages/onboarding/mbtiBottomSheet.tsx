@@ -7,13 +7,15 @@ import { MBTI } from '@/types/member'
 interface MBTIBottomSheetProps {
   onClose: () => void
   setMbti: (mbti: MBTI) => void
+  mbti?: MBTI
 }
 
-const MBTIBottomSheet = ({ onClose, setMbti }: MBTIBottomSheetProps) => {
-  const [selectedEI, setSelectedEI] = useState('')
-  const [selectedNS, setSelectedNS] = useState('')
-  const [selectedTF, setSelectedTF] = useState('')
-  const [selectedPJ, setSelectedPJ] = useState('')
+const MBTIBottomSheet = ({ onClose, setMbti, mbti }: MBTIBottomSheetProps) => {
+  console.log('[MBTIBottomSheet] ', mbti?.[0])
+  const [selectedEI, setSelectedEI] = useState(mbti?.[0] ?? '')
+  const [selectedNS, setSelectedNS] = useState(mbti?.[1] ?? '')
+  const [selectedTF, setSelectedTF] = useState(mbti?.[2] ?? '')
+  const [selectedPJ, setSelectedPJ] = useState(mbti?.[3] ?? '')
 
   const handleSelectMBTI = () => {
     onClose()
