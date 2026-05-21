@@ -10,7 +10,11 @@ import AccountControlSection from './accountControlSection'
 import { useEffect, useState } from 'react'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
-import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
+import {
+  fetchMypageDataThunk,
+  fetchPointHistoryThunk,
+  fetchTitlesThunk,
+} from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { usePathname, useRouter } from 'next/navigation'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
@@ -21,6 +25,8 @@ function MyPage() {
   const pathname = usePathname()
   const dispatch = useAppDispatch()
   const mypageData = useAppSelector((state) => state.member.mypageData)
+  const pointHistory = useAppSelector((state) => state.member.pointHistory)
+  const titles = useAppSelector((state) => state.member.titles)
   const [minLoadingComplete, setMinLoadingComplete] = useState(false)
 
   useEffect(() => {
@@ -43,6 +49,20 @@ function MyPage() {
       })()
     }
   }, [dispatch, mypageData, pathname, router])
+
+  // 잔액 표시용 — 캐시 없을 때만 fetch (실패는 silent: 잔액 미표시로 fallback)
+  useEffect(() => {
+    if (!pointHistory) {
+      void dispatch(fetchPointHistoryThunk()).catch(() => {})
+    }
+  }, [dispatch, pointHistory])
+
+  // 장착 칭호 표시용 — 캐시 없을 때만 fetch (실패는 silent)
+  useEffect(() => {
+    if (!titles) {
+      void dispatch(fetchTitlesThunk()).catch(() => {})
+    }
+  }, [dispatch, titles])
 
   if (!mypageData || !minLoadingComplete) {
     return <Loading />
