@@ -10,6 +10,7 @@ const PRIVATE_PATHS = [
   '/oauth',
   '/onboarding',
   '/api',
+  '/usecase',
 ]
 
 export default function robots(): MetadataRoute.Robots {
