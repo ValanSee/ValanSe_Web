@@ -25,6 +25,7 @@
 | SCR-MY-COMMENT-001 | `/my/comment` | ✓ | [SCR-MY-COMMENT-001_my-comment.md](./SCR-MY-COMMENT-001_my-comment.md) |
 | SCR-MY-CREATED-001 | `/my/created` | ✓ | [SCR-MY-CREATED-001_my-created.md](./SCR-MY-CREATED-001_my-created.md) |
 | SCR-MY-EDIT-001 | `/my/edit` | ✓ | [SCR-MY-EDIT-001_my-edit.md](./SCR-MY-EDIT-001_my-edit.md) |
+| SCR-MY-POINT-001 | `/my/point` | ✓ | [SCR-MY-POINT-001_my-point.md](./SCR-MY-POINT-001_my-point.md) |
 | SCR-MY-VOTED-001 | `/my/voted` | ✓ | [SCR-MY-VOTED-001_my-voted.md](./SCR-MY-VOTED-001_my-voted.md) |
 | SCR-POLL-001 | `/poll/[id]` | ✓ | [SCR-POLL-001_poll-detail.md](./SCR-POLL-001_poll-detail.md) |
 | SCR-BALANSE-001 | `/balanse` | ✗ | [SCR-BALANSE-001_balanse.md](./SCR-BALANSE-001_balanse.md) |
