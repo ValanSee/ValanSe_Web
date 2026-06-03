@@ -78,7 +78,7 @@ const CreateForm = () => {
         <div className="w-full border border-[#C6C6C6] rounded-lg px-5 py-3">
           <textarea
             className="w-full h-[120px] resize-none text-[16px] text-[#1D1D1D] font-[400] outline-none"
-            placeholder="예시: 어제 점심시간에 동료들과 뭘 먹을지 정하랴다가 시간을 다 쓰고 결국 편의점 도시락을 먹게 되었는데,, 여러분이라면 어떤 선택을 하실건가요?"
+            placeholder="예시: 어제 점심시간에 동료들과 뭘 먹을지 정하려다가 시간을 다 쓰고 결국 편의점 도시락을 먹게 되었는데, 여러분이라면 어떤 선택을 하실건가요?"
             value={content}
             onChange={(e) => setContent(e.target.value.slice(0, 500))}
           />
