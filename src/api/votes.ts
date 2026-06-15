@@ -29,6 +29,7 @@ export interface BestVoteResponse {
   category: VoteCategory
   totalParticipants: number
   createdBy: string
+  creatorTitle: string | null
   createdAt: string
   options: VoteOption[]
   pinType: PinType

@@ -8,11 +8,21 @@ import Loading from '@/components/_shared/loading'
 
 export default function MyProfileSection() {
   const router = useRouter()
-  const { mypageData } = useAppSelector((state) => state.member)
+  const { mypageData, pointHistory, titles } = useAppSelector(
+    (state) => state.member,
+  )
 
   if (!mypageData) {
     return <Loading />
   }
+
+  // 잔액: 가장 최신 항목의 remainingPoint. fetch 전이거나 빈 배열이면 null로 두고 "-" 표시.
+  const point = pointHistory?.[0]?.remainingPoint ?? null
+
+  // 장착 칭호: defaultTitles + ownedTitles에서 equipped 찾기. fetch 전이거나 없으면 null.
+  const equippedTitle =
+    titles &&
+    [...titles.defaultTitles, ...titles.ownedTitles].find((t) => t.equipped)
 
   const parseGender = (gender: string) => {
     switch (gender) {
@@ -97,6 +107,34 @@ export default function MyProfileSection() {
             수정
           </button>
         </div>
+
+        {/* 내 포인트 */}
+        <button
+          type="button"
+          onClick={() => router.push('/my/point')}
+          className="flex items-center w-full pt-5 h-17 text-left"
+        >
+          <div className="text-md text-gray-700">
+            <div className="font-bold">내 포인트</div>
+            <div className="font-medium text-[#4D7298]">
+              {point !== null ? `${point.toLocaleString()}P` : '-P'}
+            </div>
+          </div>
+        </button>
+
+        {/* 내 칭호 */}
+        <button
+          type="button"
+          onClick={() => router.push('/my/titles')}
+          className="flex items-center w-full pt-5 h-17 text-left"
+        >
+          <div className="text-md text-gray-700">
+            <div className="font-bold">내 칭호</div>
+            <div className="font-medium text-[#1D1D1D]">
+              {equippedTitle ? equippedTitle.title : '미장착'}
+            </div>
+          </div>
+        </button>
       </div>
     </section>
   )
