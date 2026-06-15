@@ -8,6 +8,7 @@ export type TrendingVoteResponse = {
   category: string
   totalParticipants: number
   createdBy: string
+  creatorTitle: string | null
   createdAt: string
   pinType: PinType
   options: {

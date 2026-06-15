@@ -10,6 +10,7 @@ export interface Vote {
   category: string
   member_id: number
   nickname: string
+  member_title: string | null
   created_at: string
   total_vote_count: number
   total_comment_count: number
