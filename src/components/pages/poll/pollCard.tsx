@@ -16,6 +16,7 @@ import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
 interface PollCardProps {
   voteId: number | string
   createdBy: string
+  creatorTitle?: string | null
   title: string
   content?: string | null
   options: {
@@ -33,6 +34,7 @@ interface PollCardProps {
 function PollCard({
   voteId,
   createdBy,
+  creatorTitle,
   title,
   content,
   options = [],
@@ -171,7 +173,14 @@ function PollCard({
   return (
     <>
       <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
-        <div className="text-sm font-medium text-gray-700">{createdBy}</div>
+        <div className="flex items-center gap-2">
+          {creatorTitle && (
+            <span className="inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-[11px] font-medium text-white">
+              {creatorTitle}
+            </span>
+          )}
+          <span className="text-sm font-medium text-gray-700">{createdBy}</span>
+        </div>
         <div className="text-base font-semibold">{title}</div>
         {content && (
           <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">

@@ -24,6 +24,11 @@ export default function BalanceList({ data, onPinChange }: Props) {
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-0">
             <div className="flex items-center gap-2">
               <UserCircle className="text-gray-400 w-5 h-5" />
+              {data.member_title && (
+                <span className="inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-[11px] font-medium text-white">
+                  {data.member_title}
+                </span>
+              )}
               <span className="text-sm text-gray-600">
                 {data.nickname} • {data.created_at}
               </span>

@@ -42,6 +42,7 @@ interface PollDetail {
   content: string | null
   category: string
   creatorNickname: string
+  creatorTitle: string | null
   createdAt: string
   totalVoteCount: number
   options: PollOption[]
@@ -237,6 +238,7 @@ function PollDetailContent() {
           <PollCard
             voteId={data.voteId}
             createdBy={data.creatorNickname}
+            creatorTitle={data.creatorTitle}
             title={data.title}
             content={data.content}
             options={data.options.map((opt) => ({

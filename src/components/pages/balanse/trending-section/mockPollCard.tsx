@@ -37,8 +37,15 @@ function MockPollCard({ data }: Props) {
         className="block mx-auto p-4 mt-6 space-y-4 rounded-xl bg-[#F0F0F0] cursor-pointer"
         onClick={handleClick}
       >
-        <div className="text-sm font-medium text-gray-700">
-          {data.createdBy}
+        <div className="flex items-center gap-2">
+          {data.creatorTitle && (
+            <span className="inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-[11px] font-medium text-white">
+              {data.creatorTitle}
+            </span>
+          )}
+          <span className="text-sm font-medium text-gray-700">
+            {data.createdBy}
+          </span>
         </div>
         <div className="flex justify-between items-center">
           <div className="text-base font-semibold">{data.title}</div>
