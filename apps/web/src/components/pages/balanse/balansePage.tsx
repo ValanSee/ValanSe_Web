@@ -11,12 +11,8 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import React from 'react'
 import { SectionHeader } from './trending-section/sectionHeader'
-import { PinButton } from './trending-section/pinButton'
 import { fetchTrendingVotes } from '@/api/pages/valanse/trendingVoteApi'
 import { TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
-import ConfirmModal from '@/components/ui/modal/confirmModal'
-import { pinVote } from '@/api/votes'
-import { useAppSelector } from '@/hooks/utils/useAppSelector'
 
 const sortOptions = [
   { label: '최신순', value: 'latest' },
@@ -37,11 +33,6 @@ function BalancePageContent() {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false)
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
-
-  // 관리자 여부 판단
-  const profile = useAppSelector((state) => state.member.profile)
-  const isAdmin = profile?.role === 'ADMIN'
 
   // URL에서 카테고리와 정렬 옵션 가져오기
   const category = searchParams.get('category') || 'ALL'
@@ -197,41 +188,15 @@ function BalancePageContent() {
     return <Loading />
   }
 
-  // 고정 해제
-  const handleUnpin = async () => {
-    await pinVote(trendingVote.voteId, 'NONE')
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-[#ffffff]">
       <Header />
 
       {/* 인기 급상승 토픽 섹션 */}
       <div className="px-4">
-        <div className="flex items-center justify-between">
-          <SectionHeader />
-          {isAdmin && (
-            <PinButton
-              pinType={trendingVote.pinType}
-              onClick={() => setShowConfirmModal(true)}
-            />
-          )}
-        </div>
+        <SectionHeader />
         <MockPollCard data={trendingVote} />
       </div>
-
-      {/* 고정 해제 확인 모달 */}
-      <ConfirmModal
-        title="고정 해제"
-        description="정말로 고정을 해제하시겠습니까?"
-        open={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={() => {
-          handleUnpin()
-          setShowConfirmModal(false)
-          setIsRefreshing(true)
-        }}
-      />
 
       {/* 투표 목록 섹션 */}
       <div className="flex items-center gap-2 px-4 mt-2">
@@ -263,10 +228,7 @@ function BalancePageContent() {
         {!error &&
           votes.map((vote, idx) => (
             <React.Fragment key={vote.id}>
-              <BalanceList
-                data={vote}
-                onPinChange={() => setIsRefreshing(true)}
-              />
+              <BalanceList data={vote} />
               {idx !== votes.length - 1 && (
                 <div className="h-px bg-[#E5E5E5] w-full my-2" />
               )}

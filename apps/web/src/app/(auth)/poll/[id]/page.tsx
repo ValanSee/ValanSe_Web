@@ -17,16 +17,13 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
-import { deleteVote, fetchBestVote, pinVote } from '@/api/votes'
+import { deleteVote, fetchBestVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
 import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
-import { SectionHeader } from '@/components/pages/poll/sectionHeader'
-import { PinType } from '@/types/balanse/vote'
-import ConfirmModal from '@/components/ui/modal/confirmModal'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
 
 interface PollOption {
@@ -73,14 +70,12 @@ function PollDetailContent() {
   const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   // 관리자 여부 파악을 위한 profile 조회
   const profile = useAppSelector((state) => state.member.profile)
 
   // URL 파라미터에서 출처 확인
   const source = searchParams.get('source')
-  const pin = searchParams.get('pin') as PinType
 
   useEffect(() => {
     if (id === 'hot') {
@@ -92,9 +87,7 @@ function PollDetailContent() {
           // fetchBestVote 호출 결과로 불러올 데이터가 없을 경우 404 에러 발생
           // -> 404 발생 여부를 반환값이 null 인지 여부로 판정해서 임시로 렌더링 취소하도록 조치함
           // 이후 세부 기획이 변경되면 이 부분에서 끌어올린 데이터를 기반으로 렌더링하는 로직을 구현하면 됨
-          router.replace(
-            `/poll/${response.voteId}?source=hot&pin=${response.pinType}`,
-          )
+          router.replace(`/poll/${response.voteId}?source=hot`)
         } catch (error) {
           console.error('Failed to fetch best vote:', error)
           router.replace('/main')
@@ -155,21 +148,6 @@ function PollDetailContent() {
     }
   }
 
-  const handlePinButtonClick = () => {
-    setShowConfirmModal(true)
-  }
-
-  // 고정 해제
-  const handleUnpin = async () => {
-    try {
-      await pinVote(Number(id), 'NONE')
-      router.replace('/poll/hot')
-    } catch (error) {
-      console.error('Failed to unpin vote:', error)
-      alert('고정 해제에 실패했습니다.')
-    }
-  }
-
   if (loading) return <Loading />
   if (error)
     return (
@@ -214,26 +192,6 @@ function PollDetailContent() {
         onBackClick={handleBackClick}
       />
       <div className="max-w-xl mx-auto p-4 pb-24">
-        {/* 관리자 계정이면 섹션 헤더에 고정 버튼 표시 */}
-        {isAdmin && (
-          <SectionHeader
-            pinType={pin as PinType}
-            handlePinButtonClick={handlePinButtonClick}
-          />
-        )}
-
-        {/* 고정 해제 확인 모달 */}
-        <ConfirmModal
-          title="고정 해제"
-          description="정말로 고정을 해제하시겠습니까?"
-          open={showConfirmModal}
-          onClose={() => setShowConfirmModal(false)}
-          onConfirm={() => {
-            handleUnpin()
-            setShowConfirmModal(false)
-          }}
-        />
-
         {data && (
           <PollCard
             voteId={data.voteId}

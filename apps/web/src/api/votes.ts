@@ -117,13 +117,3 @@ export const deleteVote = async (voteId: number) => {
     throw error
   }
 }
-
-// 투표 고정 API
-export const pinVote = async (voteId: number, pinType: PinType) => {
-  try {
-    const response = await authApi.patch(`/votes/${voteId}/pin`, { pinType })
-    return response.data
-  } catch (error) {
-    throw error
-  }
-}

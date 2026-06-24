@@ -6,7 +6,11 @@ import { useState } from 'react'
 import { Menu, X, LogOut } from 'lucide-react'
 import { clearToken } from '@/lib/auth'
 
-const NAV = [{ href: '/admin', label: '대시보드' }]
+const NAV = [
+  { href: '/admin', label: '대시보드' },
+  { href: '/votes', label: '투표 관리' },
+  { href: '/titles', label: '칭호 관리' },
+]
 
 export default function AuthedLayout({
   children,

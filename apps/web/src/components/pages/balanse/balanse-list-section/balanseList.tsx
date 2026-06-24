@@ -2,7 +2,6 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { UserCircle, ThumbsUp, MessageCircle } from 'lucide-react'
 import { Vote } from '@/types/balanse/vote'
 import Link from 'next/link'
-import { PinMenu } from './pinMenu'
 
 const categoryMap: Record<string, string> = {
   FOOD: '음식',
@@ -13,15 +12,14 @@ const categoryMap: Record<string, string> = {
 
 type Props = {
   data: Vote
-  onPinChange?: () => void
 }
 
-export default function BalanceList({ data, onPinChange }: Props) {
+export default function BalanceList({ data }: Props) {
   return (
     <Link href={`/poll/${data.id}?source=balance`} passHref legacyBehavior>
       <a className="block">
         <Card className="rounded-xl cursor-pointer">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 pb-0">
+          <CardHeader className="flex flex-row items-center gap-2 pb-0">
             <div className="flex items-center gap-2">
               <UserCircle className="text-gray-400 w-5 h-5" />
               {data.member_title && (
@@ -33,7 +31,6 @@ export default function BalanceList({ data, onPinChange }: Props) {
                 {data.nickname} • {data.created_at}
               </span>
             </div>
-            <PinMenu voteId={data.id} onPinChange={onPinChange} />
           </CardHeader>
           <CardContent className="pt-2 pb-4">
             <p className="font-semibold mb-2">{data.title}</p>
