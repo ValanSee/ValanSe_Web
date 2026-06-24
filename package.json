@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "pnpm -r --parallel --stream dev",
     "dev:web": "pnpm --filter valanse-web dev",
     "dev:cms": "pnpm --filter valanse-cms dev",
     "build": "pnpm -r build",
