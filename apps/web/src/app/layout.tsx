@@ -3,6 +3,7 @@ import './globals.css'
 import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
 import { NativeBackHandler } from '@/components/_shared/nativeBackHandler'
+import { PageViewTracker } from '@/components/_shared/pageViewTracker'
 
 const SITE_URL = 'https://valanse.kr'
 const SITE_NAME = 'ValanSe'
@@ -108,6 +109,7 @@ export default function RootLayout({
         <Providers>
           <ModalRootInitializer />
           <NativeBackHandler />
+          <PageViewTracker />
           {children}
         </Providers>
       </body>
