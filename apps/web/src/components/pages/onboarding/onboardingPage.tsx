@@ -36,6 +36,7 @@ const OnboardingPage = () => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     watch,
     formState: { errors, isValid, isSubmitting },
   } = useForm<OnboardingFormValues>({
@@ -59,7 +60,7 @@ const OnboardingPage = () => {
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
 
   const handleCheckNickname = async () => {
-    const value = nickname.trim()
+    const value = getValues('nickname').trim()
     if (!value) {
       setNicknameMessage({ type: 'error', text: '닉네임을 입력해주세요' })
       return
@@ -68,6 +69,11 @@ const OnboardingPage = () => {
     setCheckingNickname(true)
     try {
       const { isAvailable, isClean } = await checkNickname(value)
+
+      // 응답을 기다리는 사이 입력이 바뀌었으면 stale 응답이므로 무시한다.
+      if (getValues('nickname').trim() !== value) {
+        return
+      }
 
       if (!isAvailable) {
         setValue('nicknameVerified', false, { shouldValidate: true })
@@ -85,6 +91,10 @@ const OnboardingPage = () => {
       setNicknameMessage({ type: 'success', text: '사용 가능한 닉네임이에요' })
     } catch (error) {
       console.error('Failed to check nickname:', error)
+      // 입력이 바뀐 뒤 도착한 stale 에러는 무시한다.
+      if (getValues('nickname').trim() !== value) {
+        return
+      }
       setValue('nicknameVerified', false, { shouldValidate: true })
       setNicknameMessage({
         type: 'error',
