@@ -38,8 +38,9 @@ const MBTI_VALUES = [
 export const onboardingSchema = z.object({
   nickname: z.string().trim().min(1, '닉네임을 입력해주세요'),
   // 비동기 중복 확인이 통과해야만 true. 닉네임이 바뀌면 false로 리셋한다.
-  nicknameVerified: z.literal(true, {
-    errorMap: () => ({ message: '닉네임 중복 확인을 해주세요' }),
+  // (RHF defaultValues가 false를 받을 수 있도록 literal 대신 boolean+refine 사용)
+  nicknameVerified: z.boolean().refine((v) => v === true, {
+    message: '닉네임 중복 확인을 해주세요',
   }),
   gender: z.enum(GENDER_VALUES, {
     errorMap: () => ({ message: '성별을 선택해주세요' }),
