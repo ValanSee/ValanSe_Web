@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import MBTIBottomSheet from './mbtiBottomSheet'
-import { createMemberProfile } from '@/api/member/member'
+import { checkNickname, createMemberProfile } from '@/api/member/member'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   consumePostAuthRedirect,
@@ -18,6 +18,12 @@ const OnboardingPage = () => {
   const router = useRouter()
   const pathname = usePathname()
   const [nickname, setNickname] = useState('')
+  const [nicknameChecked, setNicknameChecked] = useState(false)
+  const [nicknameMessage, setNicknameMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
+  const [checkingNickname, setCheckingNickname] = useState(false)
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
@@ -56,7 +62,53 @@ const OnboardingPage = () => {
     }
   }
 
+  const handleNicknameChange = (value: string) => {
+    setNickname(value)
+    setNicknameChecked(false)
+    setNicknameMessage(null)
+  }
+
+  const handleCheckNickname = async () => {
+    if (!nickname.trim()) {
+      setNicknameMessage({ type: 'error', text: '닉네임을 입력해주세요' })
+      return
+    }
+
+    setCheckingNickname(true)
+    try {
+      const { isAvailable, isClean } = await checkNickname(nickname)
+
+      if (!isAvailable) {
+        setNicknameChecked(false)
+        setNicknameMessage({ type: 'error', text: '이미 사용 중인 닉네임이에요' })
+        return
+      }
+
+      if (!isClean) {
+        setNicknameChecked(false)
+        setNicknameMessage({ type: 'error', text: '사용할 수 없는 닉네임이에요' })
+        return
+      }
+
+      setNicknameChecked(true)
+      setNicknameMessage({ type: 'success', text: '사용 가능한 닉네임이에요' })
+    } catch (error) {
+      console.error('Failed to check nickname:', error)
+      setNicknameChecked(false)
+      setNicknameMessage({
+        type: 'error',
+        text: '닉네임 확인에 실패했어요. 다시 시도해주세요',
+      })
+    } finally {
+      setCheckingNickname(false)
+    }
+  }
+
   const handleSubmit = async () => {
+    if (!nicknameChecked) {
+      return
+    }
+
     const refinedForm = refineForm()
     try {
       await createMemberProfile(refinedForm)
@@ -74,13 +126,33 @@ const OnboardingPage = () => {
 
       <div className="mb-6">
         <label className="block mb-4 text-sm font-bold">닉네임</label>
-        <input
-          type="text"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          placeholder="닉네임을 입력해주세요"
-          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-        />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={nickname}
+            onChange={(e) => handleNicknameChange(e.target.value)}
+            placeholder="닉네임을 입력해주세요"
+            className="flex-1 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          />
+          <button
+            onClick={handleCheckNickname}
+            disabled={checkingNickname || !nickname.trim()}
+            className="shrink-0 px-4 py-2 rounded-md border border-gray-300 text-sm font-bold disabled:opacity-40"
+          >
+            중복 확인
+          </button>
+        </div>
+        {nicknameMessage && (
+          <p
+            className={`mt-2 text-sm ${
+              nicknameMessage.type === 'success'
+                ? 'text-blue-500'
+                : 'text-red-500'
+            }`}
+          >
+            {nicknameMessage.text}
+          </p>
+        )}
       </div>
 
       <div className="mb-6">
@@ -133,7 +205,8 @@ const OnboardingPage = () => {
 
       <button
         onClick={handleSubmit}
-        className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-8"
+        disabled={!nicknameChecked}
+        className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-8 disabled:opacity-40"
       >
         완료
       </button>
