@@ -27,11 +27,11 @@ const OnboardingPage = () => {
   const [gender, setGender] = useState<string | null>(null)
   const [age, setAge] = useState<string | null>(null)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
-  const [mbti, setMbti] = useState<MBTI>('ISTJ')
+  const [mbti, setMbti] = useState<MBTI | null>(null)
 
   const refineForm = (): Profile => {
-    const mbtiIe = mbti[0] as mbtiIe
-    const mbtiTf = mbti[2] as mbtiTf
+    const mbtiIe = mbti![0] as mbtiIe
+    const mbtiTf = mbti![2] as mbtiTf
 
     let ageData: Age = 'TEN'
     if (age === '10대') {
@@ -57,7 +57,7 @@ const OnboardingPage = () => {
       age: ageData,
       mbtiIe: mbtiIe,
       mbtiTf: mbtiTf,
-      mbti: mbti,
+      mbti: mbti!,
       role: 'USER',
     }
   }
@@ -121,7 +121,7 @@ const OnboardingPage = () => {
   }
 
   return (
-    <div className="px-6 py-10">
+    <div className="flex flex-col min-h-dvh px-6 py-10 bg-white">
       <h1 className="text-xl font-bold mb-9 mt-10">이것만 작성해주세요!</h1>
 
       <div className="mb-6">
@@ -132,14 +132,15 @@ const OnboardingPage = () => {
             value={nickname}
             onChange={(e) => handleNicknameChange(e.target.value)}
             placeholder="닉네임을 입력해주세요"
-            className="flex-1 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+            className="flex-1 border border-gray-300 rounded-md px-4 py-2 placeholder:text-[#8E8E8E] focus:outline-none focus:ring-2 focus:ring-black"
           />
           <button
+            type="button"
             onClick={handleCheckNickname}
-            disabled={checkingNickname || !nickname.trim()}
-            className="shrink-0 px-4 py-2 rounded-md border border-gray-300 text-sm font-bold disabled:opacity-40"
+            disabled={checkingNickname || !nickname.trim() || nicknameChecked}
+            className="shrink-0 px-4 py-2 rounded-md bg-[#839DB7] text-white text-sm font-bold disabled:opacity-40"
           >
-            중복 확인
+            {checkingNickname ? '확인 중' : nicknameChecked ? '확인 완료' : '중복 확인'}
           </button>
         </div>
         {nicknameMessage && (
@@ -161,8 +162,9 @@ const OnboardingPage = () => {
           {genderOptions.map((option) => (
             <button
               key={option}
+              type="button"
               onClick={() => setGender(option)}
-              className={`flex-1 border border-gray-300 py-2 rounded-md 
+              className={`flex-1 border border-gray-300 py-2 rounded-md
                ${gender === option ? 'text-blue-500 border-blue-500' : ''}`}
             >
               {option}
@@ -177,6 +179,7 @@ const OnboardingPage = () => {
           {ageOptions.map((option) => (
             <button
               key={option}
+              type="button"
               onClick={() => setAge(option)}
               className={`flex-1 border border-gray-300 py-2 rounded-md
                  ${age === option ? 'text-blue-500 border-blue-500' : ''}`}
@@ -189,12 +192,15 @@ const OnboardingPage = () => {
 
       <div className="mb-6">
         <label className="block mb-4 text-sm font-bold">MBTI</label>
-        <div
+        <button
+          type="button"
           onClick={() => setMbtiBottomSheetOpen(true)}
-          className="text-sm border border-gray-300 px-4 py-3 rounded-md"
+          className={`w-full text-left text-sm border border-gray-300 px-4 py-3 rounded-md ${
+            mbti ? '' : 'text-[#8E8E8E]'
+          }`}
         >
           {mbti ? mbti : 'MBTI를 알려주세요'}
-        </div>
+        </button>
       </div>
       {mbtiBottomSheetOpen && (
         <MBTIBottomSheet
@@ -205,8 +211,8 @@ const OnboardingPage = () => {
 
       <button
         onClick={handleSubmit}
-        disabled={!nicknameChecked}
-        className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-8 disabled:opacity-40"
+        disabled={!nicknameChecked || !mbti}
+        className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-auto disabled:opacity-40"
       >
         완료
       </button>
