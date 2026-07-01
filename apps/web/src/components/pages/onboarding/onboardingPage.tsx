@@ -15,6 +15,7 @@ import {
   entryHrefWithRedirect,
 } from '@/utils/authRedirect'
 import { Age, Gender, mbtiIe, mbtiTf, Profile } from '@/types/member'
+import RequiredMark from '@/components/_shared/requiredMark'
 
 const genderOptions: { value: Gender; label: string }[] = [
   { value: 'FEMALE', label: '여성' },
@@ -134,7 +135,9 @@ const OnboardingPage = () => {
       <h1 className="text-xl font-bold mb-9 mt-10">이것만 작성해주세요!</h1>
 
       <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">닉네임</label>
+        <label className="block mb-4 text-sm font-bold">
+          닉네임 <RequiredMark />
+        </label>
         <div className="flex gap-2">
           <input
             type="text"
@@ -174,7 +177,9 @@ const OnboardingPage = () => {
       </div>
 
       <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">성별</label>
+        <label className="block mb-4 text-sm font-bold">
+          성별 <RequiredMark />
+        </label>
         <div className="flex gap-4">
           {genderOptions.map((option) => (
             <label key={option.value} className="flex-1">
@@ -196,7 +201,9 @@ const OnboardingPage = () => {
       </div>
 
       <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">나이</label>
+        <label className="block mb-4 text-sm font-bold">
+          나이 <RequiredMark />
+        </label>
         <div className="flex gap-2">
           {ageOptions.map((option) => (
             <label key={option.value} className="flex-1">
@@ -218,7 +225,9 @@ const OnboardingPage = () => {
       </div>
 
       <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">MBTI</label>
+        <label className="block mb-4 text-sm font-bold">
+          MBTI <RequiredMark />
+        </label>
         <button
           type="button"
           onClick={() => setMbtiBottomSheetOpen(true)}
