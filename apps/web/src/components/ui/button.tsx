@@ -11,10 +11,10 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  default: 'bg-blue-600 hover:bg-blue-700 text-white',
-  secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-700',
-  destructive: 'bg-red-600 hover:bg-red-700 text-white',
-  outline: 'border border-gray-300 bg-white hover:bg-gray-100 text-gray-700',
+  default: 'bg-primary text-primary-foreground hover:bg-brand-violet-400',
+  secondary: 'bg-secondary text-secondary-foreground hover:bg-brand-gray-75',
+  destructive: 'bg-destructive text-destructive-foreground hover:bg-brand-red-200',
+  outline: 'border border-border bg-transparent text-foreground hover:bg-secondary',
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
