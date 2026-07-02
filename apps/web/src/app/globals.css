@@ -4,104 +4,78 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* ==========================================================
+     * Brand Palette (raw tokens, HSL channels for hsl(var(--*)))
+     * ========================================================== */
 
-    --foreground: 0 0% 3.9%;
+    /* Yellow */
+    --color-y50: 50 100% 95.3%; /* #fffbe7 */
+    --color-y75: 50 100% 80.4%; /* #ffee9b */
+    --color-y100: 50 100% 72.2%; /* #ffe771 */
+    --color-y200: 50 100% 60.2%; /* #ffdd34 */
+    --color-y300: 50 100% 52%; /* #ffd60a */
+    --color-y400: 50 92.5% 36.5%; /* #b39607 */
+    --color-y500: 50 92.6% 31.8%; /* #9c8306 */
+
+    /* Violet */
+    --color-v50: 263 76.5% 96.7%; /* #f5f0fd */
+    --color-v75: 265 71.8% 86.1%; /* #d7c2f5 */
+    --color-v100: 265 72% 80.4%; /* #c7a9f1 */
+    --color-v200: 265 70.8% 71.8%; /* #ae84ea */
+    --color-v300: 265 71.1% 66.1%; /* #9e6be6 */
+    --color-v400: 265 36.4% 46.3%; /* #6f4ba1 */
+    --color-v500: 265 36.6% 40.2%; /* #60418c */
+
+    /* Gray */
+    --color-g50: 0 0% 96.5%; /* #F6F6F6 */
+    --color-g75: 0 0% 74.9%; /* #BFBFBF */
+    --color-g100: 0 0% 51.8%; /* #848484 */
+    --color-g200: 0 0% 31%; /* #4f4f4f */
+    --color-g300: 0 0% 16.9%; /* #2b2b2b */
+    --color-g400: 0 0% 11.8%; /* #1e1e1e */
+    --color-g500: 0 0% 10.2%; /* #1a1a1a */
+
+    /* Black */
+    --color-black: 0 0% 3.9%; /* #0A0A0A */
+
+    /* Red */
+    --color-r100: 340 100% 85.5%; /* #FFB5CE */
+    --color-r200: 340 100% 67.8%; /* #FF5B91 */
+    --color-r300: 340 94.4% 51.4%; /* #F80E5C */
+
+    /* ==========================================================
+     * shadcn Semantic Mapping → Brand
+     * ========================================================== */
+
+    --background: 0 0% 96.5%; /* G50 */
+    --foreground: 0 0% 10.2%; /* G500 */
 
     --card: 0 0% 100%;
-
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 0 0% 10.2%; /* G500 */
 
     --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10.2%; /* G500 */
 
-    --popover-foreground: 0 0% 3.9%;
+    --primary: 265 71.1% 66.1%; /* V300 */
+    --primary-foreground: 0 0% 100%;
 
-    --primary: #d1d5db;
+    --secondary: 0 0% 96.5%; /* G50 */
+    --secondary-foreground: 0 0% 10.2%; /* G500 */
 
-    --primary-foreground: 0 0% 98%;
+    --muted: 0 0% 96.5%; /* G50 */
+    --muted-foreground: 0 0% 51.8%; /* G100 */
 
-    --secondary: 0 0% 96.1%;
+    --accent: 50 100% 52%; /* Y300 */
+    --accent-foreground: 0 0% 10.2%; /* G500 */
 
-    --secondary-foreground: 0 0% 9%;
+    --destructive: 340 94.4% 51.4%; /* R300 */
+    --destructive-foreground: 0 0% 100%;
 
-    --muted: 0 0% 96.1%;
-
-    --muted-foreground: 0 0% 45.1%;
-
-    --accent: 0 0% 96.1%;
-
-    --accent-foreground: 0 0% 9%;
-
-    --destructive: 0 84.2% 60.2%;
-
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 89.8%;
-
-    --input: 0 0% 89.8%;
-
-    --ring: 0 0% 3.9%;
-
-    --chart-1: 12 76% 61%;
-
-    --chart-2: 173 58% 39%;
-
-    --chart-3: 197 37% 24%;
-
-    --chart-4: 43 74% 66%;
-
-    --chart-5: 27 87% 67%;
+    --border: 0 0% 74.9%; /* G75 */
+    --input: 0 0% 74.9%; /* G75 */
+    --ring: 265 71.1% 66.1%; /* V300 */
 
     --radius: 0.5rem;
-  }
-  .dark {
-    --background: 0 0% 3.9%;
-
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 3.9%;
-
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 3.9%;
-
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 0 0% 98%;
-
-    --primary-foreground: 0 0% 9%;
-
-    --secondary: 0 0% 14.9%;
-
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 14.9%;
-
-    --muted-foreground: 0 0% 63.9%;
-
-    --accent: 0 0% 14.9%;
-
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 14.9%;
-
-    --input: 0 0% 14.9%;
-
-    --ring: 0 0% 83.1%;
-
-    --chart-1: 220 70% 50%;
-
-    --chart-2: 160 60% 45%;
-
-    --chart-3: 30 80% 55%;
-
-    --chart-4: 280 65% 60%;
-
-    --chart-5: 340 75% 55%;
   }
 }
 
@@ -111,5 +85,144 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* ==========================================================
+   * Typography Scale (Pretendard)
+   * usage: <h1 className="typo-heading-01">
+   * ========================================================== */
+
+  .typo-heading-01 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+  }
+  .typo-heading-02 {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+  }
+  .typo-heading-03 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+  }
+  .typo-heading-04 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.2px;
+  }
+  .typo-heading-05 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.2px;
+  }
+  .typo-heading-06 {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.2px;
+  }
+
+  .typo-title-01 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+  .typo-title-02 {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+  .typo-title-03 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+  .typo-title-04 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+
+  .typo-body-a-01 {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+  }
+  .typo-body-a-02 {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.2px;
+  }
+
+  .typo-body-b-01 {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+  }
+  .typo-body-b-02 {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
+  }
+  .typo-body-b-03 {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.4px;
+  }
+
+  .typo-body-c-01 {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.4px;
+  }
+  .typo-body-c-02 {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
+  }
+  .typo-body-c-03 {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
+  }
+
+  .typo-label-01 {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+  }
+  .typo-label-02 {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
+  }
+  .typo-label-03 {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.4px;
   }
 }

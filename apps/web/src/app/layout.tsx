@@ -1,9 +1,22 @@
 import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
 import './globals.css'
 import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
 import { NativeBackHandler } from '@/components/_shared/nativeBackHandler'
 import { PageViewTracker } from '@/components/_shared/pageViewTracker'
+
+const pretendard = localFont({
+  src: [
+    { path: '../../public/fonts/Pretendard-Regular.woff2', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/Pretendard-Medium.woff2', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/Pretendard-SemiBold.woff2', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/Pretendard-Bold.woff2', weight: '700', style: 'normal' },
+  ],
+  variable: '--font-pretendard',
+  display: 'swap',
+  preload: true,
+})
 
 const SITE_URL = 'https://valanse.kr'
 const SITE_NAME = 'ValanSe'
@@ -92,7 +105,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#4D7298',
+  themeColor: '#9E6BE6',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -104,8 +117,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko">
-      <body className="bg-background" suppressHydrationWarning={true}>
+    <html lang="ko" className={pretendard.variable}>
+      <body className="bg-background font-pretendard" suppressHydrationWarning={true}>
         <Providers>
           <ModalRootInitializer />
           <NativeBackHandler />
