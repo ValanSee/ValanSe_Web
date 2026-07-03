@@ -13,21 +13,22 @@ import { reissue } from '@/api/auth'
 import { logout as logoutApi, signout as signoutApi } from '@/api/auth'
 import { login } from '@/api/auth'
 
-export const loginThunk = (code: string) => async (dispatch: AppDispatch) => {
-  try {
-    dispatch(loginStart())
-    const res = await login(code)
-    saveTokens(res.accessToken, res.refreshToken) // localstorage 에 토큰 저장
-    dispatch(loginSuccess({ userId: res.id }))
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      dispatch(loginFailure(err.message))
-    } else {
-      dispatch(loginFailure('Unknown error'))
+export const loginThunk =
+  (code: string, redirectUri: string) => async (dispatch: AppDispatch) => {
+    try {
+      dispatch(loginStart())
+      const res = await login(code, redirectUri)
+      saveTokens(res.accessToken, res.refreshToken) // localstorage 에 토큰 저장
+      dispatch(loginSuccess({ userId: res.id }))
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        dispatch(loginFailure(err.message))
+      } else {
+        dispatch(loginFailure('Unknown error'))
+      }
+      throw err
     }
-    throw err
   }
-}
 
 export const reissueThunk = () => async (dispatch: AppDispatch) => {
   try {
