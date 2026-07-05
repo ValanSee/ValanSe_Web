@@ -6,13 +6,19 @@ import Link from 'next/link'
 import BestVoteArea from './bestVoteArea'
 import Loading from '@/components/_shared/loading'
 import { useEffect, useState } from 'react'
+import {
+  VOTE_CATEGORY_ICON,
+  VOTE_CATEGORY_LABEL,
+  type VoteCategory,
+} from '@/types/_shared/vote'
 
-// 테스트 데이터
-const categories = [
-  { label: '음식', icon: '/category-food.svg', param: 'FOOD' },
-  { label: '연애', icon: '/category-love.svg', param: 'LOVE' },
-  { label: '기타', icon: '/category-etc.svg', param: 'ETC' },
-]
+const categories = (
+  Object.entries(VOTE_CATEGORY_ICON) as [VoteCategory, string][]
+).map(([param, icon]) => ({
+  label: VOTE_CATEGORY_LABEL[param],
+  icon,
+  param,
+}))
 
 const MainPage = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true)
@@ -45,7 +51,7 @@ const MainPage = () => {
         </Link>
 
         {/* 카테고리 */}
-        <div className="flex justify-around w-full gap-2">
+        <div className="grid grid-cols-3 w-full gap-2">
           {categories.map((c) => (
             <Link
               href={`/balanse?category=${c.param}`}
