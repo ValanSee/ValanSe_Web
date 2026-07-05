@@ -17,9 +17,8 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
-import { deleteVote, fetchBestVote } from '@/api/votes'
+import { deleteVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
 import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
@@ -67,7 +66,6 @@ function PollDetailContent() {
   const [error, setError] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [showStats, setShowStats] = useState(false)
-  const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
@@ -78,27 +76,7 @@ function PollDetailContent() {
   const source = searchParams.get('source')
 
   useEffect(() => {
-    if (id === 'hot') {
-      setIsFromHot(true)
-      const loadBestVote = async () => {
-        try {
-          const response = await fetchBestVote()
-          if (!response) return // [지상] 예외 처리 때문에 잠시 추가
-          // fetchBestVote 호출 결과로 불러올 데이터가 없을 경우 404 에러 발생
-          // -> 404 발생 여부를 반환값이 null 인지 여부로 판정해서 임시로 렌더링 취소하도록 조치함
-          // 이후 세부 기획이 변경되면 이 부분에서 끌어올린 데이터를 기반으로 렌더링하는 로직을 구현하면 됨
-          router.replace(`/poll/${response.voteId}?source=hot`)
-        } catch (error) {
-          console.error('Failed to fetch best vote:', error)
-          router.replace('/main')
-        }
-      }
-      loadBestVote()
-    }
-  }, [id, router])
-
-  useEffect(() => {
-    if (id === 'hot' || !id) return
+    if (!id) return
 
     const fetchAll = async () => {
       try {
@@ -123,23 +101,6 @@ function PollDetailContent() {
     fetchAll()
   }, [id])
 
-  // 인기 탭에서 로딩 중일 때
-  if (id === 'hot') {
-    return <Loading />
-  }
-
-  const getHeaderTitle = () => {
-    if (source === 'hot' || isFromHot) return '오늘의 핫이슈'
-    if (source === 'balance') return '밸런스게임'
-    if (source === 'create') return '밸런스게임'
-    return '밸런스게임' // 기본값
-  }
-
-  const shouldShowBackButton = () => {
-    if (source === 'hot' || isFromHot) return false
-    return true
-  }
-
   const handleBackClick = () => {
     if (source === 'create') {
       router.push('/main')
@@ -153,8 +114,8 @@ function PollDetailContent() {
     return (
       <div className="flex flex-col min-h-screen bg-[#f0f0f0]">
         <Header
-          title={getHeaderTitle()}
-          showBackButton={shouldShowBackButton()}
+          title="밸런스게임"
+          showBackButton
           bgGray={true}
           onBackClick={handleBackClick}
         />
@@ -186,8 +147,8 @@ function PollDetailContent() {
   return (
     <div>
       <Header
-        title={getHeaderTitle()}
-        showBackButton={shouldShowBackButton()}
+        title="밸런스게임"
+        showBackButton
         bgGray={true}
         onBackClick={handleBackClick}
       />
@@ -235,7 +196,6 @@ function PollDetailContent() {
           />
         )}
       </div>
-      {(source === 'hot' || isFromHot) && <BottomNavBar />}
       {isAdmin && (
         <AdminFloatingButton onDelete={() => setDeleteModalOpen(true)} />
       )}
