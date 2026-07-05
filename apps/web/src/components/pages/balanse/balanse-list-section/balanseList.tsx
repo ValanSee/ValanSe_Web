@@ -1,14 +1,8 @@
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { UserCircle, ThumbsUp, MessageCircle } from 'lucide-react'
 import { Vote } from '@/types/balanse/vote'
+import { VOTE_CATEGORY_LABEL, type VoteCategory } from '@/types/_shared/vote'
 import Link from 'next/link'
-
-const categoryMap: Record<string, string> = {
-  FOOD: '음식',
-  LOVE: '연애',
-  ETC: '기타',
-  ALL: '전체',
-}
 
 type Props = {
   data: Vote
@@ -47,7 +41,10 @@ export default function BalanceList({ data }: Props) {
               ))}
             </div>
             <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-              <span>{categoryMap[data.category] ?? data.category}</span>
+              <span>
+                {VOTE_CATEGORY_LABEL[data.category as VoteCategory] ??
+                  data.category}
+              </span>
               <div className="flex gap-4">
                 <div className="flex items-center gap-1">
                   <ThumbsUp className="w-4 h-4" />

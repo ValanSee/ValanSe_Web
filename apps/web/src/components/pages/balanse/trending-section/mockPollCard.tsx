@@ -5,13 +5,7 @@ import { type TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
 import { getAccessToken } from '@/utils/tokenUtils'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
 import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
-
-const categoryMap: Record<string, string> = {
-  ETC: '기타',
-  FOOD: '음식',
-  LOVE: '연애',
-  ALL: '전체',
-}
+import { VOTE_CATEGORY_LABEL, type VoteCategory } from '@/types/_shared/vote'
 
 type Props = {
   data: TrendingVoteResponse
@@ -70,7 +64,8 @@ function MockPollCard({ data }: Props) {
         </div>
         <div className="flex justify-between">
           <div className="text-xs text-gray-500 mb-2">
-            {categoryMap[data.category] ?? data.category}
+            {VOTE_CATEGORY_LABEL[data.category as VoteCategory] ??
+              data.category}
           </div>
           <div className="text-sm text-gray-400 text-right">
             총 {data.totalParticipants}명 투표

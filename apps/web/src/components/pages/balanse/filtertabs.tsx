@@ -1,9 +1,4 @@
-const tabMap: Record<string, string> = {
-  전체: 'ALL',
-  음식: 'FOOD',
-  연애: 'LOVE',
-  기타: 'ETC',
-}
+import { VOTE_CATEGORIES, VOTE_CATEGORY_LABEL } from '@/types/_shared/vote'
 
 export default function FilterTabs({
   selected,
@@ -12,23 +7,21 @@ export default function FilterTabs({
   selected: string
   onChangeCategory: (category: string) => void
 }) {
-  const tabs = ['전체', '음식', '연애', '기타']
-
   return (
     <div className="flex gap-2 px-4 mt-4 overflow-x-auto">
-      {tabs.map((tab) => (
+      {VOTE_CATEGORIES.map((category) => (
         <button
-          key={tab}
+          key={category}
           className={`rounded-full px-3 py-2 text-sm font-medium transition whitespace-nowrap
             ${
-              selected === tabMap[tab]
+              selected === category
                 ? 'bg-[#7A97B8] text-white'
                 : 'bg-white text-[#8E8E8E] border border-[#C6C6C6]'
             }
           `}
-          onClick={() => onChangeCategory(tabMap[tab])}
+          onClick={() => onChangeCategory(category)}
         >
-          {tab}
+          {VOTE_CATEGORY_LABEL[category]}
         </button>
       ))}
     </div>
