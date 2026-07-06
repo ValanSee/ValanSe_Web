@@ -1,0 +1,15 @@
+export {
+  VoteCard,
+  VoteCardHeader,
+  VoteCardAvatar,
+  VoteCardAuthor,
+  VoteCardMeta,
+  VoteCardTitle,
+  VoteCardOptions,
+  VoteCardOption,
+  VoteCardVS,
+  VoteCardStats,
+  type VoteCardAvatarProps,
+  type VoteCardOptionProps,
+  type VoteCardStatsProps,
+} from '@/components/ui/voteCard'
