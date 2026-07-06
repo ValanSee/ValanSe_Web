@@ -12,7 +12,7 @@ const ModalOverlay = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center',
+      'fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-5',
       className,
     )}
     onClick={(e) => {
@@ -32,36 +32,36 @@ const ModalHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn(
-      'flex items-start justify-between p-6 border-border',
-      className,
-    )}
+    className={cn('flex items-start justify-between px-5 pt-5', className)}
     {...props}
   />
 ))
 ModalHeader.displayName = 'ModalHeader'
 
-// Title: 모달의 제목 텍스트
+// Title: 모달의 제목 텍스트 (Figma Title-02)
 const ModalTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
   <h2
     ref={ref}
-    className={cn('text-lg font-semibold text-foreground text-left', className)}
+    className={cn('typo-title-02 text-foreground text-center flex-1', className)}
     {...props}
   />
 ))
 ModalTitle.displayName = 'ModalTitle'
 
-// Description: 부제나 설명 텍스트
+// Description: 부제나 설명 텍스트 (Figma Body B-01)
 const ModalDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-muted-foreground mt-1', className)}
+    className={cn(
+      'typo-body-b-01 text-brand-gray-100 text-center mt-3',
+      className,
+    )}
     {...props}
   />
 ))
@@ -74,20 +74,20 @@ const ModalBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('p-6 space-y-4 text-left', className)}
+    className={cn('px-5 py-4 text-left', className)}
     {...props}
   />
 ))
 ModalBody.displayName = 'ModalBody'
 
-// Footer: 확인/취소 버튼 영역
+// Footer: 확인/취소 버튼 영역 (Figma 팝업 규격: gap 12)
 const ModalFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex justify-end gap-3 p-6 pt-0', className)}
+    className={cn('flex justify-stretch gap-3 px-5 pb-6 [&>*]:flex-1', className)}
     {...props}
   />
 ))
@@ -97,54 +97,38 @@ ModalFooter.displayName = 'ModalFooter'
 const ModalCloseButton = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
+>(({ className, type = 'button', ...props }, ref) => (
   <button
     ref={ref}
+    type={type}
     className={cn(
-      'text-muted-foreground hover:text-foreground transition-colors',
+      'text-brand-gray-100 hover:text-foreground transition-colors',
       className,
     )}
     {...props}
   >
-    <X className="w-4 h-4" />
+    <X className="w-5 h-5" />
   </button>
 ))
 ModalCloseButton.displayName = 'ModalCloseButton'
 
-// Main Modal Container
+// Main Modal Container (Figma 팝업 컨테이너: radius 20, bg white, max-w 352)
 const Modal = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    role="dialog"
+    aria-modal="true"
     className={cn(
-      'z-50 w-full max-w-md rounded-xl bg-background text-foreground shadow-lg animate-in fade-in-50 zoom-in-90',
+      'z-50 w-full max-w-[352px] rounded-[20px] bg-card text-foreground shadow-lg animate-in fade-in-50 zoom-in-90',
       className,
     )}
     {...props}
   />
 ))
 Modal.displayName = 'Modal'
-
-// Example Composition
-// <ModalOverlay>
-//   <Modal>
-//     <ModalHeader>
-//       <ModalTitle>삭제하시겠습니까?</ModalTitle>
-//       <ModalCloseButton onClick={closeModal} />
-//     </ModalHeader>
-//     <ModalBody>
-//       <ModalDescription>
-//         이 작업은 되돌릴 수 없습니다. 정말 삭제하시겠습니까?
-//       </ModalDescription>
-//     </ModalBody>
-//     <ModalFooter>
-//       <Button variant="secondary" onClick={closeModal}>취소</Button>
-//       <Button variant="destructive" onClick={confirmDelete}>삭제</Button>
-//     </ModalFooter>
-//   </Modal>
-// </ModalOverlay>
 
 export {
   Modal,
