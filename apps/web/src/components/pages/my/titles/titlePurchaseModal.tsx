@@ -9,7 +9,7 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from '@/components/ui/modal'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/common/Button'
 import { Title } from '@/types/_shared/title'
 
 interface TitlePurchaseModalProps {
