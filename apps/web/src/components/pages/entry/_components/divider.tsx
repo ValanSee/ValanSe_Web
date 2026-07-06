@@ -1,9 +1,9 @@
 function Divider() {
   return (
-    <div className="flex w-full items-center gap-2 mb-4">
-      <hr className="w-full border-gray-300" />
-      <p className="text-gray-500 text-sm whitespace-nowrap">또는</p>
-      <hr className="w-full border-gray-300" />
+    <div className="mb-4 flex w-full items-center gap-2">
+      <hr className="w-full border-border" />
+      <p className="typo-body-c-03 whitespace-nowrap text-brand-gray-100">또는</p>
+      <hr className="w-full border-border" />
     </div>
   )
 }

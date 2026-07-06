@@ -27,7 +27,8 @@ function KakaoLoginButton() {
     <button
       type="button"
       onClick={goKakao}
-      className="w-full max-w-xs bg-[#FEE500] text-black flex items-center justify-center gap-2 py-3 rounded-xl font-semibold shadow-sm hover:brightness-95 mb-4"
+      // 카카오 브랜드 가이드 준수: #FEE500 · 검정 텍스트. §8 예외.
+      className="mb-4 flex w-full max-w-xs items-center justify-center gap-2 rounded-xl bg-[#FEE500] py-3 typo-body-b-01 text-brand-black shadow-sm hover:brightness-95"
     >
       카카오로 로그인
     </button>

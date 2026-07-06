@@ -7,9 +7,9 @@ import KakaoLoginButton from './_components/kakaoLoginButton'
 
 function EntryPage() {
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex flex-col justify-center items-center px-6 py-10 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 py-10 text-center">
       {/* 로고 영역 */}
-      <div className="flex flex-col items-center mb-6">
+      <div className="mb-6 flex flex-col items-center">
         <Image
           src="/assets/logo.svg"
           alt="Valanse Logo"
@@ -17,11 +17,12 @@ function EntryPage() {
           height={96}
           className="mb-2"
         />
-        <h1 className="text-2xl font-bold text-[#5B6B8A]">VALANSE</h1>
+        {/* TODO(design): 로고 워드마크 색은 Figma 확정 시 브랜드 토큰으로 치환 */}
+        <h1 className="typo-heading-02 text-[#5B6B8A]">VALANSE</h1>
       </div>
 
       {/* 설명 */}
-      <p className="text-sm text-gray-700 mb-12">
+      <p className="typo-body-b-02 mb-12 text-brand-gray-200">
         밸런스 게임에 진심인 사람들을 위한
         <br />
         밸런스 게임 플랫폼
@@ -30,7 +31,7 @@ function EntryPage() {
       <div className="w-full max-w-xs">
         <Suspense
           fallback={
-            <div className="w-full max-w-xs py-3 rounded-xl bg-[#FEE500]/60 text-center text-sm text-gray-600 mb-4">
+            <div className="mb-4 w-full max-w-xs rounded-xl bg-[#FEE500]/60 py-3 text-center typo-label-03 text-brand-gray-200">
               로그인 준비 중…
             </div>
           }
