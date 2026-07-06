@@ -163,16 +163,17 @@ function BalancePageContent() {
 
   if (trendingError && !trendingVote) {
     return (
-      <div className="flex flex-col min-h-screen bg-[#ffffff]">
+      <div className="flex min-h-screen flex-col bg-card">
         <Header />
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-16">
-          <p className="text-xl font-bold text-red-500">⚠️</p>
-          <p className="text-center text-lg font-semibold text-gray-700">
+          <p className="typo-heading-04 text-destructive">⚠️</p>
+          <p className="typo-title-02 text-center text-brand-gray-200">
             {trendingError}
           </p>
           <button
             type="button"
-            className="rounded-lg bg-[#4D7298] px-5 py-2.5 text-sm font-medium text-white"
+            // TODO(design): 배경 #4D7298은 blue-gray 팔레트 미확정으로 TODO 유지
+            className="typo-label-03 rounded-lg bg-[#4D7298] px-5 py-2.5 text-primary-foreground"
             onClick={() => setIsRefreshing(true)}
           >
             다시 시도
@@ -189,7 +190,7 @@ function BalancePageContent() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#ffffff]">
+    <div className="flex min-h-screen flex-col bg-card">
       <Header />
 
       {/* 인기 급상승 토픽 섹션 */}
@@ -199,13 +200,13 @@ function BalancePageContent() {
       </div>
 
       {/* 투표 목록 섹션 */}
-      <div className="flex items-center gap-2 px-4 mt-2">
+      <div className="mt-2 flex items-center gap-2 px-4">
         <FilterTabs
           selected={category}
           onChangeCategory={handleCategoryChange}
         />
         <select
-          className="ml-auto rounded px-2 py-1 text-sm"
+          className="typo-body-c-02 ml-auto rounded px-2 py-1 text-foreground"
           value={sort}
           onChange={(e) =>
             handleSortChange(e.target.value as 'latest' | 'popular')
@@ -218,11 +219,11 @@ function BalancePageContent() {
           ))}
         </select>
       </div>
-      <div className="px-4 mt-4 space-y-4 pb-28">
+      <div className="mt-4 space-y-4 px-4 pb-28">
         {error && (
           <div className="flex flex-col items-center justify-center py-8">
-            <p className="text-xl font-bold text-red-500 mb-2">⚠️</p>
-            <p className="text-lg font-semibold text-gray-700">{error}</p>
+            <p className="typo-heading-04 mb-2 text-destructive">⚠️</p>
+            <p className="typo-title-02 text-brand-gray-200">{error}</p>
           </div>
         )}
         {!error &&
@@ -230,18 +231,19 @@ function BalancePageContent() {
             <React.Fragment key={vote.id}>
               <BalanceList data={vote} />
               {idx !== votes.length - 1 && (
-                <div className="h-px bg-[#E5E5E5] w-full my-2" />
+                <div className="my-2 h-px w-full bg-border" />
               )}
             </React.Fragment>
           ))}
 
         {/* 무한 스크롤 로딩 인디케이터 */}
         {hasNextPage && (
-          <div ref={loadingRef} className="text-center py-4">
+          <div ref={loadingRef} className="py-4 text-center">
             {isLoadingMore && (
               <>
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4D7298] mx-auto"></div>
-                <p className="text-sm text-gray-500 mt-2">
+                {/* TODO(design): spinner border 색 #4D7298은 blue-gray 팔레트 미확정으로 TODO 유지 */}
+                <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-[#4D7298]"></div>
+                <p className="typo-body-c-02 mt-2 text-brand-gray-100">
                   더 많은 투표를 불러오는 중...
                 </p>
               </>

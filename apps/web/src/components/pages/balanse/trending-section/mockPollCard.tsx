@@ -34,31 +34,32 @@ function MockPollCard({ data }: Props) {
   return (
     <>
       <div
-        className="block mx-auto p-4 mt-6 space-y-4 rounded-xl bg-[#F0F0F0] cursor-pointer"
+        className="mx-auto mt-6 block cursor-pointer space-y-4 rounded-xl bg-background p-4"
         onClick={handleClick}
       >
         <div className="flex items-center gap-2">
           {data.creatorTitle && (
-            <span className="inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-[11px] font-medium text-white">
+            // TODO(design): 칭호 배경 #4D7298은 blue-gray 팔레트 미확정으로 TODO 유지
+            <span className="typo-body-c-03 inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-primary-foreground">
               {data.creatorTitle}
             </span>
           )}
-          <span className="text-sm font-medium text-gray-700">
+          <span className="typo-label-03 text-brand-gray-200">
             {data.createdBy}
           </span>
         </div>
-        <div className="flex justify-between items-center">
-          <div className="text-base font-semibold">{data.title}</div>
+        <div className="flex items-center justify-between">
+          <div className="typo-title-02 text-foreground">{data.title}</div>
         </div>
 
         <div className="space-y-2">
           {data.options.map((option, idx) => {
             return (
               <div
-                className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ring-blue-500 bg-white`}
+                className="relative cursor-pointer rounded-md border border-border bg-card px-4 py-3 transition-all"
                 key={option.optionId}
               >
-                <div className="flex justify-between relative z-10 font-medium">
+                <div className="typo-label-03 relative z-10 flex justify-between text-foreground">
                   <span>
                     <strong>{String.fromCharCode(65 + idx)}</strong>{' '}
                     {option.content}
@@ -69,10 +70,10 @@ function MockPollCard({ data }: Props) {
           })}
         </div>
         <div className="flex justify-between">
-          <div className="text-xs text-gray-500 mb-2">
+          <div className="typo-body-c-03 mb-2 text-brand-gray-100">
             {categoryMap[data.category] ?? data.category}
           </div>
-          <div className="text-sm text-gray-400 text-right">
+          <div className="typo-body-c-02 text-right text-brand-gray-100">
             총 {data.totalParticipants}명 투표
           </div>
         </div>

@@ -18,43 +18,44 @@ export default function BalanceList({ data }: Props) {
   return (
     <Link href={`/poll/${data.id}?source=balance`} passHref legacyBehavior>
       <a className="block">
-        <Card className="rounded-xl cursor-pointer">
+        <Card className="cursor-pointer rounded-xl">
           <CardHeader className="flex flex-row items-center gap-2 pb-0">
             <div className="flex items-center gap-2">
-              <UserCircle className="text-gray-400 w-5 h-5" />
+              <UserCircle className="h-5 w-5 text-brand-gray-100" />
               {data.member_title && (
-                <span className="inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-[11px] font-medium text-white">
+                // TODO(design): 칭호 배경 #4D7298은 blue-gray 팔레트 미확정으로 TODO 유지
+                <span className="typo-body-c-03 inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-primary-foreground">
                   {data.member_title}
                 </span>
               )}
-              <span className="text-sm text-gray-600">
+              <span className="typo-body-c-02 text-brand-gray-100">
                 {data.nickname} • {data.created_at}
               </span>
             </div>
           </CardHeader>
-          <CardContent className="pt-2 pb-4">
-            <p className="font-semibold mb-2">{data.title}</p>
+          <CardContent className="pb-4 pt-2">
+            <p className="typo-title-02 mb-2 text-foreground">{data.title}</p>
             {data.content && (
-              <p className="text-sm text-gray-600 mb-3 leading-relaxed whitespace-pre-wrap">
+              <p className="typo-body-c-02 mb-3 whitespace-pre-wrap leading-relaxed text-brand-gray-100">
                 {data.content}
               </p>
             )}
-            <div className="text-sm text-gray-700 space-y-1">
+            <div className="typo-body-c-02 space-y-1 text-brand-gray-200">
               {data.options.map((opt) => (
-                <div key={opt.id} className="bg-white">
+                <div key={opt.id} className="bg-card">
                   {opt.content}
                 </div>
               ))}
             </div>
-            <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
+            <div className="mt-3 flex items-center justify-between typo-body-c-03 text-brand-gray-100">
               <span>{categoryMap[data.category] ?? data.category}</span>
               <div className="flex gap-4">
                 <div className="flex items-center gap-1">
-                  <ThumbsUp className="w-4 h-4" />
+                  <ThumbsUp className="h-4 w-4" />
                   {data.total_vote_count}
                 </div>
                 <div className="flex items-center gap-1">
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="h-4 w-4" />
                   {data.total_comment_count}
                 </div>
               </div>

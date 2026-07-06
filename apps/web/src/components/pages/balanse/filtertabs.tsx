@@ -15,15 +15,17 @@ export default function FilterTabs({
   const tabs = ['전체', '음식', '연애', '기타']
 
   return (
-    <div className="flex gap-2 px-4 mt-4 overflow-x-auto">
+    <div className="mt-4 flex gap-2 overflow-x-auto px-4">
       {tabs.map((tab) => (
         <button
           key={tab}
-          className={`rounded-full px-3 py-2 text-sm font-medium transition whitespace-nowrap
+          // TODO(design): 활성 상태 색 #7A97B8은 blue-gray 팔레트 미확정으로 TODO 유지.
+          // 향후 Common/Chip primary variant로 교체 검토.
+          className={`typo-label-03 whitespace-nowrap rounded-full px-3 py-2 transition
             ${
               selected === tabMap[tab]
-                ? 'bg-[#7A97B8] text-white'
-                : 'bg-white text-[#8E8E8E] border border-[#C6C6C6]'
+                ? 'bg-[#7A97B8] text-primary-foreground'
+                : 'border border-border bg-card text-brand-gray-100'
             }
           `}
           onClick={() => onChangeCategory(tabMap[tab])}
