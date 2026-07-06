@@ -124,6 +124,7 @@ A. 발견한 사람이 바로잡는 것이 원칙. 그 PR에서 같이 고치거
 - [`docs/screens/`](./docs/screens/) — 화면 명세서 전체
 - [`docs/screens/README.md`](./docs/screens/README.md) — SCR-ID 인덱스
 - [`docs/screens/_TEMPLATE.md`](./docs/screens/_TEMPLATE.md) — 신규 작성 템플릿
+- [`docs/design-system-roadmap.md`](./docs/design-system-roadmap.md) — 디자인시스템 개편 로드맵 (§10 참조)
 - [`.claude/skills/usecase-sync/SKILL.md`](./.claude/skills/usecase-sync/SKILL.md) — Claude Code skill (에이전트 자동 인지용)
 - [`src/app/usecase/`](./src/app/usecase/) — dev-only 뷰어 라우트
 - [`src/app/robots.ts`](./src/app/robots.ts) — `/usecase` SEO 차단
@@ -252,3 +253,20 @@ export default function Page() {
   )
 }
 ```
+
+---
+
+## 10. 디자인시스템 개편 로드맵
+
+디자인 대개편의 컴포넌트 단위 계획은 별도 문서에서 관리합니다.
+
+- 📄 [`docs/design-system-roadmap.md`](./docs/design-system-roadmap.md)
+
+포함 내용:
+
+- Figma 카탈로그(노드 `123:500`) 기반 컴포넌트 매트릭스 (Button · TextField · Chip · Badge · Header · Tab · Dropdown · Modal · Vote Card 등)
+- 레이어 구조 (`ui/` → `common/` → `pages/`) 및 CVA 사용 규칙
+- PR 단위(P0~P8) · 브랜치 컨벤션 · Storybook 요구사항
+- 실행 순서 및 명시적 스코프 제외 항목
+
+**신규 UI 컴포넌트를 만들 땐 이 문서의 매트릭스에 해당 컴포넌트가 이미 있는지 먼저 확인하세요.** 있으면 해당 PR 스코프에서, 없으면 문서를 먼저 업데이트한 뒤 코드에 착수합니다.
