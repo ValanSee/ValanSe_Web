@@ -31,36 +31,38 @@ const MainPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pb-24">
+    <div className="flex min-h-screen flex-col items-center bg-background px-4 pb-24">
       <BestVoteArea />
 
-      <div className="flex flex-col items-center w-full gap-10 pt-8">
+      <div className="flex w-full flex-col items-center gap-10 pt-8">
         {/* 밸런스 게임 만들기 */}
         <Link
           href="/create"
-          className="flex items-center justify-between w-full h-[120px] pl-5 pr-4 py-3 bg-white rounded-lg text-2xl font-bold"
+          className="typo-heading-02 flex h-[120px] w-full items-center justify-between rounded-lg bg-card py-3 pl-5 pr-4 text-foreground"
         >
           밸런스 게임 만들기
+          {/* TODO(P8): PR #129 머지 후 /icons/nav/create.svg로 갱신, 또는 CreateIcon 컴포넌트로 교체 */}
           <Image src="/create.svg" alt="create" width={28} height={28} />
         </Link>
 
         {/* 카테고리 */}
-        <div className="flex justify-around w-full gap-2">
+        <div className="flex w-full justify-around gap-2">
           {categories.map((c) => (
             <Link
               href={`/balanse?category=${c.param}`}
               key={c.label}
-              className="flex flex-col items-center w-full p-4 pt-7 pb-5 rounded-lg bg-white"
+              className="flex w-full flex-col items-center rounded-lg bg-card p-4 pb-5 pt-7"
             >
               <Image src={c.icon} alt={c.label} width={48} height={48} />
-              <div className="text-md mt-1 font-semibold">{c.label}</div>
+              <div className="typo-title-04 mt-1 text-foreground">{c.label}</div>
             </Link>
           ))}
         </div>
 
+        {/* TODO(design): "New 전체보기" 강조색 text-[#f27f23]은 브랜드 오렌지 팔레트 확정 후 치환 */}
         <Link
           href="/balanse"
-          className="flex items-center  w-full h-[120px] bg-white rounded-lg font-bold pl-4 text-2xl text-[#f27f23]"
+          className="typo-heading-02 flex h-[120px] w-full items-center rounded-lg bg-card pl-4 text-[#f27f23]"
         >
           New 전체보기
         </Link>

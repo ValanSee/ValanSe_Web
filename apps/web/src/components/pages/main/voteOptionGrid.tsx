@@ -15,6 +15,8 @@ interface VoteOptionGridProps {
 export default function VoteOptionGrid({ options }: VoteOptionGridProps) {
   if (!options || options.length === 0) return null
 
+  // TODO(design): 옵션 A/B 강조색 (#5F81A3 blue, #F27F34 orange)은
+  // 브랜드 팔레트에 대응 색이 없음. Figma 확정 후 브랜드 토큰으로 치환.
   const getBorderColor = (index: number) => {
     const colors = ['#5F81A3', '#F27F34']
 
@@ -48,7 +50,7 @@ export default function VoteOptionGrid({ options }: VoteOptionGridProps) {
 
   return (
     <div
-      className={`grid ${getGridColsClass(options.length)} gap-2 w-full pt-4 min-h-[164px]`}
+      className={`grid ${getGridColsClass(options.length)} min-h-[164px] w-full gap-2 pt-4`}
     >
       {options.map((option, index) => {
         const borderColor = getBorderColor(index)
@@ -56,13 +58,13 @@ export default function VoteOptionGrid({ options }: VoteOptionGridProps) {
         return (
           <div
             key={option.optionId}
-            className={`flex flex-col items-center gap-5 w-full h-full p-4 py-6 rounded-lg bg-white border`}
+            className="flex h-full w-full flex-col items-center gap-5 rounded-lg border bg-card p-4 py-6"
             style={{ borderColor }}
           >
-            <div className="font-bold text-2xl" style={{ color: textColor }}>
+            <div className="typo-heading-02" style={{ color: textColor }}>
               {optionLabel[index] ?? '?'}
             </div>
-            <div className="text-sm text-center leading-tight">
+            <div className="typo-body-c-02 text-center text-foreground leading-tight">
               {option.content}
             </div>
           </div>

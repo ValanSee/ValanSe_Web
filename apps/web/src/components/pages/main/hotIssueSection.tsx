@@ -13,29 +13,30 @@ function HotIssueSection() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
 
   return (
-    <div className="bg-[#839DB7] px-6 pb-6 rounded-b-[2rem]">
+    // TODO(design): 배경색 #839DB7은 브랜드 blue-gray 팔레트 확정 후 치환
+    <div className="rounded-b-[2rem] bg-[#839DB7] px-6 pb-6">
       {/* 투표 정보 */}
-      <div className="flex flex-col items-center pt-12">
+      <div className="flex flex-col items-center pt-12 text-primary-foreground">
         <Image src="/fire.svg" alt="fire" width={40} height={40} />
-        <div className="text-2xl font-bold pt-4">오늘의 핫이슈</div>
-        <div className="text-sm pt-1">24시간 이후 투표 종료</div>
-        <div className="text-md font-semibold pt-4">1,234명 참여</div>
+        <div className="typo-heading-02 pt-4">오늘의 핫이슈</div>
+        <div className="typo-body-c-02 pt-1">24시간 이후 투표 종료</div>
+        <div className="typo-title-03 pt-4">1,234명 참여</div>
       </div>
 
       {/* 선택지 */}
-      <div className="grid grid-cols-2 gap-2 w-full max-w-md pt-5">
+      <div className="grid w-full max-w-md grid-cols-2 gap-2 pt-5">
         {options.map((label, i) => (
           <button
             key={label}
-            className={`w-45 h-[9.5rem] rounded-lg border shadow-sm px-7 py-6 ${
+            className={`h-[9.5rem] w-45 rounded-lg border px-7 py-6 shadow-sm ${
               selectedOption === label
-                ? 'bg-black text-white'
-                : 'bg-white text-gray-800'
+                ? 'bg-brand-black text-primary-foreground'
+                : 'bg-card text-foreground'
             }`}
             onClick={() => setSelectedOption(label)}
           >
-            <div className="font-bold text-lg mb-1">{label}</div>
-            <div className="text-sm">{optionTexts[i]}</div>
+            <div className="typo-heading-04 mb-1">{label}</div>
+            <div className="typo-body-c-02">{optionTexts[i]}</div>
           </button>
         ))}
       </div>

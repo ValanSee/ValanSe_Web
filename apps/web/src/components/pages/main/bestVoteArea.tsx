@@ -33,25 +33,26 @@ function BestVoteArea() {
   }, [])
 
   return (
-    <div className="flex flex-col items-center bg-[#839db7] rounded-bl-2xl rounded-br-2xl w-screen px-6 pb-5 min-h-[500px]">
+    // TODO(design): 배경색 #839db7은 브랜드 blue-gray 팔레트 확정 후 치환
+    <div className="flex min-h-[500px] w-screen flex-col items-center rounded-b-2xl bg-[#839db7] px-6 pb-5">
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center w-full pt-[98px] flex-1">
+        <div className="flex w-full flex-1 flex-col items-center justify-center pt-[98px]">
           <InlineLoading />
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center pt-[98px] leading-none min-h-[150px]">
+          <div className="flex min-h-[150px] flex-col items-center pt-[98px] leading-none">
             <Image src="/fire.svg" alt="fire" width={40} height={40} />
-            <div className="pt-4 text-white text-3xl font-bold">
+            <div className="typo-heading-01 pt-4 text-primary-foreground">
               오늘의 핫이슈
             </div>
-            <div className="pt-1 text-white text-xs font-normal">
+            <div className="typo-body-c-03 pt-1 text-primary-foreground">
               24시간 이후 투표 종료
             </div>
-            <div className="pt-4 text-white text-lg font-bold">
+            <div className="typo-heading-04 pt-4 text-primary-foreground">
               {voteData?.totalParticipants.toLocaleString()}명 참여
             </div>
-            <div className="pt-4 text-white text-lg font-bold line-clamp-2">
+            <div className="typo-heading-04 line-clamp-2 pt-4 text-primary-foreground">
               [ {voteData?.title} ]
             </div>
           </div>
