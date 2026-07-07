@@ -1,72 +1,75 @@
 'use client'
 
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
-import Image from 'next/image'
 import Link from 'next/link'
-import BestVoteArea from './bestVoteArea'
-import Loading from '@/components/_shared/loading'
+import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
+import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
+import Header from '@/components/_shared/header'
+import Loading from '@/components/_shared/loading'
+import { Chip } from '@/components/ui/chip'
+import { BestVoteResponse, fetchBestVote } from '@/api/votes'
+import HomeVoteCard from './homeVoteCard'
 
-// 테스트 데이터
-const categories = [
-  { label: '음식', icon: '/category-food.svg', param: 'FOOD' },
-  { label: '연애', icon: '/category-love.svg', param: 'LOVE' },
-  { label: '기타', icon: '/category-etc.svg', param: 'ETC' },
-]
+const CATEGORIES = [
+  { label: '연애', param: 'LOVE' },
+  { label: '음식', param: 'FOOD' },
+  { label: '살까말까', param: 'BUY' },
+  { label: '스포츠', param: 'SPORT' },
+  { label: '고민', param: 'WORRY' },
+] as const
 
 const MainPage = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [featured, setFeatured] = useState<BestVoteResponse | null>(null)
 
   useEffect(() => {
-    // 최소 0.8초 로딩 시간 보장
-    const timer = setTimeout(() => {
-      setIsInitialLoading(false)
-    }, 800)
-
+    const timer = setTimeout(() => setIsInitialLoading(false), 800)
     return () => clearTimeout(timer)
   }, [])
 
-  if (isInitialLoading) {
-    return <Loading />
-  }
+  useEffect(() => {
+    fetchBestVote()
+      .then(setFeatured)
+      .catch(() => {})
+  }, [])
+
+  if (isInitialLoading) return <Loading />
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#F0F0F0] px-4 pb-24">
-      <BestVoteArea />
+    <div className="flex min-h-screen flex-col bg-background pb-24">
+      <Header
+        title="홈"
+        trailing={
+          <Link
+            href="/search"
+            aria-label="검색"
+            className="flex h-6 w-6 items-center justify-center text-foreground"
+          >
+            <Icon icon="iconamoon:search" width={24} aria-hidden />
+          </Link>
+        }
+      />
 
-      <div className="flex flex-col items-center w-full gap-10 pt-8">
-        {/* 밸런스 게임 만들기 */}
-        <Link
-          href="/create"
-          className="flex items-center justify-between w-full h-[120px] pl-5 pr-4 py-3 bg-white rounded-lg text-2xl font-bold"
-        >
-          밸런스 게임 만들기
-          <Image src="/create.svg" alt="create" width={28} height={28} />
-        </Link>
-
-        {/* 카테고리 */}
-        <div className="flex justify-around w-full gap-2">
-          {categories.map((c) => (
-            <Link
-              href={`/balanse?category=${c.param}`}
-              key={c.label}
-              className="flex flex-col items-center w-full p-4 pt-7 pb-5 rounded-lg bg-white"
-            >
-              <Image src={c.icon} alt={c.label} width={48} height={48} />
-              <div className="text-md mt-1 font-semibold">{c.label}</div>
-            </Link>
-          ))}
-        </div>
-
-        <Link
-          href="/balanse"
-          className="flex items-center  w-full h-[120px] bg-white rounded-lg font-bold pl-4 text-2xl text-[#f27f23]"
-        >
-          New 전체보기
-        </Link>
+      {/* 카테고리 chip 가로 스크롤 */}
+      <div className="flex gap-2 overflow-x-auto px-4 py-3">
+        {CATEGORIES.map((c) => (
+          <Link
+            key={c.param}
+            href={`/balanse?category=${c.param}`}
+            className="shrink-0"
+          >
+            <Chip status="ghost" size="m" clickable={false}>
+              {c.label}
+            </Chip>
+          </Link>
+        ))}
       </div>
 
-      {/* 하단 네비게이션 */}
+      {/* 오늘의 핫이슈 (featured 카드) */}
+      <div className="flex flex-col gap-3 px-4">
+        {featured && <HomeVoteCard data={featured} />}
+      </div>
+
       <BottomNavBar />
     </div>
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+import { Icon } from '@iconify/react'
 import { safeRedirectPath } from '@/utils/authRedirect'
 
 function KakaoLoginButton() {
@@ -19,7 +20,7 @@ function KakaoLoginButton() {
   const AUTH_URI = `${KAKAO_URL}?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code${stateParam}`
 
   const goKakao = () => {
-    // replace: 엔트리 히스토리를 덮어써서 로그인 후 뒤로가기 시 로그인/콜백 단계가 반복되지 않게 함
+    // 엔트리 히스토리를 덮어써 로그인 후 뒤로가기 시 반복 방지
     window.location.replace(AUTH_URI)
   }
 
@@ -27,8 +28,10 @@ function KakaoLoginButton() {
     <button
       type="button"
       onClick={goKakao}
-      className="w-full max-w-xs bg-[#FEE500] text-black flex items-center justify-center gap-2 py-3 rounded-xl font-semibold shadow-sm hover:brightness-95 mb-4"
+      // 카카오 브랜드 가이드 준수: #FEE500 · 검정 텍스트 (§8 예외)
+      className="typo-label-01 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#FEE500] text-brand-black hover:brightness-95"
     >
+      <Icon icon="ri:kakao-talk-fill" width={24} aria-hidden />
       카카오로 로그인
     </button>
   )
