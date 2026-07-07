@@ -15,6 +15,7 @@ import {
 } from '@/store/thunks/memberThunks'
 import { useDebounce } from '@/hooks/useDebounce'
 import Header from '@/components/_shared/header'
+import Loading from '@/components/_shared/loading'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -97,7 +98,7 @@ const EditPage = () => {
     router.push('/my')
   }
 
-  if (!myPageData) return null
+  if (!myPageData) return <Loading />
 
   return (
     <div className="flex min-h-screen flex-col bg-card">

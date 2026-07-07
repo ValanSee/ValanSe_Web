@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Header from '@/components/_shared/header'
+import Loading from '@/components/_shared/loading'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import {
@@ -57,7 +58,7 @@ const TitlesPage = () => {
 
   const point = pointHistory?.[0]?.remainingPoint ?? 0
 
-  if (!titles) return null
+  if (!titles) return <Loading />
 
   const ownedAll = [...titles.defaultTitles, ...titles.ownedTitles]
   const lockedAll = titles.lockedTitles

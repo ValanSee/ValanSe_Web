@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
+import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
@@ -55,7 +56,7 @@ function MyPage() {
     if (!titles) void dispatch(fetchTitlesThunk()).catch(() => {})
   }, [dispatch, titles])
 
-  if (!mypageData) return null
+  if (!mypageData) return <Loading />
 
   const point = pointHistory?.[0]?.remainingPoint ?? null
   const equippedTitle =

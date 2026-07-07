@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Header from '@/components/_shared/header'
+import Loading from '@/components/_shared/loading'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { fetchPointHistoryThunk } from '@/store/thunks/memberThunks'
@@ -27,7 +28,7 @@ const PointPage = () => {
     })()
   }, [dispatch, pathname, router])
 
-  if (!pointHistory) return null
+  if (!pointHistory) return <Loading />
 
   const currentPoint = pointHistory[0]?.remainingPoint ?? 0
 
