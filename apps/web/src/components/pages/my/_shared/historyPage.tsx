@@ -12,8 +12,7 @@ import { MyVoteHistoryItem } from '@/types/my/history'
 const CATEGORIES = [
   { label: '전체', value: 'ALL' },
   { label: '연애', value: 'LOVE' },
-  { label: '살까말까', value: 'BUY' },
-  { label: '스포츠', value: 'SPORT' },
+  { label: '음식', value: 'FOOD' },
   { label: '기타', value: 'ETC' },
 ] as const
 

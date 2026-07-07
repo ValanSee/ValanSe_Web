@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
@@ -13,9 +12,7 @@ import HomeVoteCard from './homeVoteCard'
 const CATEGORIES = [
   { label: '연애', param: 'LOVE' },
   { label: '음식', param: 'FOOD' },
-  { label: '살까말까', param: 'BUY' },
-  { label: '스포츠', param: 'SPORT' },
-  { label: '고민', param: 'WORRY' },
+  { label: '기타', param: 'ETC' },
 ] as const
 
 const MainPage = () => {
@@ -37,18 +34,7 @@ const MainPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-24">
-      <Header
-        title="홈"
-        trailing={
-          <Link
-            href="/search"
-            aria-label="검색"
-            className="flex h-6 w-6 items-center justify-center text-foreground"
-          >
-            <Icon icon="iconamoon:search" width={24} aria-hidden />
-          </Link>
-        }
-      />
+      <Header title="홈" />
 
       {/* 카테고리 chip 가로 스크롤 */}
       <div className="flex gap-2 overflow-x-auto px-4 py-3">

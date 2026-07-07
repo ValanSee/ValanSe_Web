@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST='{"pages":{},"app":{"/Users/a11/Desktop/project/valanse/ValanSe_Web/apps/web/src/app/layout":["static/media/cfa29e4f0aabf12a-s.p.woff2","static/media/12f0acdcae926a24-s.p.woff2","static/media/119cf01b445a4dc3-s.p.woff2","static/media/e00e15f44d7b58c0-s.p.woff2"]},"appUsingSizeAdjust":true,"pagesUsingSizeAdjust":false}';

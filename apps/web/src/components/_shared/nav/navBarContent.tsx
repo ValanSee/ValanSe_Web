@@ -14,7 +14,6 @@ const NAV_ITEMS: NavItem[] = [
   { label: '홈', route: '/main', icon: 'ic:round-home' },
   { label: '밸런스', route: '/balanse', icon: 'heroicons:scale' },
   { label: '만들기', route: '/create', icon: 'jam:write' },
-  { label: '알림', route: '/notifications', icon: 'lets-icons:bell-fill' },
   { label: '마이', route: '/my', icon: 'weui:setting-filled' },
 ]
 

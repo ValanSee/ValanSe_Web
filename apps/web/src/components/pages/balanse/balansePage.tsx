@@ -1,7 +1,5 @@
 'use client'
 
-import Link from 'next/link'
-import { Icon } from '@iconify/react'
 import {
   Suspense,
   useCallback,
@@ -21,8 +19,7 @@ import BalanseVoteCard from './balanseVoteCard'
 const TABS = [
   { label: '전체', value: 'ALL' },
   { label: '연애', value: 'LOVE' },
-  { label: '살까말까', value: 'BUY' },
-  { label: '스포츠', value: 'SPORT' },
+  { label: '음식', value: 'FOOD' },
   { label: '기타', value: 'ETC' },
 ] as const
 
@@ -101,18 +98,7 @@ function BalancePageContent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-24">
-      <Header
-        title="밸런스 게임"
-        trailing={
-          <Link
-            href="/search"
-            aria-label="검색"
-            className="flex h-6 w-6 items-center justify-center text-foreground"
-          >
-            <Icon icon="iconamoon:search" width={24} aria-hidden />
-          </Link>
-        }
-      />
+      <Header title="밸런스 게임" />
 
       <TabBar>
         {TABS.map((tab) => (
