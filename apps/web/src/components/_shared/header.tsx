@@ -1,52 +1,67 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { Icon } from '@iconify/react'
+import { cn } from '@/lib/utils'
 
 interface HeaderProps {
-  title: string
+  title?: React.ReactNode
   showBackButton?: boolean
-  bgGray?: boolean
   onBackClick?: () => void
+  /** 우측 액션 슬롯 (검색·설정 등) */
+  trailing?: React.ReactNode
+  /** 배경 회색 여부 (bg-background), 기본은 bg-card */
+  bgGray?: boolean
+  className?: string
 }
 
 export default function Header({
   title,
   showBackButton,
-  bgGray,
   onBackClick,
+  trailing,
+  bgGray,
+  className,
 }: HeaderProps) {
   const router = useRouter()
-
-  const handleBackClick = () => {
-    if (onBackClick) {
-      onBackClick()
-    } else {
-      router.back()
-    }
+  const handleBack = () => {
+    if (onBackClick) onBackClick()
+    else router.back()
   }
 
   return (
-    <div
-      className={`border-b border-gray-200 px-4 py-3 flex items-center ${bgGray ? 'bg-background' : 'bg-white'}`}
-    >
-      {showBackButton && (
-        <button
-          className="mr-2 p-2"
-          onClick={handleBackClick}
-          aria-label="뒤로가기"
-        >
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path
-              d="M15 19l-7-7 7-7"
-              stroke="#222"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+    <header
+      className={cn(
+        'flex h-14 w-full items-center justify-between gap-2 px-4',
+        bgGray ? 'bg-background' : 'bg-card',
+        className,
       )}
-      <h1 className="text-xl font-bold text-black">{title}</h1>
-    </div>
+    >
+      <div className="flex min-w-[24px] items-center">
+        {showBackButton && (
+          <button
+            type="button"
+            onClick={handleBack}
+            aria-label="뒤로가기"
+            className="flex h-6 w-6 items-center justify-center text-foreground"
+          >
+            <Icon
+              icon="icon-park-outline:left"
+              width={24}
+              height={24}
+              aria-hidden
+            />
+          </button>
+        )}
+      </div>
+      {title && (
+        <h1 className="typo-heading-05 flex-1 text-center text-foreground">
+          {title}
+        </h1>
+      )}
+      <div className="flex min-w-[24px] items-center justify-end">
+        {trailing}
+      </div>
+    </header>
   )
 }
