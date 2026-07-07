@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
-import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
@@ -35,12 +34,6 @@ function MyPage() {
   const mypageData = useAppSelector((s) => s.member.mypageData)
   const pointHistory = useAppSelector((s) => s.member.pointHistory)
   const titles = useAppSelector((s) => s.member.titles)
-  const [minLoadingComplete, setMinLoadingComplete] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMinLoadingComplete(true), 800)
-    return () => clearTimeout(timer)
-  }, [])
 
   useEffect(() => {
     if (!mypageData) {
@@ -62,7 +55,7 @@ function MyPage() {
     if (!titles) void dispatch(fetchTitlesThunk()).catch(() => {})
   }, [dispatch, titles])
 
-  if (!mypageData || !minLoadingComplete) return <Loading />
+  if (!mypageData) return null
 
   const point = pointHistory?.[0]?.remainingPoint ?? null
   const equippedTitle =

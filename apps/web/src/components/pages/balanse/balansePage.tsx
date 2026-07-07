@@ -10,7 +10,6 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
-import Loading from '@/components/_shared/loading'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
@@ -81,10 +80,7 @@ function BalancePageContent() {
       try {
         setLoading(true)
         setError(null)
-        const [data] = await Promise.all([
-          fetchVotes({ category, sort, size: 5 }),
-          new Promise((resolve) => setTimeout(resolve, 800)),
-        ])
+        const data = await fetchVotes({ category, sort, size: 5 })
         setVotes(data.votes)
         setHasNextPage(data.has_next_page)
         setNextCursor(data.next_cursor)
@@ -96,8 +92,6 @@ function BalancePageContent() {
     }
     load()
   }, [category, sort])
-
-  if (loading) return <Loading />
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-24">
@@ -120,7 +114,7 @@ function BalancePageContent() {
             {error}
           </p>
         )}
-        {!error && votes.length === 0 && (
+        {!error && !loading && votes.length === 0 && (
           <p className="typo-body-b-01 py-8 text-center text-brand-gray-100">
             해당 카테고리의 밸런스게임이 아직 없어요
           </p>
@@ -144,7 +138,7 @@ function BalancePageContent() {
 
 export default function BalancePage() {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={null}>
       <BalancePageContent />
     </Suspense>
   )

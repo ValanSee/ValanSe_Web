@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Header from '@/components/_shared/header'
-import Loading from '@/components/_shared/loading'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import {
@@ -30,27 +29,21 @@ const TitlesPage = () => {
   const dispatch = useAppDispatch()
   const titles = useAppSelector((state) => state.member.titles)
   const pointHistory = useAppSelector((state) => state.member.pointHistory)
-  const [loaded, setLoaded] = useState(false)
   const [tab, setTab] = useState<TitleTabKey>('owned')
   const [modal, setModal] = useState<ModalState>(null)
   const [pending, setPending] = useState(false)
 
   useEffect(() => {
-    let cancelled = false
     void (async () => {
       try {
         await Promise.all([
           dispatch(fetchTitlesThunk()),
           dispatch(fetchPointHistoryThunk()),
         ])
-        if (!cancelled) setLoaded(true)
       } catch {
         router.replace(entryHrefWithRedirect(pathname))
       }
     })()
-    return () => {
-      cancelled = true
-    }
   }, [dispatch, pathname, router])
 
   const equipped = useMemo<Title | null>(() => {
@@ -64,7 +57,7 @@ const TitlesPage = () => {
 
   const point = pointHistory?.[0]?.remainingPoint ?? 0
 
-  if (!loaded || !titles) return <Loading />
+  if (!titles) return null
 
   const ownedAll = [...titles.defaultTitles, ...titles.ownedTitles]
   const lockedAll = titles.lockedTitles

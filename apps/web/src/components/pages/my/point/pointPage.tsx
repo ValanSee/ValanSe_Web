@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Header from '@/components/_shared/header'
-import Loading from '@/components/_shared/loading'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { fetchPointHistoryThunk } from '@/store/thunks/memberThunks'
@@ -17,26 +16,19 @@ const PointPage = () => {
   const pathname = usePathname()
   const dispatch = useAppDispatch()
   const pointHistory = useAppSelector((state) => state.member.pointHistory)
-  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    let cancelled = false
     void (async () => {
       try {
         await dispatch(fetchPointHistoryThunk())
-        if (!cancelled) setLoaded(true)
       } catch {
         router.replace(entryHrefWithRedirect(pathname))
       }
     })()
-    return () => {
-      cancelled = true
-    }
   }, [dispatch, pathname, router])
 
-  if (!loaded || !pointHistory) return <Loading />
+  if (!pointHistory) return null
 
-  // 가장 최신 항목의 remainingPoint가 현재 잔액. 내역이 없으면 0.
   const currentPoint = pointHistory[0]?.remainingPoint ?? 0
 
   return (
