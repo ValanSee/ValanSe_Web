@@ -36,7 +36,7 @@ const AccountDeletionPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background px-6 py-10 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-card px-6 py-10 max-w-2xl mx-auto">
       {/* 앱 이름 및 헤더 */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-2">ValanSe</h1>

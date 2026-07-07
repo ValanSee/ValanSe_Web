@@ -99,14 +99,14 @@ const TitlesPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-card">
       <Header
         title="칭호"
         showBackButton
         onBackClick={() => router.push('/my')}
       />
       <TitleCurrentSection equipped={equipped} point={point} />
-      <div className="h-2 bg-background" />
+      <div className="h-2 bg-brand-gray-50" />
       <TitleTabs
         active={tab}
         onChange={setTab}

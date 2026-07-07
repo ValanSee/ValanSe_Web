@@ -94,7 +94,7 @@ function BalancePageContent() {
   }, [category, sort])
 
   return (
-    <div className="flex min-h-screen flex-col bg-background pb-24">
+    <div className="flex min-h-screen flex-col bg-card pb-24">
       <Header title="밸런스 게임" />
 
       <TabBar>

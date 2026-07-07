@@ -69,7 +69,7 @@ function MyPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background pb-24">
+    <div className="flex min-h-screen flex-col bg-card pb-24">
       <Header
         title="마이"
         trailing={
@@ -153,7 +153,7 @@ function MyPage() {
         ))}
       </section>
 
-      <div className="h-2 bg-background" />
+      <div className="h-2 bg-brand-gray-50" />
 
       {/* 계정 관리 */}
       <section className="flex flex-col gap-1 bg-card px-5 py-4">

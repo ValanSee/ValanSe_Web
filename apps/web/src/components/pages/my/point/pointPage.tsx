@@ -33,7 +33,7 @@ const PointPage = () => {
   const currentPoint = pointHistory[0]?.remainingPoint ?? 0
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-card">
       <Header
         title="내 포인트"
         showBackButton
@@ -41,7 +41,7 @@ const PointPage = () => {
       />
       <PointHeaderSection point={currentPoint} />
       <PointPolicyNotice />
-      <div className="h-2 bg-background" />
+      <div className="h-2 bg-brand-gray-50" />
       <PointHistoryList items={pointHistory} />
     </div>
   )

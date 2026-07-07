@@ -46,7 +46,7 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
   }, [category, sort, mode])
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-card">
       <Header title={title} showBackButton onBackClick={() => router.push('/my')} />
       <TabBar>
         {CATEGORIES.map((tab) => (

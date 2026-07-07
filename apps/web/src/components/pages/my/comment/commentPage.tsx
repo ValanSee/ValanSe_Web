@@ -53,7 +53,7 @@ const CommentPage = () => {
     )
 
   return (
-    <div className="flex min-h-screen flex-col bg-background pb-24">
+    <div className="flex min-h-screen flex-col bg-card pb-24">
       <Header
         title="내가 작성한 댓글"
         showBackButton

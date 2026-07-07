@@ -151,7 +151,7 @@ function PollDetailContent() {
   if (loading) return <Loading />
   if (error)
     return (
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-card">
         <Header
           title={getHeaderTitle()}
           showBackButton={shouldShowBackButton()}
@@ -184,11 +184,10 @@ function PollDetailContent() {
   }
 
   return (
-    <div>
+    <div className="flex min-h-screen flex-col bg-card">
       <Header
         title={getHeaderTitle()}
         showBackButton={shouldShowBackButton()}
-        bgGray={true}
         onBackClick={handleBackClick}
       />
       <div className="max-w-xl mx-auto p-4 pb-24">
