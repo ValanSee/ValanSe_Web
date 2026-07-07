@@ -3,30 +3,34 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Icon } from '@iconify/react'
+import { usePathname, useRouter } from 'next/navigation'
 import MBTIBottomSheet from './mbtiBottomSheet'
 import {
   onboardingSchema,
   type OnboardingFormValues,
 } from './onboarding.schema'
 import { checkNickname, createMemberProfile } from '@/api/member/member'
-import { usePathname, useRouter } from 'next/navigation'
 import {
   consumePostAuthRedirect,
   entryHrefWithRedirect,
 } from '@/utils/authRedirect'
 import { Age, Gender, mbtiIe, mbtiTf, Profile } from '@/types/member'
-import RequiredMark from '@/components/_shared/requiredMark'
+import Header from '@/components/_shared/header'
+import { Button } from '@/components/ui/button'
+import { TextField } from '@/components/ui/textField'
+import { cn } from '@/lib/utils'
 
 const genderOptions: { value: Gender; label: string }[] = [
-  { value: 'FEMALE', label: '여성' },
   { value: 'MALE', label: '남성' },
+  { value: 'FEMALE', label: '여성' },
 ]
 
 const ageOptions: { value: Age; label: string }[] = [
   { value: 'TEN', label: '10대' },
   { value: 'TWENTY', label: '20대' },
   { value: 'THIRTY', label: '30대' },
-  { value: 'OVER_FOURTY', label: '40대' },
+  { value: 'OVER_FOURTY', label: '40대 이상' },
 ]
 
 const OnboardingPage = () => {
@@ -39,7 +43,7 @@ const OnboardingPage = () => {
     setValue,
     getValues,
     watch,
-    formState: { errors, isValid, isSubmitting },
+    formState: { isValid, isSubmitting },
   } = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
     mode: 'onChange',
@@ -51,6 +55,8 @@ const OnboardingPage = () => {
 
   const nickname = watch('nickname')
   const nicknameVerified = watch('nicknameVerified')
+  const gender = watch('gender')
+  const age = watch('age')
   const mbti = watch('mbti')
 
   const [nicknameMessage, setNicknameMessage] = useState<{
@@ -70,32 +76,32 @@ const OnboardingPage = () => {
     setCheckingNickname(true)
     try {
       const { isAvailable, isClean } = await checkNickname(value)
-
-      // 응답을 기다리는 사이 입력이 바뀌었으면 stale 응답이므로 무시한다.
-      if (getValues('nickname').trim() !== value) {
-        return
-      }
+      if (getValues('nickname').trim() !== value) return
 
       if (!isAvailable) {
         setValue('nicknameVerified', false, { shouldValidate: true })
-        setNicknameMessage({ type: 'error', text: '이미 사용 중인 닉네임이에요' })
+        setNicknameMessage({
+          type: 'error',
+          text: '이미 사용 중인 닉네임이에요',
+        })
         return
       }
-
       if (!isClean) {
         setValue('nicknameVerified', false, { shouldValidate: true })
-        setNicknameMessage({ type: 'error', text: '사용할 수 없는 닉네임이에요' })
+        setNicknameMessage({
+          type: 'error',
+          text: '사용할 수 없는 닉네임이에요',
+        })
         return
       }
-
       setValue('nicknameVerified', true, { shouldValidate: true })
-      setNicknameMessage({ type: 'success', text: '사용 가능한 닉네임이에요' })
-    } catch (error) {
-      console.error('Failed to check nickname:', error)
-      // 입력이 바뀐 뒤 도착한 stale 에러는 무시한다.
-      if (getValues('nickname').trim() !== value) {
-        return
-      }
+      setNicknameMessage({
+        type: 'success',
+        text: '사용 가능한 닉네임이에요',
+      })
+    } catch (e) {
+      console.error('Failed to check nickname:', e)
+      if (getValues('nickname').trim() !== value) return
       setValue('nicknameVerified', false, { shouldValidate: true })
       setNicknameMessage({
         type: 'error',
@@ -116,146 +122,176 @@ const OnboardingPage = () => {
       mbti: values.mbti,
       role: 'USER',
     }
-
     try {
       await createMemberProfile(profile)
       router.replace(consumePostAuthRedirect() ?? '/main')
-    } catch (error) {
-      console.error('Failed to create member profile:', error)
+    } catch (e) {
+      console.error('Failed to create member profile:', e)
       alert('회원 정보 생성에 실패했습니다.')
       router.replace(entryHrefWithRedirect(pathname))
     }
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col min-h-dvh px-6 py-10 bg-white"
-    >
-      <h1 className="text-xl font-bold mb-9 mt-10">이것만 작성해주세요!</h1>
+    <div className="flex min-h-dvh flex-col bg-card">
+      <Header showBackButton title="회원가입" />
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-1 flex-col gap-8 px-5 pb-8 pt-6"
+      >
+        {/* 닉네임 */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-end gap-2">
+            <TextField
+              label={
+                <>
+                  닉네임 <span className="text-destructive">*</span>
+                </>
+              }
+              maxLength={16}
+              showCounter
+              value={nickname}
+              placeholder="닉네임을 입력해주세요"
+              {...register('nickname', {
+                onChange: () => {
+                  setValue('nicknameVerified', false, { shouldValidate: true })
+                  setNicknameMessage(null)
+                },
+              })}
+            />
+            <Button
+              type="button"
+              variant={nicknameVerified ? 'secondary' : 'primary'}
+              size="l"
+              className="shrink-0"
+              onClick={handleCheckNickname}
+              disabled={checkingNickname || !nickname.trim() || nicknameVerified}
+            >
+              {checkingNickname
+                ? '확인 중'
+                : nicknameVerified
+                  ? '확인 완료'
+                  : '중복 확인'}
+            </Button>
+          </div>
+          {nicknameMessage && (
+            <p
+              className={cn(
+                'typo-body-c-02',
+                nicknameMessage.type === 'success'
+                  ? 'text-primary'
+                  : 'text-destructive',
+              )}
+            >
+              {nicknameMessage.text}
+            </p>
+          )}
+        </div>
 
-      <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">
-          닉네임 <RequiredMark />
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            {...register('nickname', {
-              onChange: () => {
-                setValue('nicknameVerified', false, { shouldValidate: true })
-                setNicknameMessage(null)
-              },
-            })}
-            placeholder="닉네임을 입력해주세요"
-            className="flex-1 border border-gray-300 rounded-md px-4 py-2 placeholder:text-[#8E8E8E] focus:outline-none focus:ring-2 focus:ring-black"
-          />
+        {/* 성별 */}
+        <div className="flex flex-col gap-3">
+          <span className="typo-title-02 text-foreground">
+            성별 <span className="text-destructive">*</span>
+          </span>
+          <div className="grid grid-cols-2 gap-3">
+            {genderOptions.map((opt) => (
+              <label key={opt.value} className="cursor-pointer">
+                <input
+                  type="radio"
+                  value={opt.value}
+                  {...register('gender')}
+                  className="peer sr-only"
+                />
+                <Button
+                  type="button"
+                  variant={gender === opt.value ? 'secondary' : 'ghost'}
+                  size="l"
+                  fullWidth
+                  onClick={() =>
+                    setValue('gender', opt.value, { shouldValidate: true })
+                  }
+                >
+                  {opt.label}
+                </Button>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* 나이 */}
+        <div className="flex flex-col gap-3">
+          <span className="typo-title-02 text-foreground">
+            나이 <span className="text-destructive">*</span>
+          </span>
+          <div className="grid grid-cols-2 gap-3">
+            {ageOptions.map((opt) => (
+              <label key={opt.value} className="cursor-pointer">
+                <input
+                  type="radio"
+                  value={opt.value}
+                  {...register('age')}
+                  className="peer sr-only"
+                />
+                <Button
+                  type="button"
+                  variant={age === opt.value ? 'secondary' : 'ghost'}
+                  size="l"
+                  fullWidth
+                  onClick={() =>
+                    setValue('age', opt.value, { shouldValidate: true })
+                  }
+                >
+                  {opt.label}
+                </Button>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* MBTI */}
+        <div className="flex flex-col gap-3">
+          <span className="typo-title-02 text-foreground">
+            MBTI <span className="text-destructive">*</span>
+          </span>
           <button
             type="button"
-            onClick={handleCheckNickname}
-            disabled={checkingNickname || !nickname.trim() || nicknameVerified}
-            className="shrink-0 px-4 py-2 rounded-md bg-[#839DB7] text-white text-sm font-bold disabled:opacity-40"
+            onClick={() => setMbtiBottomSheetOpen(true)}
+            className={cn(
+              'typo-label-02 flex h-12 w-full items-center justify-between rounded-xl border border-brand-gray-75 bg-card px-4 py-2 text-left transition-colors hover:border-primary',
+              mbti ? 'text-foreground' : 'text-brand-gray-100',
+            )}
           >
-            {checkingNickname
-              ? '확인 중'
-              : nicknameVerified
-                ? '확인 완료'
-                : '중복 확인'}
+            {mbti ?? 'MBTI를 선택해주세요'}
+            <Icon
+              icon="icon-park-solid:down-one"
+              width={20}
+              className="text-brand-gray-100"
+              aria-hidden
+            />
           </button>
         </div>
-        {nicknameMessage && (
-          <p
-            className={`mt-2 text-sm ${
-              nicknameMessage.type === 'success'
-                ? 'text-blue-500'
-                : 'text-red-500'
-            }`}
-          >
-            {nicknameMessage.text}
-          </p>
+        {mbtiBottomSheetOpen && (
+          <MBTIBottomSheet
+            onClose={() => setMbtiBottomSheetOpen(false)}
+            setMbti={(value) =>
+              setValue('mbti', value, { shouldValidate: true })
+            }
+          />
         )}
-      </div>
 
-      <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">
-          성별 <RequiredMark />
-        </label>
-        <div className="flex gap-4">
-          {genderOptions.map((option) => (
-            <label key={option.value} className="flex-1">
-              <input
-                type="radio"
-                value={option.value}
-                {...register('gender')}
-                className="peer sr-only"
-              />
-              <span className="block text-center border border-gray-300 py-2 rounded-md cursor-pointer peer-checked:text-blue-500 peer-checked:border-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-black">
-                {option.label}
-              </span>
-            </label>
-          ))}
-        </div>
-        {errors.gender && (
-          <p className="mt-2 text-sm text-red-500">{errors.gender.message}</p>
-        )}
-      </div>
-
-      <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">
-          나이 <RequiredMark />
-        </label>
-        <div className="flex gap-2">
-          {ageOptions.map((option) => (
-            <label key={option.value} className="flex-1">
-              <input
-                type="radio"
-                value={option.value}
-                {...register('age')}
-                className="peer sr-only"
-              />
-              <span className="block text-center border border-gray-300 py-2 rounded-md cursor-pointer peer-checked:text-blue-500 peer-checked:border-blue-500 peer-focus-visible:ring-2 peer-focus-visible:ring-black">
-                {option.label}
-              </span>
-            </label>
-          ))}
-        </div>
-        {errors.age && (
-          <p className="mt-2 text-sm text-red-500">{errors.age.message}</p>
-        )}
-      </div>
-
-      <div className="mb-6">
-        <label className="block mb-4 text-sm font-bold">
-          MBTI <RequiredMark />
-        </label>
-        <button
-          type="button"
-          onClick={() => setMbtiBottomSheetOpen(true)}
-          className={`w-full text-left text-sm border border-gray-300 px-4 py-3 rounded-md ${
-            mbti ? '' : 'text-[#8E8E8E]'
-          }`}
+        {/* CTA */}
+        <Button
+          type="submit"
+          variant="primary"
+          size="xl"
+          fullWidth
+          disabled={!isValid || isSubmitting}
+          className="mt-auto"
         >
-          {mbti ? mbti : 'MBTI를 알려주세요'}
-        </button>
-        {errors.mbti && (
-          <p className="mt-2 text-sm text-red-500">{errors.mbti.message}</p>
-        )}
-      </div>
-      {mbtiBottomSheetOpen && (
-        <MBTIBottomSheet
-          onClose={() => setMbtiBottomSheetOpen(false)}
-          setMbti={(value) => setValue('mbti', value, { shouldValidate: true })}
-        />
-      )}
-
-      <button
-        type="submit"
-        disabled={!isValid || isSubmitting}
-        className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-auto disabled:opacity-40"
-      >
-        완료
-      </button>
-    </form>
+          회원가입 하기
+        </Button>
+      </form>
+    </div>
   )
 }
 
