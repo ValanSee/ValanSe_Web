@@ -40,7 +40,7 @@ function EntryPage() {
         </Suspense>
         <Link
           href="/main"
-          className="typo-label-02 text-brand-gray-200"
+          className="typo-label-01 text-brand-gray-200"
         >
           로그인 없이 시작하기
         </Link>
