@@ -1,217 +1,179 @@
 'use client'
 
-import Image from 'next/image'
+import { Icon } from '@iconify/react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Chip } from '@/components/ui/chip'
+import { TextField } from '@/components/ui/textField'
+import { createVote } from '@/api/votes'
 import { CreateVoteData } from '@/types/api/votes'
 import { VoteCategory } from '@/types/_shared/vote'
-import { createVote } from '@/api/votes'
-import { useRouter } from 'next/navigation'
-import RequiredMark from '@/components/_shared/requiredMark'
 
-const categories = [
-  { label: '음식', value: 'FOOD' },
+const CATEGORIES: { label: string; value: VoteCategory }[] = [
   { label: '연애', value: 'LOVE' },
+  { label: '음식', value: 'FOOD' },
   { label: '기타', value: 'ETC' },
 ]
 
 const CreateForm = () => {
   const router = useRouter()
-  const [title, setTitle] = useState<string>('')
-  const [category, setCategory] = useState<string | null>(null)
-  const [options, setOptions] = useState<string[]>(['', '']) // A, B
-  const [content, setContent] = useState<string>('')
+  const [title, setTitle] = useState('')
+  const [category, setCategory] = useState<VoteCategory | null>(null)
+  const [options, setOptions] = useState<string[]>(['', ''])
+  const [content, setContent] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const isFormValid = () => {
-    if (title.trim() === '') return false
-    if (!category) return false
-    for (const option of options) {
-      if (option.trim() === '') return false
-    }
-    return true
-  }
+  const isValid =
+    title.trim() !== '' && !!category && options.every((o) => o.trim() !== '')
 
-  const onSubmit = async () => {
-    if (!isFormValid()) {
-      alert('필수 정보를 입력해주세요')
-      return
+  const submit = async () => {
+    if (!isValid || submitting) return
+    setSubmitting(true)
+    try {
+      const voteData: CreateVoteData = {
+        title,
+        options,
+        category: category as VoteCategory,
+        ...(content.trim() ? { content: content.trim() } : {}),
+      }
+      const voteId = await createVote(voteData)
+      if (voteId) router.push(`/poll/${voteId}?source=create`)
+    } catch {
+      alert('업로드 실패')
+    } finally {
+      setSubmitting(false)
     }
-    const voteData: CreateVoteData = {
-      title,
-      options,
-      category: category as VoteCategory,
-      ...(content.trim()
-        ? ({ content: content.trim() } as Pick<CreateVoteData, 'content'>)
-        : {}),
-    }
-    const voteId = await createVote(voteData)
-    return voteId
   }
 
   return (
-    <div className="flex flex-col items-center gap-10">
+    <div className="flex flex-col gap-8">
       {/* 질문 */}
-      <div className="flex flex-col items-center gap-3 w-full">
-        <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
-          <div>질문을 작성해주세요</div>
-          <RequiredMark />
-        </div>
-        <div className="w-full border border-[#C6C6C6] rounded-lg px-5 py-3">
-          <input
-            type="text"
-            className="w-full text-[18px] text-[#1D1D1D] font-[500]"
-            placeholder="예) 나에게 초능력이 생긴다면?"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-      </div>
+      <TextField
+        label={
+          <>
+            질문을 작성해주세요 <span className="text-destructive">*</span>
+          </>
+        }
+        placeholder="예) 나에게 초능력이 생긴다면?"
+        maxLength={40}
+        showCounter
+        value={title}
+        onValueChange={setTitle}
+      />
 
-      {/* 썰(경험담) */}
-      <div className="flex flex-col items-center gap-2 w-full">
-        <div className="w-full flex items-center gap-2">
-          <div className="text-[18px] font-[700] leading-none">
+      {/* 썰 (선택사항) */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <span className="typo-title-02 text-foreground">
             썰(경험담)을 들려주세요
-          </div>
-          <div className="px-2 py-[2px] rounded-md border border-[#E4E4E4] text-[12px] text-[#8E8E8E] leading-none">
+          </span>
+          <span className="typo-body-c-02 rounded-md border border-brand-gray-75 px-2 py-0.5 text-brand-gray-100">
             선택사항
-          </div>
+          </span>
         </div>
-        <div className="w-full border border-[#C6C6C6] rounded-lg px-5 py-3">
+        <div className="rounded-xl border border-brand-gray-75 bg-card px-4 py-3">
           <textarea
-            className="w-full h-[120px] resize-none text-[16px] text-[#1D1D1D] font-[400] outline-none"
-            placeholder="예시: 어제 점심시간에 동료들과 뭘 먹을지 정하려다가 시간을 다 쓰고 결국 편의점 도시락을 먹게 되었는데, 여러분이라면 어떤 선택을 하실건가요?"
+            className="typo-body-a-01 h-[120px] w-full resize-none bg-transparent text-foreground outline-none placeholder:text-brand-gray-100"
+            placeholder="어제 점심시간에 동료들과 뭘 먹을지 정하려다가…"
             value={content}
-            onChange={(e) => setContent(e.target.value.slice(0, 500))}
+            maxLength={500}
+            onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        <div className="w-full flex items-center justify-between">
-          <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
-            썰을 추가하면 더 많은 공감과 댓글을 받을 수 있어요!
-          </div>
-          <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
-            {content.length}/500
-          </div>
+        <div className="flex items-center justify-between typo-body-c-02 text-brand-gray-100">
+          <span>썰을 추가하면 더 많은 공감과 댓글을 받을 수 있어요!</span>
+          <span>{content.length}/500</span>
         </div>
       </div>
 
       {/* 주제 */}
-      <div className="flex flex-col items-center gap-3 w-full">
-        <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
-          <div>주제를 선택해주세요</div>
-          <RequiredMark />
-        </div>
-        <div className="flex gap-2 w-full">
-          {categories.map((c) => (
-            <button
-              key={c.label}
-              className={`w-[68px] h-10 rounded-full ${
-                category === c.value
-                  ? 'bg-[#839DB7] text-white'
-                  : 'bg-white text-[#8E8E8E] border border-[#C6C6C6]'
-              }`}
-              onClick={() => {
-                if (category === c.value) {
-                  setCategory(null)
-                  return
-                }
-                setCategory(c.value)
-              }}
+      <div className="flex flex-col gap-3">
+        <span className="typo-title-02 text-foreground">
+          주제를 선택해주세요 <span className="text-destructive">*</span>
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {CATEGORIES.map((c) => (
+            <Chip
+              key={c.value}
+              clickable
+              status={category === c.value ? 'primary' : 'ghost'}
+              size="l"
+              onClick={() =>
+                setCategory(category === c.value ? null : c.value)
+              }
             >
-              <div className="text-[16px]">{c.label}</div>
-            </button>
+              {c.label}
+            </Chip>
           ))}
         </div>
       </div>
 
-      {/* 선택지 */}
-      <div className="flex flex-col items-center w-full">
-        <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
-          <div>선택지를 작성해주세요</div>
-          <RequiredMark />
-        </div>
-
-        {/* 선택지 input들 */}
-        <div className="flex flex-col gap-2 w-full pt-3">
+      {/* 선택지 A~D */}
+      <div className="flex flex-col gap-3">
+        <span className="typo-title-02 text-foreground">
+          선택지를 작성해주세요 <span className="text-destructive">*</span>
+        </span>
+        <div className="flex flex-col gap-2">
           {options.map((option, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 w-full border border-[#C6C6C6] rounded-lg px-5 py-3"
+              className="flex items-center gap-3 rounded-xl border border-brand-gray-75 bg-card px-4 py-3"
             >
-              <div className="text-[18px] font-[500] leading-none">
+              <span className="typo-heading-06 text-foreground">
                 {String.fromCharCode(65 + index)}
-              </div>
+              </span>
               <input
                 type="text"
-                className="w-full text-[18px] text-[#1D1D1D] font-[500]"
+                className="typo-label-02 w-full bg-transparent text-foreground outline-none placeholder:text-brand-gray-100"
+                placeholder={`선택지 ${String.fromCharCode(65 + index)}`}
                 value={option}
                 onChange={(e) => {
-                  const newOptions = [...options]
-                  newOptions[index] = e.target.value
-                  setOptions(newOptions)
+                  const next = [...options]
+                  next[index] = e.target.value
+                  setOptions(next)
                 }}
               />
             </div>
           ))}
         </div>
-
-        {/* 선택지 추가 버튼 */}
         {options.length < 4 && (
           <button
-            className="flex items-center pt-4 ml-auto gap-3 text-[#555555] text-[14px] font-[400] leading-none"
-            onClick={() => {
-              if (options.length < 4) {
-                setOptions([...options, ''])
-              }
-            }}
+            type="button"
+            className="typo-label-03 ml-auto flex items-center gap-1 text-brand-gray-200"
+            onClick={() => setOptions([...options, ''])}
           >
-            <Image
-              src="/plus-gray.svg"
-              alt="plus-gray"
-              width={12}
-              height={12}
-            />
+            <Icon icon="tabler:plus" width={16} aria-hidden />
             선택지 추가
           </button>
         )}
       </div>
-      {/* 제출 버튼 */}
-      <div className="flex flex-col items-center gap-3">
-        {/* 경고문 */}
-        <div className="flex gap-1 w-full items-start">
-          <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
-            *
-          </div>
-          <div className="text-[12px] font-[400] leading-none text-[#8E8E8E]">
-            폭력적이거나 선정적인 내용, 타인에게 불쾌감이나 피해를 줄 수 있는
-            게시물은 금지되어 있으며, 위반 시 이용이 제한될 수 있습니다.
-          </div>
-        </div>
-        {/* 버튼 */}
-        <div className="flex gap-2 w-full">
-          <button
-            onClick={() => {
-              // NOTE: 뒤로 갈 페이지가 없음
-            }}
-            className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#E4E4E4] rounded-lg text-[18px] text-[#8E8E8E] font-[400]"
-          >
-            취소
-          </button>
-          <button
-            onClick={async () => {
-              try {
-                const voteId = await onSubmit()
-                if (voteId) {
-                  router.push(`/poll/${voteId}?source=create`)
-                }
-              } catch {
-                alert('업로드 실패')
-              }
-            }}
-            className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#839DB7] rounded-lg text-[18px] text-white font-[400]"
-          >
-            업로드
-          </button>
-        </div>
+
+      {/* 경고문 */}
+      <p className="typo-body-c-02 text-brand-gray-100">
+        * 폭력적이거나 선정적인 내용, 타인에게 불쾌감이나 피해를 줄 수 있는
+        게시물은 금지되어 있으며, 위반 시 이용이 제한될 수 있습니다.
+      </p>
+
+      {/* CTA */}
+      <div className="flex gap-3 pt-2 [&>*]:flex-1">
+        <Button
+          variant="gray"
+          size="l"
+          onClick={() => router.back()}
+          fullWidth
+        >
+          취소
+        </Button>
+        <Button
+          variant="primary"
+          size="l"
+          onClick={submit}
+          disabled={!isValid || submitting}
+          fullWidth
+        >
+          게임 만들기
+        </Button>
       </div>
     </div>
   )
