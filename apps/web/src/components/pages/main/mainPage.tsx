@@ -31,7 +31,7 @@ const MainPage = () => {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col bg-background pb-24">
+    <div className="flex min-h-screen flex-col bg-card pb-24">
       <Header title="홈" />
 
       {/* 뜨고 있는 밸런스 */}
@@ -48,7 +48,7 @@ const MainPage = () => {
       </section>
 
       {/* 이런 주제는 어때요? */}
-      <section className="mt-6 flex flex-col gap-3 border-y-8 border-brand-gray-50 bg-card px-4 py-5">
+      <section className="mt-6 flex flex-col gap-3 border-b-8 border-brand-gray-50 bg-card px-4 py-5">
         <h2 className="typo-heading-06 text-foreground">이런 주제는 어때요?</h2>
         <div className="flex items-start justify-around">
           {CATEGORIES.map((c) => (
