@@ -151,19 +151,19 @@ function PollDetailContent() {
   if (loading) return <Loading />
   if (error)
     return (
-      <div className="flex flex-col min-h-screen bg-[#f0f0f0]">
+      <div className="flex min-h-screen flex-col bg-background">
         <Header
           title={getHeaderTitle()}
           showBackButton={shouldShowBackButton()}
           bgGray={true}
           onBackClick={handleBackClick}
         />
-        <div className="flex flex-col items-center justify-center flex-1 p-4">
-          <div className="text-center">
-            <p className="text-xl font-bold text-red-500 mb-2">⚠️</p>
-            <p className="text-lg font-semibold text-gray-700 mb-2">{error}</p>
-            <p className="text-sm text-gray-500">다시 시도해주세요</p>
-          </div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-4 text-center">
+          <p className="typo-heading-04 text-destructive">⚠️</p>
+          <p className="typo-title-02 text-brand-gray-200">{error}</p>
+          <p className="typo-body-c-01 text-brand-gray-100">
+            다시 시도해주세요
+          </p>
         </div>
       </div>
     )
