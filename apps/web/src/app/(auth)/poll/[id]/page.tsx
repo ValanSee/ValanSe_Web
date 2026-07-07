@@ -130,9 +130,9 @@ function PollDetailContent() {
 
   const getHeaderTitle = () => {
     if (source === 'hot' || isFromHot) return '오늘의 핫이슈'
-    if (source === 'balance') return '밸런스게임'
-    if (source === 'create') return '밸런스게임'
-    return '밸런스게임' // 기본값
+    if (source === 'balance') return '밸런스 게임'
+    if (source === 'create') return '밸런스 게임'
+    return '밸런스 게임'
   }
 
   const shouldShowBackButton = () => {
