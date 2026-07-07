@@ -81,7 +81,10 @@ function BalancePageContent() {
       try {
         setLoading(true)
         setError(null)
-        const data = await fetchVotes({ category, sort, size: 5 })
+        const [data] = await Promise.all([
+          fetchVotes({ category, sort, size: 5 }),
+          new Promise((resolve) => setTimeout(resolve, 800)),
+        ])
         setVotes(data.votes)
         setHasNextPage(data.has_next_page)
         setNextCursor(data.next_cursor)
