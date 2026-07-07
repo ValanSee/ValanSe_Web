@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import Header from '../_shared/header'
+import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
@@ -40,11 +40,15 @@ const PointPage = () => {
   const currentPoint = pointHistory[0]?.remainingPoint ?? 0
 
   return (
-    <div className="flex flex-col min-h-screen bg-white font-pretendard">
-      <Header title="내 포인트" />
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header
+        title="내 포인트"
+        showBackButton
+        onBackClick={() => router.push('/my')}
+      />
       <PointHeaderSection point={currentPoint} />
       <PointPolicyNotice />
-      <div className="w-full h-3 bg-[#F0F0F0]" />
+      <div className="h-2 bg-background" />
       <PointHistoryList items={pointHistory} />
     </div>
   )

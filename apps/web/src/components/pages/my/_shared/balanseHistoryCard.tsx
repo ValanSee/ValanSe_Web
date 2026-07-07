@@ -1,9 +1,17 @@
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
-import { UserCircle } from 'lucide-react'
-import { MyVoteHistoryItem } from '@/types/my/history'
+import { Icon } from '@iconify/react'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
-import Image from 'next/image'
+import { MyVoteHistoryItem } from '@/types/my/history'
+import { Chip } from '@/components/ui/chip'
 import { numberToAlphabet } from '@/utils/map'
+
+const CATEGORY_LABEL: Record<string, string> = {
+  LOVE: '연애',
+  FOOD: '음식',
+  BUY: '살까말까',
+  SPORT: '스포츠',
+  WORRY: '고민',
+  ETC: '기타',
+}
 
 export default function BalanseHistoryCard({
   data,
@@ -12,48 +20,43 @@ export default function BalanseHistoryCard({
   data: MyVoteHistoryItem
   onClick?: () => void
 }) {
-  const nickname = useAppSelector((state) => state.member.profile?.nickname)
+  const nickname = useAppSelector((s) => s.member.profile?.nickname)
 
   return (
-    <Card
-      className="rounded-xl cursor-pointer hover:shadow-lg transition-shadow"
+    <button
+      type="button"
       onClick={onClick}
+      className="flex w-full flex-col gap-3 rounded-2xl bg-card p-5 text-left shadow-[0_0_4px_rgba(0,0,0,0.08)]"
     >
-      <CardHeader className="flex flex-row items-center gap-2 pb-0">
-        <UserCircle className="text-gray-400 w-5 h-5" />
-        <span className="text-sm text-gray-600">
-          {nickname} • {data.createdAt}
+      <div className="flex items-center gap-2">
+        <Chip size="s" status="secondary">
+          {CATEGORY_LABEL[data.category] ?? data.category}
+        </Chip>
+        <span className="typo-body-c-02 text-brand-gray-100">
+          {nickname} · {data.createdAt}
         </span>
-      </CardHeader>
-      <CardContent className="pt-2 pb-4">
-        <p className="font-semibold mb-2">{data.title}</p>
-        {data.content && (
-          <p className="text-sm text-gray-600 mb-3 leading-relaxed whitespace-pre-wrap">
-            {data.content}
-          </p>
-        )}
-        <div className="text-sm text-gray-700 space-y-1">
-          {data.options.map((opt, index) => (
-            <div key={index} className="text-[16px] font-[400] text-[#555555]">
-              {numberToAlphabet(index)} {opt}
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-          <span>{data.category}</span>
-          <div className="flex gap-4">
-            <div className="flex items-center gap-1">
-              <Image
-                src="/vote-count.svg"
-                alt="vote-count"
-                width={18}
-                height={18}
-              />
-              {data.totalVoteCount}
-            </div>
+      </div>
+      <h3 className="typo-heading-06 text-foreground">{data.title}</h3>
+      {data.content && (
+        <p className="typo-body-b-01 line-clamp-2 text-brand-gray-200">
+          {data.content}
+        </p>
+      )}
+      <div className="flex flex-col gap-1">
+        {data.options.map((opt, index) => (
+          <div
+            key={index}
+            className="typo-body-b-01 text-brand-gray-200"
+          >
+            <span className="mr-1 text-primary">{numberToAlphabet(index)}</span>
+            {opt}
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        ))}
+      </div>
+      <div className="flex items-center gap-1 typo-body-c-02 text-brand-gray-100">
+        <Icon icon="tabler:users" width={16} aria-hidden />
+        {data.totalVoteCount}
+      </div>
+    </button>
   )
 }

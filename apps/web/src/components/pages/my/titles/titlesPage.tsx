@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import Header from '../_shared/header'
+import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
@@ -105,10 +105,14 @@ const TitlesPage = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white font-pretendard">
-      <Header title="칭호" />
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header
+        title="칭호"
+        showBackButton
+        onBackClick={() => router.push('/my')}
+      />
       <TitleCurrentSection equipped={equipped} point={point} />
-      <div className="w-full h-3 bg-[#F0F0F0]" />
+      <div className="h-2 bg-background" />
       <TitleTabs
         active={tab}
         onChange={setTab}
@@ -117,7 +121,7 @@ const TitlesPage = () => {
       />
       <ul className="px-4 pb-20">
         {visible.length === 0 ? (
-          <li className="py-16 text-center text-sm text-[#8E8E8E]">
+          <li className="typo-body-b-01 py-16 text-center text-brand-gray-100">
             {tab === 'owned'
               ? '보유한 칭호가 없어요'
               : '잠금 칭호가 없어요'}

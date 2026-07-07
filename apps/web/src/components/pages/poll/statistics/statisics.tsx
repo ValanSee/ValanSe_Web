@@ -21,7 +21,7 @@ import {
   GenderStatisticsResponse,
 } from '@/api/comment/statisticsApi'
 import type { ChartData } from 'chart.js'
-import { ChevronUp, ChevronDown } from 'lucide-react'
+import { Icon } from '@iconify/react'
 
 ChartJS.register(
   ArcElement,
@@ -298,16 +298,23 @@ export default function VoteChart({
   }
 
   return (
-    <div className="space-y-4 mt-4">
+    <div className="mt-4 flex flex-col gap-3">
       <button
-        className="w-full flex items-center justify-between px-5 py-4 bg-white rounded-xl shadow  text-[#222] mb-2 transition hover:shadow-md border border-gray-100"
+        type="button"
+        className="typo-label-01 flex w-full items-center justify-between rounded-2xl border border-brand-gray-75 bg-card px-5 py-4 text-foreground transition-colors hover:bg-brand-gray-50"
         onClick={() => setShowStatsAction(!showStats)}
       >
         <span>투표 결과 자세히 보기</span>
-        {showStats ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        <Icon
+          icon={
+            showStats ? 'icon-park-outline:up' : 'icon-park-outline:down'
+          }
+          width={20}
+          aria-hidden
+        />
       </button>
       {showStats && (
-        <div className="bg-white rounded-xl shadow p-6 h-[700px]">
+        <div className="rounded-2xl bg-card p-6 shadow-[0_0_4px_rgba(0,0,0,0.06)]">
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Checkbox

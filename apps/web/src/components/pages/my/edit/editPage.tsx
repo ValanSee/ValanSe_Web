@@ -1,97 +1,74 @@
-// TODO: api 호출 -> 내 정보 불러오기
-
 'use client'
 
 import { useState, useEffect } from 'react'
-import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
-import { Profile, MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/member'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { Icon } from '@iconify/react'
+import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
+import { Profile, MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/member'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { checkNickname } from '@/api/member/member'
 import {
   fetchMypageDataThunk,
   updateProfileThunk,
 } from '@/store/thunks/memberThunks'
-import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { useDebounce } from '@/hooks/useDebounce'
 import Loading from '@/components/_shared/loading'
+import Header from '@/components/_shared/header'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
-const ageOptions = ['10대', '20대', '30대', '40대']
-const genderOptions = ['여성', '남성']
+const genderOptions: { label: string; value: Gender }[] = [
+  { label: '남성', value: 'MALE' },
+  { label: '여성', value: 'FEMALE' },
+]
 
-const ageMap = (label: string) => {
-  switch (label) {
-    case '10대':
-      return 'TEN'
-    case '20대':
-      return 'TWENTY'
-    case '30대':
-      return 'THIRTY'
-    case '40대':
-      return 'OVER_FOURTY'
-    default:
-      return label
-  }
-}
-
-const genderMap = (label: string) => {
-  switch (label) {
-    case '여성':
-      return 'FEMALE'
-    case '남성':
-      return 'MALE'
-    default:
-      return label
-  }
-}
+const ageOptions: { label: string; value: Age }[] = [
+  { label: '10대', value: 'TEN' },
+  { label: '20대', value: 'TWENTY' },
+  { label: '30대', value: 'THIRTY' },
+  { label: '40대 이상', value: 'OVER_FOURTY' },
+]
 
 const EditPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const myPageData = useAppSelector((state) => state.member.mypageData)
+  const myPageData = useAppSelector((s) => s.member.mypageData)
 
-  // 로컬 상태 관리
-  const [nickname, setNickname] = useState<string | null>(
-    myPageData?.nickname || '',
-  )
+  const [nickname, setNickname] = useState<string>(myPageData?.nickname || '')
   const [gender, setGender] = useState<Gender | null>(
-    myPageData?.gender as Gender,
+    (myPageData?.gender as Gender) ?? null,
   )
-  const [age, setAge] = useState<Age | null>(myPageData?.age as Age)
-  const [mbti, setMbti] = useState<MBTI | null>(myPageData?.mbti as MBTI)
+  const [age, setAge] = useState<Age | null>(
+    (myPageData?.age as Age) ?? null,
+  )
+  const [mbti, setMbti] = useState<MBTI | null>(
+    (myPageData?.mbti as MBTI) ?? null,
+  )
 
-  const [isDirty, setIsDirty] = useState(false)
   const [isNicknameEditing, setIsNicknameEditing] = useState(false)
   const [nickNameMessage, setNickNameMessage] = useState<string | null>(null)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
-  const debouncedNickname = useDebounce<string>(nickname || '', 500)
+  const debouncedNickname = useDebounce<string>(nickname, 500)
 
   useEffect(() => {
-    if (debouncedNickname && debouncedNickname.length > 0) {
-      async function validateNickname() {
-        try {
-          const res = await checkNickname(debouncedNickname)
-          if (!res.isAvailable) {
-            setNickNameMessage('이미 사용 중인 닉네임입니다.')
-          } else if (!res.isMeaningful) {
-            setNickNameMessage('의미 있는 닉네임을 입력해주세요.')
-          } else if (!res.isClean) {
-            setNickNameMessage('욕설을 포함한 닉네임은 사용할 수 없습니다.')
-          } else {
-            setNickNameMessage(null)
-          }
-        } catch {
-          setNickNameMessage('닉네임 체크 중 오류가 발생했습니다.')
-        }
+    if (!debouncedNickname) return
+    ;(async () => {
+      try {
+        const res = await checkNickname(debouncedNickname)
+        if (!res.isAvailable) setNickNameMessage('이미 사용 중인 닉네임이에요')
+        else if (!res.isMeaningful)
+          setNickNameMessage('의미 있는 닉네임을 입력해주세요')
+        else if (!res.isClean) setNickNameMessage('사용할 수 없는 닉네임이에요')
+        else setNickNameMessage(null)
+      } catch {
+        setNickNameMessage('닉네임 확인 중 오류가 발생했어요')
       }
-      validateNickname()
-    }
+    })()
   }, [debouncedNickname])
 
   useEffect(() => {
-    console.log('전역 상태 nickname', myPageData?.nickname)
-    console.log('로컬 상태 nickname', nickname)
     if (myPageData) {
       setNickname(myPageData.nickname)
       setGender(myPageData.gender as Gender)
@@ -100,181 +77,177 @@ const EditPage = () => {
     } else {
       dispatch(fetchMypageDataThunk())
     }
-  }, [myPageData])
-
-  const refineForm = (): Profile => {
-    if (!mbti) {
-      throw new Error('MBTI is required')
-    }
-    const mbtiIe = mbti[0] as mbtiIe
-    const mbtiTf = mbti[2] as mbtiTf
-
-    const ageData: Age = age! as Age
-    const genderData: Gender = gender! as Gender
-
-    return {
-      nickname: nickname as string,
-      gender: genderData,
-      age: ageData,
-      mbtiIe: mbtiIe,
-      mbtiTf: mbtiTf,
-      mbti: mbti,
-      role: 'USER',
-    }
-  }
+  }, [myPageData, dispatch])
 
   const handleSubmit = async () => {
-    const refinedForm = refineForm()
-
+    if (!mbti || !age || !gender) return
     if (nickNameMessage) {
       alert(nickNameMessage)
-    } else {
-      dispatch(updateProfileThunk(refinedForm))
-      router.push('/my')
+      return
     }
+    const profile: Profile = {
+      nickname,
+      gender,
+      age,
+      mbtiIe: mbti[0] as mbtiIe,
+      mbtiTf: mbti[2] as mbtiTf,
+      mbti,
+      role: 'USER',
+    }
+    dispatch(updateProfileThunk(profile))
+    router.push('/my')
   }
 
-  if (!myPageData) {
-    return <Loading />
-  }
+  if (!myPageData) return <Loading />
 
   return (
-    <div className="px-4 py-10">
-      <div className="flex flex-col items-center gap-4">
-        <Image
-          src={myPageData.profile_image_url || '/profile-example.svg'}
-          alt="profile"
-          width={84}
-          height={84}
-          className="rounded-full object-cover"
-        />
-        <div className="text-[20px]">{myPageData.kakaoname}</div>
-      </div>
-      <div className="flex flex-col gap-4 mb-6 pt-6">
-        <label className="text-md font-bold">닉네임</label>
-        <div className="flex items-center justify-between pl-5 pr-3.5 py-3 border border-[#C6C6C6] rounded-md">
-          {!isNicknameEditing ? (
-            <>
-              <div className="text-md text-[#1D1D1D]">{nickname}</div>
-              <button
-                onClick={() => {
-                  setIsNicknameEditing(true)
-                  setIsDirty(true)
-                  setNickNameMessage(null)
-                }}
-                className="text-[#8E8E8E]"
-              >
-                수정
-              </button>
-            </>
-          ) : (
-            <>
-              <input
-                type="text"
-                value={nickname || ''}
-                onChange={(e) => setNickname(e.target.value)}
-                className="text-md text-[#1D1D1D] flex-1"
-              />
-              <div className="flex gap-2 text-md">
-                <button
-                  onClick={() => {
-                    setNickname(myPageData?.nickname || '')
-                    setIsDirty(false)
-                    setNickNameMessage(null)
-                    setIsNicknameEditing(false)
-                  }}
-                  className="text-[#8E8E8E]"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={() => {
-                    if (nickNameMessage) {
-                      alert(nickNameMessage)
-                    } else {
-                      setIsDirty(false)
+    <div className="flex min-h-screen flex-col bg-card">
+      <Header title="프로필 수정" showBackButton />
+      <div className="flex flex-col gap-8 px-5 pb-8 pt-6">
+        <div className="flex flex-col items-center gap-3">
+          <Image
+            src={myPageData.profile_image_url || '/profile-example.svg'}
+            alt="프로필"
+            width={84}
+            height={84}
+            className="h-[84px] w-[84px] rounded-full bg-brand-gray-75 object-cover"
+          />
+          <p className="typo-title-02 text-foreground">{myPageData.kakaoname}</p>
+        </div>
+
+        {/* 닉네임 */}
+        <div className="flex flex-col gap-2">
+          <label className="typo-title-02 text-foreground">닉네임</label>
+          <div className="flex items-center justify-between rounded-xl border border-brand-gray-75 bg-card px-4 py-3">
+            {isNicknameEditing ? (
+              <>
+                <input
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="typo-label-02 flex-1 bg-transparent text-foreground outline-none"
+                  maxLength={16}
+                />
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNickname(myPageData.nickname)
                       setNickNameMessage(null)
                       setIsNicknameEditing(false)
-                    }
-                  }}
-                  className="text-[#4D7298]"
+                    }}
+                    className="typo-label-03 text-brand-gray-100"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (nickNameMessage) alert(nickNameMessage)
+                      else setIsNicknameEditing(false)
+                    }}
+                    className="typo-label-03 text-primary"
+                  >
+                    완료
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="typo-label-02 text-foreground">
+                  {nickname}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsNicknameEditing(true)}
+                  className="typo-label-03 text-brand-gray-100"
                 >
-                  완료
+                  수정
                 </button>
-              </div>
-            </>
+              </>
+            )}
+          </div>
+          {nickNameMessage && (
+            <p className="typo-body-c-02 text-destructive">{nickNameMessage}</p>
           )}
         </div>
-        {nickNameMessage && isDirty && (
-          <div className="text-red-500 text-sm">{nickNameMessage}</div>
-        )}
-      </div>
 
-      <div className="flex flex-col gap-4 mb-6">
-        <label className="text-md font-bold">성별</label>
-        <div className="flex gap-4">
-          {genderOptions.map((option) => (
-            <button
-              key={genderMap(option)}
-              onClick={() => setGender(genderMap(option) as Gender)}
-              className={`flex-1 border py-2 rounded-md 
-               ${gender === genderMap(option) ? 'text-[#4D7298] border-[#4D7298]' : 'text-[#8E8E8E] border-[#C6C6C6]'}`}
-            >
-              {option}
-            </button>
-          ))}
+        {/* 성별 */}
+        <div className="flex flex-col gap-3">
+          <label className="typo-title-02 text-foreground">성별</label>
+          <div className="grid grid-cols-2 gap-3">
+            {genderOptions.map((opt) => (
+              <Button
+                key={opt.value}
+                variant={gender === opt.value ? 'secondary' : 'ghost'}
+                size="l"
+                fullWidth
+                onClick={() => setGender(opt.value)}
+              >
+                {opt.label}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-col gap-4 mb-6">
-        <label className="text-md font-bold">나이</label>
-        <div className="flex gap-2">
-          {ageOptions.map((option) => (
-            <button
-              key={option}
-              onClick={() => setAge(ageMap(option) as Age)}
-              className={`flex-1 border py-2 rounded-md
-                 ${age === ageMap(option) ? 'text-[#4D7298] border-[#4D7298]' : 'text-[#8E8E8E] border-[#C6C6C6]'}`}
-            >
-              {option}
-            </button>
-          ))}
+        {/* 나이 */}
+        <div className="flex flex-col gap-3">
+          <label className="typo-title-02 text-foreground">나이</label>
+          <div className="grid grid-cols-2 gap-3">
+            {ageOptions.map((opt) => (
+              <Button
+                key={opt.value}
+                variant={age === opt.value ? 'secondary' : 'ghost'}
+                size="l"
+                fullWidth
+                onClick={() => setAge(opt.value)}
+              >
+                {opt.label}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-col gap-4 mb-6">
-        <label className="text-md font-bold">MBTI</label>
-        <div className="flex items-center justify-between pl-5 pr-3.5 py-3 text-md text-[#8E8E8E] border border-gray-300 rounded-md">
-          <div className="text-md text-[#8E8E8E]">{mbti}</div>
+        {/* MBTI */}
+        <div className="flex flex-col gap-3">
+          <label className="typo-title-02 text-foreground">MBTI</label>
           <button
+            type="button"
             onClick={() => setMbtiBottomSheetOpen(true)}
-            className="text-[#8E8E8E]"
+            className={cn(
+              'typo-label-02 flex h-12 w-full items-center justify-between rounded-xl border border-brand-gray-75 bg-card px-4 py-2 text-left transition-colors hover:border-primary',
+              mbti ? 'text-foreground' : 'text-brand-gray-100',
+            )}
           >
-            수정
+            {mbti ?? 'MBTI를 선택해주세요'}
+            <Icon
+              icon="icon-park-solid:down-one"
+              width={20}
+              className="text-brand-gray-100"
+              aria-hidden
+            />
           </button>
         </div>
-      </div>
-      {mbtiBottomSheetOpen && (
-        <MBTIBottomSheet
-          onClose={() => setMbtiBottomSheetOpen(false)}
-          setMbti={setMbti}
-        />
-      )}
+        {mbtiBottomSheetOpen && (
+          <MBTIBottomSheet
+            onClose={() => setMbtiBottomSheetOpen(false)}
+            setMbti={setMbti}
+          />
+        )}
 
-      {/* Action Bar */}
-      <div className="flex gap-4">
-        <button
-          onClick={() => router.push('/my')}
-          className="w-full py-4 rounded-md bg-[#e4e4e4] text-[#8E8E8E] mt-8"
-        >
-          취소
-        </button>
-        <button
-          onClick={handleSubmit}
-          className="w-full py-4 rounded-md bg-[#839DB7] text-white mt-8"
-        >
-          변경사항 저장
-        </button>
+        <div className="flex gap-3 pt-4 [&>*]:flex-1">
+          <Button
+            variant="gray"
+            size="l"
+            fullWidth
+            onClick={() => router.push('/my')}
+          >
+            취소
+          </Button>
+          <Button variant="primary" size="l" fullWidth onClick={handleSubmit}>
+            저장
+          </Button>
+        </div>
       </div>
     </div>
   )
