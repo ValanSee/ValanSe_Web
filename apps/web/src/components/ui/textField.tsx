@@ -56,8 +56,6 @@ export interface TextFieldProps
   onValueChange?: (value: string) => void
 }
 
-const genId = () => Math.random().toString(36).slice(2, 10)
-
 const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
@@ -78,7 +76,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     ref,
   ) => {
     const reactId = React.useId()
-    const id = idProp ?? `${reactId}-${genId()}`
+    const id = idProp ?? reactId
     const supportId = supportText ? `${id}-help` : undefined
 
     const state: FieldState = disabled
