@@ -32,6 +32,10 @@ ChartJS.register(
   BarElement,
 )
 
+// 차트 옵션(A/B/C/D)별 색상. chart.js 가 리터럴 hex 문자열을 요구하므로
+// Tailwind 클래스가 아니라 상수로 유지한다.
+const CHART_OPTION_COLORS = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
+
 interface VoteChartProps {
   voteId: number | string
   showStats: boolean
@@ -48,7 +52,7 @@ function OptionTabs({
   active: string
   setActive: (v: string) => void
 }) {
-  const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
+  const tabColors = CHART_OPTION_COLORS
   return (
     <div className="flex justify-center space-x-4 mt-4">
       {options.map((option, idx) => (
@@ -58,7 +62,7 @@ function OptionTabs({
           className={`px-4 py-1 rounded-full text-sm border ${
             active === option
               ? 'text-white'
-              : 'bg-white text-gray-600 border-[#B0B0B0]'
+              : 'bg-white text-brand-gray-200 border-brand-gray-75'
           }`}
           style={
             active === option
@@ -107,7 +111,7 @@ export default function VoteChart({
         setOptionLabels(res.options.map((opt) => opt.content))
 
         // 동적 색상 생성 (2-4개 옵션에 맞는 색상)
-        const colors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
+        const colors = CHART_OPTION_COLORS
 
         setPieData({
           labels: res.options.map((option) => option.content),
@@ -203,7 +207,7 @@ export default function VoteChart({
         setOptionLabels(options)
 
         // 각 투표 옵션별로 E/I 또는 T/F 성향의 비율을 데이터셋으로 구성 (고유 색상 적용)
-        const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
+        const tabColors = CHART_OPTION_COLORS
         const datasets = options.map((option, index) => {
           const firstRatio =
             firstData.find((item) => item.content === option)?.ratio || 0
@@ -321,7 +325,7 @@ export default function VoteChart({
                 id="gender"
                 checked={chartType === 'gender'}
                 onCheckedChange={() => setChartType('gender')}
-                className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                className="w-5 h-5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
               <label htmlFor="gender">남자/여자 투표 결과 보기</label>
             </div>
@@ -331,7 +335,7 @@ export default function VoteChart({
                 id="age"
                 checked={chartType === 'age'}
                 onCheckedChange={() => setChartType('age')}
-                className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                className="w-5 h-5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
               <label htmlFor="age">나이대별 투표 결과 보기</label>
             </div>
@@ -341,7 +345,7 @@ export default function VoteChart({
                 id="mbti"
                 checked={chartType === 'mbti'}
                 onCheckedChange={() => setChartType('mbti')}
-                className="w-5 h-5 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                className="w-5 h-5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
               />
               <label htmlFor="mbti">MBTI별 투표 결과 보기</label>
             </div>
@@ -356,9 +360,14 @@ export default function VoteChart({
                   onClick={() => setGenderTab('male')}
                   className={`px-4 py-1 rounded-full text-sm border ${
                     genderTab === 'male'
-                      ? 'bg-[#6C8BA7] text-white border-[#6C8BA7]'
-                      : 'bg-white text-gray-600 border-[#B0B0B0]'
+                      ? 'text-white'
+                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
                   }`}
+                  style={
+                    genderTab === 'male'
+                      ? { backgroundColor: CHART_OPTION_COLORS[0], borderColor: CHART_OPTION_COLORS[0] }
+                      : {}
+                  }
                 >
                   남자
                 </button>
@@ -366,9 +375,14 @@ export default function VoteChart({
                   onClick={() => setGenderTab('female')}
                   className={`px-4 py-1 rounded-full text-sm border ${
                     genderTab === 'female'
-                      ? 'bg-[#F28C4A] text-white border-[#F28C4A]'
-                      : 'bg-white text-gray-600 border-[#B0B0B0]'
+                      ? 'text-white'
+                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
                   }`}
+                  style={
+                    genderTab === 'female'
+                      ? { backgroundColor: CHART_OPTION_COLORS[1], borderColor: CHART_OPTION_COLORS[1] }
+                      : {}
+                  }
                 >
                   여자
                 </button>
@@ -390,14 +404,14 @@ export default function VoteChart({
               {/* MBTI 옵션별 색상 legend */}
               <div className="flex justify-center gap-4 mb-4 mt-8 flex-wrap">
                 {availableOptions.map((option, idx) => {
-                  const tabColors = ['#6C8BA7', '#F28C4A', '#10B981', '#8B5CF6']
+                  const tabColors = CHART_OPTION_COLORS
                   return (
                     <div key={option} className="flex items-center gap-1">
                       <span
                         className="inline-block w-12 h-4 "
                         style={{ backgroundColor: tabColors[idx] }}
                       />
-                      <span className="text-xs text-gray-600 whitespace-nowrap">
+                      <span className="text-xs text-brand-gray-200 whitespace-nowrap">
                         {optionLabels[idx]}
                       </span>
                     </div>
@@ -436,9 +450,14 @@ export default function VoteChart({
                   onClick={() => setActiveTab('A')}
                   className={`px-4 py-1 rounded-full text-sm border ${
                     activeTab === 'A'
-                      ? 'bg-[#6C8BA7] text-white border-[#6C8BA7]'
-                      : 'bg-white text-gray-600 border-[#B0B0B0]'
+                      ? 'text-white'
+                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
                   }`}
+                  style={
+                    activeTab === 'A'
+                      ? { backgroundColor: CHART_OPTION_COLORS[0], borderColor: CHART_OPTION_COLORS[0] }
+                      : {}
+                  }
                 >
                   E/I
                 </button>
@@ -446,9 +465,14 @@ export default function VoteChart({
                   onClick={() => setActiveTab('B')}
                   className={`px-4 py-1 rounded-full text-sm border ${
                     activeTab === 'B'
-                      ? 'bg-[#F28C4A] text-white border-[#F28C4A]'
-                      : 'bg-white text-gray-600 border-[#B0B0B0]'
+                      ? 'text-white'
+                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
                   }`}
+                  style={
+                    activeTab === 'B'
+                      ? { backgroundColor: CHART_OPTION_COLORS[1], borderColor: CHART_OPTION_COLORS[1] }
+                      : {}
+                  }
                 >
                   T/F
                 </button>

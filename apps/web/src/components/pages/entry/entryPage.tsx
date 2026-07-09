@@ -31,7 +31,7 @@ function EntryPage() {
       <div className="flex w-full max-w-sm flex-col items-center gap-4">
         <Suspense
           fallback={
-            <div className="typo-label-01 flex h-14 w-full items-center justify-center rounded-xl bg-[#FEE500]/60 text-brand-gray-200">
+            <div className="typo-label-01 flex h-14 w-full items-center justify-center rounded-xl bg-brand-kakao/60 text-brand-gray-200">
               로그인 준비 중…
             </div>
           }

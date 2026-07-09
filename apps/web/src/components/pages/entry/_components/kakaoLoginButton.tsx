@@ -28,8 +28,7 @@ function KakaoLoginButton() {
     <button
       type="button"
       onClick={goKakao}
-      // 카카오 브랜드 가이드 준수: #FEE500 · 검정 텍스트 (§8 예외)
-      className="typo-label-01 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-[#FEE500] text-brand-black hover:brightness-95"
+      className="typo-label-01 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-brand-kakao text-brand-black hover:brightness-95"
     >
       <Icon icon="ri:kakao-talk-fill" width={24} aria-hidden />
       카카오로 로그인
