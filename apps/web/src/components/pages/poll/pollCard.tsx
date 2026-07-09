@@ -168,7 +168,15 @@ function PollCard({
           </p>
         )}
 
-        <div className="flex flex-col gap-3">
+        <div className="relative flex flex-col gap-3">
+          {localOptions.length === 2 && (
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-card typo-title-04 text-primary shadow-[0_0_4px_rgba(0,0,0,0.12)]"
+              aria-hidden
+            >
+              VS
+            </div>
+          )}
           {localOptions.map((option, idx) => {
             const isSelected = selectedId === option.optionId
             const percentage =
@@ -187,7 +195,7 @@ function PollCard({
                 className={cn(
                   'relative flex min-h-14 items-center gap-3 overflow-hidden rounded-xl px-4 py-3 text-left transition-colors',
                   isSelected
-                    ? 'bg-brand-violet-200 text-primary-foreground'
+                    ? 'bg-primary text-primary-foreground'
                     : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
                   isVoting && 'cursor-not-allowed opacity-70',
                 )}

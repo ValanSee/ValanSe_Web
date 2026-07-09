@@ -65,7 +65,6 @@ function PollDetailContent() {
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [open, setOpen] = useState(false)
   const [showStats, setShowStats] = useState(false)
   const [isFromHot, setIsFromHot] = useState(false)
   const router = useRouter()
@@ -209,23 +208,18 @@ function PollDetailContent() {
             postLoginReturnPath={postLoginReturnPath}
           />
         )}
-        {bestComment && !open && (
+        {bestComment && bestComment.totalCommentCount > 0 && (
           <PreviewCommentCard
             content={bestComment.content}
             commentsNumber={bestComment.totalCommentCount}
-            open={open}
-            setOpen={setOpen}
           />
         )}
-        {open && (
-          <CommentDetail
-            comments={comments}
-            voteId={data.voteId}
-            onClose={() => setOpen(false)}
-            profile={profile}
-            postLoginReturnPath={postLoginReturnPath}
-          />
-        )}
+        <CommentDetail
+          comments={comments}
+          voteId={data.voteId}
+          profile={profile}
+          postLoginReturnPath={postLoginReturnPath}
+        />
         {data && (
           <VoteChart
             voteId={data.voteId}

@@ -39,6 +39,23 @@ export default function BalanseVoteCard({ data }: Props) {
           {data.content}
         </p>
       )}
+      {data.options?.length >= 2 && (
+        <div className="flex flex-col gap-2">
+          {data.options.slice(0, 2).map((opt, idx) => (
+            <div
+              key={opt.id}
+              className="flex items-center gap-3 rounded-xl bg-brand-violet-50 px-4 py-3"
+            >
+              <span className="typo-title-04 text-primary">
+                {idx === 0 ? 'A' : 'B'}
+              </span>
+              <span className="typo-body-b-02 line-clamp-1 text-primary">
+                {opt.content}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex items-center gap-4 typo-body-c-02 text-brand-gray-100">
         <span className="flex items-center gap-1">
           <Icon icon="tabler:users" width={16} aria-hidden />

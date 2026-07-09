@@ -139,6 +139,14 @@ const OnboardingPage = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-1 flex-col gap-8 px-5 pb-8 pt-6"
       >
+        {/* 프로필 아바타 placeholder */}
+        <div
+          className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-gray-50 text-brand-gray-100"
+          aria-hidden
+        >
+          <Icon icon="tabler:user" width={40} />
+        </div>
+
         {/* 닉네임 */}
         <div className="flex flex-col gap-2">
           <div className="flex items-end gap-2">
