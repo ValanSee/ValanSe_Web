@@ -4,10 +4,11 @@ import { publicApi } from './instance/publicApi'
 // types
 import { LoginResponse, ReissueResponse } from '@/types/api/auth'
 
-export const login = async (code: string) => {
+export const login = async (code: string, redirectUri: string) => {
   try {
     const response = await publicApi.post<LoginResponse>('/auth/kakao/login', {
       code,
+      redirectUri,
     })
     return response.data
   } catch (error) {

@@ -6,6 +6,7 @@ import { CreateVoteData } from '@/types/api/votes'
 import { VoteCategory } from '@/types/_shared/vote'
 import { createVote } from '@/api/votes'
 import { useRouter } from 'next/navigation'
+import RequiredMark from '@/components/_shared/requiredMark'
 
 const categories = [
   { label: '음식', value: 'FOOD' },
@@ -52,7 +53,7 @@ const CreateForm = () => {
       <div className="flex flex-col items-center gap-3 w-full">
         <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
           <div>질문을 작성해주세요</div>
-          <div className="text-[#FF3B30]">*</div>
+          <RequiredMark />
         </div>
         <div className="w-full border border-[#C6C6C6] rounded-lg px-5 py-3">
           <input
@@ -97,7 +98,7 @@ const CreateForm = () => {
       <div className="flex flex-col items-center gap-3 w-full">
         <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
           <div>주제를 선택해주세요</div>
-          <div className="text-[#FF3B30]">*</div>
+          <RequiredMark />
         </div>
         <div className="flex gap-2 w-full">
           {categories.map((c) => (
@@ -126,7 +127,7 @@ const CreateForm = () => {
       <div className="flex flex-col items-center w-full">
         <div className="w-full text-[18px] font-[700] leading-none flex items-center gap-1">
           <div>선택지를 작성해주세요</div>
-          <div className="text-[#FF3B30]">*</div>
+          <RequiredMark />
         </div>
 
         {/* 선택지 input들 */}

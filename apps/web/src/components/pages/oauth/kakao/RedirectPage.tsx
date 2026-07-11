@@ -31,7 +31,9 @@ export default function KakaoRedirect() {
           const startTime = Date.now()
 
           // 1. 로그인 시도
-          await dispatch(loginThunk(code))
+          // redirectUri는 카카오 authorize 단계에서 사용한 값과 동일해야 함
+          const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!
+          await dispatch(loginThunk(code, redirectUri))
 
           try {
             // 2. 프로필 조회 시도
