@@ -43,7 +43,7 @@ const OnboardingPage = () => {
     setValue,
     getValues,
     watch,
-    formState: { isValid, isSubmitting },
+    formState: { errors, isValid, isSubmitting },
   } = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
     mode: 'onChange',
@@ -76,6 +76,8 @@ const OnboardingPage = () => {
     setCheckingNickname(true)
     try {
       const { isAvailable, isClean } = await checkNickname(value)
+
+      // 응답을 기다리는 사이 입력이 바뀌었으면 stale 응답이므로 무시한다.
       if (getValues('nickname').trim() !== value) return
 
       if (!isAvailable) {
@@ -101,6 +103,7 @@ const OnboardingPage = () => {
       })
     } catch (e) {
       console.error('Failed to check nickname:', e)
+      // 입력이 바뀐 뒤 도착한 stale 에러는 무시한다.
       if (getValues('nickname').trim() !== value) return
       setValue('nicknameVerified', false, { shouldValidate: true })
       setNicknameMessage({
@@ -224,6 +227,11 @@ const OnboardingPage = () => {
               </label>
             ))}
           </div>
+          {errors.gender && (
+            <p className="typo-body-c-02 text-destructive">
+              {errors.gender.message}
+            </p>
+          )}
         </div>
 
         {/* 나이 */}
@@ -254,6 +262,11 @@ const OnboardingPage = () => {
               </label>
             ))}
           </div>
+          {errors.age && (
+            <p className="typo-body-c-02 text-destructive">
+              {errors.age.message}
+            </p>
+          )}
         </div>
 
         {/* MBTI */}
@@ -277,6 +290,11 @@ const OnboardingPage = () => {
               aria-hidden
             />
           </button>
+          {errors.mbti && (
+            <p className="typo-body-c-02 text-destructive">
+              {errors.mbti.message}
+            </p>
+          )}
         </div>
         {mbtiBottomSheetOpen && (
           <MBTIBottomSheet
