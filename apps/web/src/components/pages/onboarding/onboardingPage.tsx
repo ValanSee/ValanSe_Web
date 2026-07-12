@@ -152,7 +152,7 @@ const OnboardingPage = () => {
 
         {/* 닉네임 */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-end gap-2">
+          <div className="flex items-start gap-2">
             <TextField
               label={
                 <>
@@ -170,11 +170,12 @@ const OnboardingPage = () => {
                 },
               })}
             />
+            {/* TextField label(24) + gap-2(8) = 32px 만큼 내려 입력 필드 상단과 맞춘다. */}
             <Button
               type="button"
               variant={nicknameVerified ? 'secondary' : 'primary'}
               size="l"
-              className="shrink-0"
+              className="mt-8 shrink-0"
               onClick={handleCheckNickname}
               disabled={checkingNickname || !nickname.trim() || nicknameVerified}
             >
