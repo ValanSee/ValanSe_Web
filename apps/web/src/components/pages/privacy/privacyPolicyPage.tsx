@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Header from '@/components/_shared/header'
 
 const APP_NAME = 'Valanse'
 const CONTACT_EMAIL = 'valansekr@gmail.com'
@@ -13,14 +14,16 @@ export const metadata: Metadata = {
 
 export const PrivacyPolicyPage = () => {
   return (
-    <main
-      style={{
-        padding: '32px 16px',
-        maxWidth: 920,
-        margin: '0 auto',
-        lineHeight: 1.75,
-      }}
-    >
+    <div className="flex min-h-screen flex-col bg-card">
+      <Header title="개인정보 처리방침" showBackButton />
+      <main
+        style={{
+          padding: '32px 16px',
+          maxWidth: 920,
+          margin: '0 auto',
+          lineHeight: 1.75,
+        }}
+      >
       <header style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 28, margin: 0 }}>개인정보 처리방침</h1>
         <p style={{ marginTop: 8, color: '#555' }}>
@@ -172,9 +175,10 @@ export const PrivacyPolicyPage = () => {
         </p>
       </section>
 
-      <footer style={{ marginTop: 36, color: '#666', fontSize: 14 }}>
-        © {new Date().getFullYear()} {APP_NAME}
-      </footer>
-    </main>
+        <footer style={{ marginTop: 36, color: '#666', fontSize: 14 }}>
+          © {new Date().getFullYear()} {APP_NAME}
+        </footer>
+      </main>
+    </div>
   )
 }

@@ -44,14 +44,12 @@ export default function BalanseVoteCard({ data }: Props) {
           {data.options.slice(0, 2).map((opt, idx) => (
             <div
               key={opt.id}
-              className="flex items-center gap-3 rounded-xl bg-brand-violet-50 px-4 py-3"
+              className="typo-label-02 flex items-center gap-3 rounded-xl bg-brand-gray-50 px-4 py-3 text-primary"
             >
-              <span className="typo-title-04 text-primary">
-                {idx === 0 ? 'A' : 'B'}
+              <span className="typo-heading-06">
+                {String.fromCharCode(65 + idx)}
               </span>
-              <span className="typo-body-b-02 line-clamp-1 text-primary">
-                {opt.content}
-              </span>
+              <span className="flex-1 truncate">{opt.content}</span>
             </div>
           ))}
         </div>
