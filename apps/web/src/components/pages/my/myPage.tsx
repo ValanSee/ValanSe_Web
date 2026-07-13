@@ -9,6 +9,7 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'
 import SearchIconButton from '@/components/_shared/searchIconButton'
+import { IconButton } from '@/components/ui/iconButton'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import {
@@ -92,14 +93,11 @@ function MyPage() {
             {mypageData.mbti}
           </p>
         </div>
-        <button
-          type="button"
-          aria-label="프로필 설정"
+        <IconButton
+          icon="weui:setting-filled"
+          label="프로필 설정"
           onClick={() => router.push('/my/edit')}
-          className="flex h-6 w-6 items-center justify-center text-foreground"
-        >
-          <Icon icon="weui:setting-filled" width={24} aria-hidden />
-        </button>
+        />
       </section>
 
       {/* 활동 요약 (Figma 3열 stats 카드) */}

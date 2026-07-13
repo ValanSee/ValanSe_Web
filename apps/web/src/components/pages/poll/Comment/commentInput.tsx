@@ -1,11 +1,10 @@
 'use client'
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { IconButton } from '@/components/ui/iconButton'
 import { createComment } from '@/api/comment/commentApi'
 import { getAccessToken } from '@/utils/tokenUtils'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
-import { cn } from '@/lib/utils'
 
 interface CommentInputProps {
   voteId: number | string
@@ -67,20 +66,17 @@ export default function CommentInput({
           disabled={isSubmitting}
           className="typo-label-02 flex-1 rounded-xl bg-brand-gray-50 px-4 py-3 text-foreground outline-none placeholder:text-brand-gray-100 focus:ring-2 focus:ring-primary"
         />
-        <button
-          type="button"
+        <IconButton
+          icon="wpf:sent"
+          label="댓글 전송"
+          variant="primary"
+          size="md"
+          shape="square"
+          className={!canSubmit ? 'bg-brand-gray-50 text-brand-gray-75' : ''}
           onClick={handleSubmit}
           disabled={!canSubmit}
-          aria-label="댓글 전송"
-          className={cn(
-            'flex h-12 w-12 items-center justify-center rounded-xl transition-colors',
-            canSubmit
-              ? 'bg-primary text-primary-foreground hover:bg-brand-violet-400'
-              : 'bg-brand-gray-50 text-brand-gray-75 cursor-not-allowed',
-          )}
-        >
-          <Icon icon="wpf:sent" width={20} aria-hidden />
-        </button>
+          loading={isSubmitting}
+        />
       </div>
     </div>
   )

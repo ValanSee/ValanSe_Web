@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { IconButton } from '@/components/ui/iconButton'
 import { cn } from '@/lib/utils'
 
 interface HeaderProps {
@@ -44,19 +44,11 @@ export default function Header({
         {leading
           ? leading
           : showBackButton && (
-              <button
-                type="button"
+              <IconButton
+                icon="icon-park-outline:left"
+                label="뒤로가기"
                 onClick={handleBack}
-                aria-label="뒤로가기"
-                className="flex h-6 w-6 items-center justify-center text-foreground"
-              >
-                <Icon
-                  icon="icon-park-outline:left"
-                  width={24}
-                  height={24}
-                  aria-hidden
-                />
-              </button>
+              />
             )}
       </div>
       {title && (

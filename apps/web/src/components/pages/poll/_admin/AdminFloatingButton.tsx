@@ -1,5 +1,7 @@
 'use client'
+
 import { useState } from 'react'
+import { IconButton } from '@/components/ui/iconButton'
 
 interface Props {
   onDelete: () => void
@@ -13,6 +15,7 @@ export default function AdminFloatingButton({ onDelete }: Props) {
       {open && (
         <div className="mb-3 overflow-hidden rounded-xl border border-brand-gray-75 bg-card shadow-lg">
           <button
+            type="button"
             onClick={onDelete}
             className="typo-label-02 block w-full px-4 py-3 text-destructive hover:bg-destructive/10"
           >
@@ -21,12 +24,15 @@ export default function AdminFloatingButton({ onDelete }: Props) {
         </div>
       )}
 
-      <button
+      <IconButton
+        icon="mdi:cog"
+        label="관리자 메뉴"
+        variant="primary"
+        size="lg"
+        shape="circle"
+        className="shadow-xl"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-lg text-background shadow-xl"
-      >
-        ⚙️
-      </button>
+      />
     </div>
   )
 }
