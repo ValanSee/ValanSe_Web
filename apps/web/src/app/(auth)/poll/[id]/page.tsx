@@ -20,6 +20,7 @@ import {
 import VoteChart from '@/components/pages/poll/statistics/statisics'
 import { deleteVote, fetchBestVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
+import SearchIconButton from '@/components/_shared/searchIconButton'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
@@ -167,6 +168,7 @@ function PollDetailContent() {
           showBackButton={shouldShowBackButton()}
           bgGray={true}
           onBackClick={handleBackClick}
+          trailing={<SearchIconButton />}
         />
         <div className="flex flex-1 flex-col items-center justify-center gap-2 p-4 text-center">
           <p className="typo-heading-04 text-destructive">⚠️</p>
@@ -199,6 +201,7 @@ function PollDetailContent() {
         title={getHeaderTitle()}
         showBackButton={shouldShowBackButton()}
         onBackClick={handleBackClick}
+        trailing={<SearchIconButton />}
       />
       <div className="max-w-xl mx-auto p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
         {data && (
@@ -219,6 +222,13 @@ function PollDetailContent() {
             postLoginReturnPath={postLoginReturnPath}
           />
         )}
+        {data && data.hasVoted && (
+          <VoteChart
+            voteId={data.voteId}
+            showStats={showStats}
+            setShowStatsAction={setShowStats}
+          />
+        )}
         {bestComment && bestComment.totalCommentCount > 0 && (
           <PreviewCommentCard
             content={bestComment.content}
@@ -231,13 +241,6 @@ function PollDetailContent() {
           profile={profile}
           postLoginReturnPath={postLoginReturnPath}
         />
-        {data && (
-          <VoteChart
-            voteId={data.voteId}
-            showStats={showStats}
-            setShowStatsAction={setShowStats}
-          />
-        )}
       </div>
       <div
         className="fixed inset-x-0 bottom-0 z-30 bg-card"

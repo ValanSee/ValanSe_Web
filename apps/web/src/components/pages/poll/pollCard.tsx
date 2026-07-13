@@ -158,6 +158,7 @@ function PollCard({
                     (option.vote_count / localTotalParticipants) * 100,
                   )
                 : 0
+            const unvotedAfterVote = voted && !isSelected
             return (
               <button
                 key={option.optionId ?? idx}
@@ -169,17 +170,12 @@ function PollCard({
                   'relative flex min-h-14 items-center gap-3 overflow-hidden rounded-xl px-4 py-3 text-left transition-colors',
                   isSelected
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
+                    : unvotedAfterVote
+                      ? 'bg-brand-gray-200 text-primary-foreground'
+                      : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
                   disabled && 'cursor-not-allowed opacity-70',
                 )}
               >
-                {voted && !isSelected && (
-                  <div
-                    className="absolute left-0 top-0 h-full bg-brand-yellow-300/70 transition-all duration-500 ease-in-out"
-                    style={{ width: `${percentage}%` }}
-                    aria-hidden
-                  />
-                )}
                 <div className="relative z-10 flex w-full items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="typo-heading-06">
@@ -195,8 +191,8 @@ function PollCard({
                       aria-hidden
                     />
                   )}
-                  {voted && !isSelected && (
-                    <span className="typo-label-02 text-foreground">
+                  {unvotedAfterVote && (
+                    <span className="typo-label-02 text-primary-foreground">
                       {percentage}%
                     </span>
                   )}

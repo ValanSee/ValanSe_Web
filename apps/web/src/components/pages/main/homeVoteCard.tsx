@@ -2,16 +2,18 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Icon } from '@iconify/react'
-import CategoryChip from '@/components/_shared/categoryChip'
-import VoteOptionPill from '@/components/_shared/voteOptionPill'
 import { useVoteAction } from '@/hooks/utils/useVoteAction'
+import { cn } from '@/lib/utils'
 import type { BestVoteResponse } from '@/api/votes'
 
 interface Props {
   data: BestVoteResponse
 }
 
+/**
+ * 홈 상단 "뜨고 있는 밸런스" 히어로 카드. Figma 노드 6324:7185 참조.
+ * 큰 보라 그라디언트 배경 + 흰 타이틀 + 상단 노란 chip + 중앙 VS 뱃지 + 하단 옵션 버튼.
+ */
 export default function HomeVoteCard({ data }: Props) {
   const detailHref = `/poll/${data.voteId}?source=hot`
   const [selectedId, setSelectedId] = useState<number | null>(null)
@@ -23,43 +25,76 @@ export default function HomeVoteCard({ data }: Props) {
     },
   })
 
+  const [optionA, optionB] = data.options.slice(0, 2)
+
   return (
     <>
-      <article className="flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-[0_0_4px_rgba(0,0,0,0.08)]">
-        <Link href={detailHref} className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <CategoryChip category={data.category} />
-            <span className="typo-body-c-02 text-brand-gray-100">
-              {data.createdBy}
-            </span>
-          </div>
-          <h2 className="typo-heading-06 text-foreground">{data.title}</h2>
-        </Link>
-
-        <div className="flex flex-col gap-2">
-          {data.options.slice(0, 2).map((opt, i) => (
-            <VoteOptionPill
-              key={opt.optionId}
-              index={i}
-              content={opt.content}
-              isSelected={selectedId === opt.optionId}
-              disabled={isVoting}
-              onClick={() => submit(opt.optionId)}
-            />
-          ))}
-        </div>
-
-        <Link
-          href={detailHref}
-          className="flex items-center justify-between typo-body-c-02 text-brand-gray-100"
-        >
-          <span>{data.totalParticipants.toLocaleString()}명 참여</span>
-          <span className="flex items-center gap-1">
-            <Icon icon="tabler:message" width={16} aria-hidden />0
+      <article className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-violet-100 to-brand-violet-200 p-5 shadow-[0_0_4px_rgba(0,0,0,0.08)]">
+        <Link href={detailHref} className="flex flex-col items-center gap-3">
+          <span className="typo-label-03 rounded-full bg-brand-yellow-300 px-3 py-1 text-brand-black">
+            {data.totalParticipants.toLocaleString()}명 투표 중
           </span>
+          <h2 className="typo-heading-05 text-center text-primary-foreground">
+            {data.title}
+          </h2>
         </Link>
+
+        <div className="relative mt-5 grid grid-cols-2 gap-2">
+          {optionA && (
+            <HeroOptionButton
+              label={optionA.content}
+              selected={selectedId === optionA.optionId}
+              disabled={isVoting}
+              onClick={() => submit(optionA.optionId)}
+            />
+          )}
+          {optionB && (
+            <HeroOptionButton
+              label={optionB.content}
+              selected={selectedId === optionB.optionId}
+              disabled={isVoting}
+              onClick={() => submit(optionB.optionId)}
+            />
+          )}
+          <span
+            className="typo-title-04 pointer-events-none absolute left-1/2 top-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-card text-foreground"
+            aria-hidden
+          >
+            VS
+          </span>
+        </div>
       </article>
       {loginModal}
     </>
+  )
+}
+
+function HeroOptionButton({
+  label,
+  selected,
+  disabled,
+  onClick,
+}: {
+  label: string
+  selected: boolean
+  disabled?: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-pressed={selected}
+      className={cn(
+        'typo-label-02 flex min-h-12 items-center justify-center rounded-xl px-4 py-3 text-center transition-colors',
+        selected
+          ? 'bg-card text-primary'
+          : 'bg-card/90 text-primary hover:bg-card',
+        disabled && 'cursor-not-allowed opacity-70',
+      )}
+    >
+      {label}
+    </button>
   )
 }

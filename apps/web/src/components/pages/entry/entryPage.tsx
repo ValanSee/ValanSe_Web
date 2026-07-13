@@ -32,7 +32,7 @@ function EntryPage() {
         <Suspense
           fallback={
             <div className="typo-label-01 flex h-14 w-full items-center justify-center rounded-xl bg-brand-kakao/60 text-brand-gray-200">
-              로그인 준비 중…
+              시작 준비 중…
             </div>
           }
         >

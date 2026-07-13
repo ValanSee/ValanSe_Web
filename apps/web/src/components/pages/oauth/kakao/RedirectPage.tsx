@@ -96,10 +96,12 @@ export default function KakaoRedirect() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center bg-card">
         <div className="text-center">
-          <p className="text-xl font-bold text-red-500 mb-4">{error}</p>
-          <p className="text-gray-600">잠시 후 로그인 페이지로 이동합니다...</p>
+          <p className="typo-heading-05 mb-4 text-destructive">{error}</p>
+          <p className="typo-body-b-01 text-brand-gray-200">
+            잠시 후 로그인 페이지로 이동합니다...
+          </p>
         </div>
       </div>
     )

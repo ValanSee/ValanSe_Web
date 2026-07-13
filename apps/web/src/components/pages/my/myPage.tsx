@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'
+import SearchIconButton from '@/components/_shared/searchIconButton'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import {
@@ -70,19 +72,7 @@ function MyPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">
-      <Header
-        title="마이"
-        trailing={
-          <button
-            type="button"
-            aria-label="설정"
-            onClick={() => router.push('/my/edit')}
-            className="flex h-6 w-6 items-center justify-center text-foreground"
-          >
-            <Icon icon="weui:setting-filled" width={24} aria-hidden />
-          </button>
-        }
-      />
+      <Header title="마이" trailing={<SearchIconButton />} />
 
       {/* 프로필 */}
       <section className="flex items-center gap-4 bg-card px-5 py-6">
@@ -101,6 +91,23 @@ function MyPage() {
             {parseGender(mypageData.gender)} · {parseAge(mypageData.age)} ·{' '}
             {mypageData.mbti}
           </p>
+        </div>
+        <button
+          type="button"
+          aria-label="프로필 설정"
+          onClick={() => router.push('/my/edit')}
+          className="flex h-6 w-6 items-center justify-center text-foreground"
+        >
+          <Icon icon="weui:setting-filled" width={24} aria-hidden />
+        </button>
+      </section>
+
+      {/* 활동 요약 (Figma 3열 stats 카드) */}
+      <section className="px-5 pb-4">
+        <div className="grid grid-cols-3 divide-x divide-brand-gray-75 rounded-2xl border border-brand-gray-75 bg-card py-4">
+          <StatCell label="내 게임" href="/my/created" />
+          <StatCell label="투표한 게임" href="/my/voted" />
+          <StatCell label="작성한 댓글" href="/my/comment" />
         </div>
       </section>
 
@@ -176,6 +183,18 @@ function MyPage() {
 
       <BottomNavBar />
     </div>
+  )
+}
+
+function StatCell({ label, href }: { label: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex flex-col items-center justify-center gap-1"
+    >
+      <span className="typo-body-c-01 text-brand-gray-100">{label}</span>
+      <span className="typo-title-02 text-foreground">-</span>
+    </Link>
   )
 }
 

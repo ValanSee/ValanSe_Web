@@ -7,7 +7,7 @@ const MESSAGE = '오늘은 어떤 선택을 하시겠어요?'
 export default function Loading() {
   return (
     <div className={styles.loadingContainer}>
-      <div className="text-center text-xl font-bold text-gray-700 mb-8">
+      <div className="typo-heading-05 mb-8 text-center text-brand-gray-200">
         밸런스게임 플랫폼 ValanSe
       </div>
 
@@ -70,7 +70,7 @@ export default function Loading() {
         />
       </svg>
 
-      <div className="mt-6 text-center text-lg font-bold text-gray-700">
+      <div className="typo-heading-06 mt-6 text-center text-brand-gray-200">
         {MESSAGE}
       </div>
     </div>

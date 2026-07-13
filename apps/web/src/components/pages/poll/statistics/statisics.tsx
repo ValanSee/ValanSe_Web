@@ -62,7 +62,7 @@ function OptionTabs({
           className={`px-4 py-1 rounded-full text-sm border ${
             active === option
               ? 'text-white'
-              : 'bg-white text-brand-gray-200 border-brand-gray-75'
+              : 'bg-card text-brand-gray-200 border-brand-gray-75'
           }`}
           style={
             active === option
@@ -361,7 +361,7 @@ export default function VoteChart({
                   className={`px-4 py-1 rounded-full text-sm border ${
                     genderTab === 'male'
                       ? 'text-white'
-                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
+                      : 'bg-card text-brand-gray-200 border-brand-gray-75'
                   }`}
                   style={
                     genderTab === 'male'
@@ -376,7 +376,7 @@ export default function VoteChart({
                   className={`px-4 py-1 rounded-full text-sm border ${
                     genderTab === 'female'
                       ? 'text-white'
-                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
+                      : 'bg-card text-brand-gray-200 border-brand-gray-75'
                   }`}
                   style={
                     genderTab === 'female'
@@ -451,7 +451,7 @@ export default function VoteChart({
                   className={`px-4 py-1 rounded-full text-sm border ${
                     activeTab === 'A'
                       ? 'text-white'
-                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
+                      : 'bg-card text-brand-gray-200 border-brand-gray-75'
                   }`}
                   style={
                     activeTab === 'A'
@@ -466,7 +466,7 @@ export default function VoteChart({
                   className={`px-4 py-1 rounded-full text-sm border ${
                     activeTab === 'B'
                       ? 'text-white'
-                      : 'bg-white text-brand-gray-200 border-brand-gray-75'
+                      : 'bg-card text-brand-gray-200 border-brand-gray-75'
                   }`}
                   style={
                     activeTab === 'B'

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
@@ -10,9 +11,8 @@ import { BestVoteResponse, fetchBestVote } from '@/api/votes'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
 import HomeVoteCard from './homeVoteCard'
-import { CATEGORY_META } from '@/constants/category'
-
-const HOME_CATEGORY_PARAMS = ['LOVE', 'FOOD', 'ETC'] as const
+import SearchIconButton from '@/components/_shared/searchIconButton'
+import { CATEGORIES } from '@/constants/category'
 
 const MainPage = () => {
   const [featured, setFeatured] = useState<BestVoteResponse | null>(null)
@@ -29,7 +29,18 @@ const MainPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">
-      <Header title="홈" />
+      <Header
+        leading={
+          <Image
+            src="/assets/logo.svg"
+            alt="Valanse"
+            width={28}
+            height={26}
+            priority
+          />
+        }
+        trailing={<SearchIconButton />}
+      />
 
       {/* 뜨고 있는 밸런스 */}
       <section className="flex flex-col gap-3 px-4 pt-4">
@@ -45,24 +56,23 @@ const MainPage = () => {
       </section>
 
       {/* 이런 주제는 어때요? */}
-      <section className="mt-6 flex flex-col gap-3 border-b-8 border-brand-gray-50 bg-card px-4 py-5">
-        <h2 className="typo-heading-06 text-foreground">이런 주제는 어때요?</h2>
-        <div className="flex items-start justify-around">
-          {HOME_CATEGORY_PARAMS.map((param) => {
-            const c = CATEGORY_META[param]
-            return (
-              <Link
-                key={c.param}
-                href={`/balanse?category=${c.param}`}
-                className="flex flex-col items-center gap-2"
-              >
-                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gray-50">
-                  <Icon icon={c.icon} width={32} aria-hidden />
-                </span>
-                <span className="typo-title-03 text-foreground">{c.label}</span>
-              </Link>
-            )
-          })}
+      <section className="mt-6 flex flex-col gap-3 border-b-8 border-brand-gray-50 bg-card py-5">
+        <h2 className="typo-heading-06 px-4 text-foreground">
+          이런 주제는 어때요?
+        </h2>
+        <div className="scrollbar-hide flex gap-4 overflow-x-auto px-4">
+          {CATEGORIES.map((c) => (
+            <Link
+              key={c.param}
+              href={`/balanse?category=${c.param}`}
+              className="flex shrink-0 flex-col items-center gap-2"
+            >
+              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gray-50">
+                <Icon icon={c.icon} width={32} aria-hidden />
+              </span>
+              <span className="typo-title-03 text-foreground">{c.label}</span>
+            </Link>
+          ))}
         </div>
       </section>
 

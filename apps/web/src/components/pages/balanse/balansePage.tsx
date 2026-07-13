@@ -10,17 +10,17 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
+import SearchIconButton from '@/components/_shared/searchIconButton'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
 import BalanseVoteCard from './balanseVoteCard'
+import { CATEGORIES } from '@/constants/category'
 
 const TABS = [
-  { label: '전체', value: 'ALL' },
-  { label: '연애', value: 'LOVE' },
-  { label: '음식', value: 'FOOD' },
-  { label: '기타', value: 'ETC' },
-] as const
+  { label: '전체', value: 'ALL' as const },
+  ...CATEGORIES.map((c) => ({ label: c.label, value: c.param })),
+]
 
 function BalancePageContent() {
   const router = useRouter()
@@ -95,7 +95,7 @@ function BalancePageContent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">
-      <Header title="밸런스 게임" />
+      <Header title="밸런스 게임" trailing={<SearchIconButton />} />
 
       <TabBar>
         {TABS.map((tab) => (

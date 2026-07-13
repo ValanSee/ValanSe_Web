@@ -8,6 +8,8 @@ interface HeaderProps {
   title?: React.ReactNode
   showBackButton?: boolean
   onBackClick?: () => void
+  /** 좌측 슬롯 (로고 등). 지정하면 back 버튼 자리를 대체 */
+  leading?: React.ReactNode
   /** 우측 액션 슬롯 (검색·설정 등) */
   trailing?: React.ReactNode
   /** 배경 회색 여부 (bg-background), 기본은 bg-card */
@@ -19,6 +21,7 @@ export default function Header({
   title,
   showBackButton,
   onBackClick,
+  leading,
   trailing,
   bgGray,
   className,
@@ -38,21 +41,23 @@ export default function Header({
       )}
     >
       <div className="flex min-w-[24px] items-center">
-        {showBackButton && (
-          <button
-            type="button"
-            onClick={handleBack}
-            aria-label="뒤로가기"
-            className="flex h-6 w-6 items-center justify-center text-foreground"
-          >
-            <Icon
-              icon="icon-park-outline:left"
-              width={24}
-              height={24}
-              aria-hidden
-            />
-          </button>
-        )}
+        {leading
+          ? leading
+          : showBackButton && (
+              <button
+                type="button"
+                onClick={handleBack}
+                aria-label="뒤로가기"
+                className="flex h-6 w-6 items-center justify-center text-foreground"
+              >
+                <Icon
+                  icon="icon-park-outline:left"
+                  width={24}
+                  height={24}
+                  aria-hidden
+                />
+              </button>
+            )}
       </div>
       {title && (
         <h1 className="typo-heading-05 flex-1 text-center text-foreground">
