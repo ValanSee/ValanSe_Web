@@ -1,10 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchVotes, fetchHotPinned, fetchTrendingPinned } from '@/lib/votes'
+import { fetchVotes, fetchHotPinned } from '@/lib/votes'
 import type { Vote, PinnedVote } from '@/types/vote'
 import { PinMenu } from '@/components/votes/PinMenu'
-import { ThumbsUp, MessageCircle, Flame, TrendingUp } from 'lucide-react'
+import { ThumbsUp, MessageCircle, Flame } from 'lucide-react'
 import axios from 'axios'
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -23,16 +23,14 @@ export default function VotesPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hot, setHot] = useState<PinnedVote | null>(null)
-  const [trending, setTrending] = useState<PinnedVote | null>(null)
   const [pinnedLoading, setPinnedLoading] = useState(true)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   const loadPinned = useCallback(async () => {
     setPinnedLoading(true)
     try {
-      const [h, t] = await Promise.all([fetchHotPinned(), fetchTrendingPinned()])
+      const h = await fetchHotPinned()
       setHot(h)
-      setTrending(t)
     } catch (err) {
       console.error('failed to load pinned:', err)
     } finally {
@@ -114,20 +112,11 @@ export default function VotesPage() {
 
       <section className="space-y-2">
         <h2 className="text-sm font-semibold text-gray-700">현재 고정</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3">
           <PinnedCard
             label="핫이슈"
-            tone="orange"
             icon={<Flame className="h-4 w-4 text-orange-500" />}
             vote={hot}
-            loading={pinnedLoading}
-            onChange={onPinChanged}
-          />
-          <PinnedCard
-            label="인기 급상승"
-            tone="blue"
-            icon={<TrendingUp className="h-4 w-4 text-blue-500" />}
-            vote={trending}
             loading={pinnedLoading}
             onChange={onPinChanged}
           />
@@ -178,23 +167,19 @@ export default function VotesPage() {
 
 function PinnedCard({
   label,
-  tone,
   icon,
   vote,
   loading,
   onChange,
 }: {
   label: string
-  tone: 'orange' | 'blue'
   icon: React.ReactNode
   vote: PinnedVote | null
   loading: boolean
   onChange: () => void
 }) {
-  const ring = tone === 'orange' ? 'border-orange-200' : 'border-blue-200'
-  const bg = tone === 'orange' ? 'bg-orange-50' : 'bg-blue-50'
   return (
-    <div className={`flex items-start gap-3 rounded-lg border ${ring} ${bg} p-3`}>
+    <div className="flex items-start gap-3 rounded-lg border border-orange-200 bg-orange-50 p-3">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5 text-xs font-medium text-gray-700">
           {icon}
