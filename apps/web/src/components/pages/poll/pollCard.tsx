@@ -1,20 +1,18 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Icon } from '@iconify/react'
 import { voteOption, VoteResponse } from '@/api/votes'
 import { getAccessToken } from '@/utils/tokenUtils'
 import {
   clearPendingVote,
-  entryHrefWithRedirect,
   peekPendingVote,
   releasePendingVoteClaim,
-  setPendingVote,
   tryClaimPendingVoteSubmit,
 } from '@/utils/authRedirect'
-import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
 import { Chip } from '@/components/ui/chip'
+import VsBadge from '@/components/_shared/vsBadge'
+import { useVoteAction } from '@/hooks/utils/useVoteAction'
 import { cn } from '@/lib/utils'
 
 interface PollCardProps {
@@ -53,7 +51,6 @@ function PollCard({
   votedOptionLabel,
   postLoginReturnPath,
 }: PollCardProps) {
-  const router = useRouter()
   const [voted, setVoted] = useState(hasVoted)
   const [selectedId, setSelectedId] = useState<number | null>(() => {
     if (hasVoted && votedOptionLabel) {
@@ -65,9 +62,7 @@ function PollCard({
   const [localOptions, setLocalOptions] = useState(options)
   const [localTotalParticipants, setLocalTotalParticipants] =
     useState(totalParticipants)
-  const [isVoting, setIsVoting] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [pendingOptionId, setPendingOptionId] = useState<number | null>(null)
+  const [pendingClaimRunning, setPendingClaimRunning] = useState(false)
 
   const applyVoteResponse = useCallback(
     (response: VoteResponse, prevSelectedId: number | null) => {
@@ -89,6 +84,18 @@ function PollCard({
     [],
   )
 
+  const { submit, isVoting, loginModal } = useVoteAction({
+    voteId,
+    detailHref: postLoginReturnPath,
+    onVoted: (response) => {
+      setSelectedId((prev) => {
+        applyVoteResponse(response, prev)
+        return response.voted ? response.voteOptionId : null
+      })
+    },
+  })
+
+  // 로그인 리디렉트 후 pending vote 자동 제출
   useEffect(() => {
     const pending = peekPendingVote()
     if (!pending || Number(pending.voteId) !== Number(voteId)) return
@@ -103,7 +110,7 @@ function PollCard({
     let cancelled = false
     void (async () => {
       try {
-        setIsVoting(true)
+        setPendingClaimRunning(true)
         const response = await voteOption(voteId, pending.optionId)
         if (cancelled) return
         clearPendingVote()
@@ -112,7 +119,7 @@ function PollCard({
         if (!cancelled) alert('투표에 실패했습니다.')
       } finally {
         releasePendingVoteClaim()
-        if (!cancelled) setIsVoting(false)
+        if (!cancelled) setPendingClaimRunning(false)
       }
     })()
 
@@ -121,34 +128,7 @@ function PollCard({
     }
   }, [voteId, hasVoted, localOptions, applyVoteResponse])
 
-  const handleVote = async (id: number) => {
-    if (isVoting) return
-    if (!getAccessToken()) {
-      setPendingOptionId(id)
-      setShowLoginModal(true)
-      return
-    }
-    const prevSelected = selectedId
-    try {
-      setIsVoting(true)
-      if (prevSelected === id) {
-        setSelectedId(null)
-        setVoted(false)
-      } else {
-        setSelectedId(id)
-        setVoted(true)
-      }
-      const response: VoteResponse = await voteOption(voteId, id)
-      applyVoteResponse(response, prevSelected)
-    } catch (e) {
-      console.error('투표 실패:', e)
-      alert('투표에 실패했습니다.')
-      setSelectedId(null)
-      setVoted(false)
-    } finally {
-      setIsVoting(false)
-    }
-  }
+  const disabled = isVoting || pendingClaimRunning
 
   return (
     <>
@@ -169,14 +149,7 @@ function PollCard({
         )}
 
         <div className="relative flex flex-col gap-3">
-          {localOptions.length === 2 && (
-            <div
-              className="typo-title-04 pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-card text-foreground"
-              aria-hidden
-            >
-              VS
-            </div>
-          )}
+          {localOptions.length === 2 && <VsBadge />}
           {localOptions.map((option, idx) => {
             const isSelected = selectedId === option.optionId
             const percentage =
@@ -189,18 +162,17 @@ function PollCard({
               <button
                 key={option.optionId ?? idx}
                 type="button"
-                onClick={() => handleVote(option.optionId)}
-                disabled={isVoting}
+                onClick={() => submit(option.optionId)}
+                disabled={disabled}
                 aria-pressed={isSelected}
                 className={cn(
                   'relative flex min-h-14 items-center gap-3 overflow-hidden rounded-xl px-4 py-3 text-left transition-colors',
                   isSelected
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
-                  isVoting && 'cursor-not-allowed opacity-70',
+                  disabled && 'cursor-not-allowed opacity-70',
                 )}
               >
-                {/* 결과 바 — 투표 후, 미선택 옵션에만 */}
                 {voted && !isSelected && (
                   <div
                     className="absolute left-0 top-0 h-full bg-brand-yellow-300/70 transition-all duration-500 ease-in-out"
@@ -238,22 +210,7 @@ function PollCard({
           {localTotalParticipants.toLocaleString()}명 참여 중
         </div>
       </article>
-
-      <LoginRequiredModal
-        open={showLoginModal}
-        onClose={() => {
-          setShowLoginModal(false)
-          setPendingOptionId(null)
-        }}
-        onLogin={() => {
-          if (pendingOptionId !== null) {
-            setPendingVote(voteId, pendingOptionId)
-          }
-          setShowLoginModal(false)
-          setPendingOptionId(null)
-          router.replace(entryHrefWithRedirect(postLoginReturnPath))
-        }}
-      />
+      {loginModal}
     </>
   )
 }
