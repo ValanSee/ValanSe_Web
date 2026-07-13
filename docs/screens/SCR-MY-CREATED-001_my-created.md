@@ -9,6 +9,7 @@
 | 경로 | `/my/created` |
 | 인증 필요 | ✓ |
 | 작성일 | 2026-05-16 |
+| 최종 수정일 | 2026-07-13 |
 
 ## 🎯 화면 목적
 
@@ -31,7 +32,9 @@
 
 | 항목 | 출처 | 비고 |
 |---|---|---|
-| 게임 제목 | (TODO: 확인) | - |
+| 게임 제목 | `GET /votes/mine/created` | - |
+| 선택지 목록 | 동일 (`options[].content`) | - |
+| 선택지 이미지 썸네일 | 동일 (`options[].imageUrl`) | 있을 때만 선택지 옆 32px 썸네일 |
 | 참여자 수 / 생성일 | 동일 | - |
 
 **사용자 액션**
@@ -48,7 +51,7 @@
 
 | Method | Endpoint | 용도 |
 |---|---|---|
-| GET | (TODO: HistoryPage 컴포넌트 확인) | 내 생성 게임 목록 |
+| GET | `/votes/mine/created` | 내 생성 게임 목록 (options는 `{content, imageUrl}` 배열) |
 
 ## 📎 관련 문서
 

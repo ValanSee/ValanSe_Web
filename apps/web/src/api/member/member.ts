@@ -37,6 +37,26 @@ export const updateMemberProfile = async (
   }
 }
 
+interface UpdateProfileImageResponse {
+  profile_image_url: string
+}
+
+// 프로필 이미지를 업로드하고 갱신된 이미지 URL을 반환. 기존 이미지는 서버가 교체 처리.
+export const updateProfileImage = async (file: File): Promise<string> => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  try {
+    const response = await authApi.put<UpdateProfileImageResponse>(
+      '/member/profile-image',
+      formData,
+    )
+    return response.data.profile_image_url
+  } catch (error) {
+    throw error
+  }
+}
+
 // TODO : 마이페이지 타입 정리
 export type fetchMemberMypageResponse = {
   profile: {

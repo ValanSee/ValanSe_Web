@@ -3,14 +3,37 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
+import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
+import { updateProfileImageThunk } from '@/store/thunks/memberThunks'
+import { ALLOWED_IMAGE_TYPES, validateImageFile } from '@/utils/imageFile'
 import Loading from '@/components/_shared/loading'
 
 export default function MyProfileSection() {
   const router = useRouter()
+  const dispatch = useAppDispatch()
   const { mypageData, pointHistory, titles } = useAppSelector(
     (state) => state.member,
   )
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+
+  const onSelectProfileImage = async (file: File | undefined) => {
+    if (!file || isUploadingImage) return
+    const errorMessage = validateImageFile(file)
+    if (errorMessage) {
+      alert(errorMessage)
+      return
+    }
+    try {
+      setIsUploadingImage(true)
+      await dispatch(updateProfileImageThunk(file))
+    } catch {
+      alert('프로필 이미지 변경에 실패했습니다.')
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
 
   if (!mypageData) {
     return <Loading />
@@ -59,13 +82,32 @@ export default function MyProfileSection() {
 
       {/* 프로필 */}
       <div className="flex items-center gap-4 pt-4">
-        <Image
-          src={mypageData.profile_image_url || '/file.svg'}
-          alt="프로필 이미지"
-          width={84}
-          height={84}
-          className="rounded-full object-cover"
-        />
+        <label
+          className="relative shrink-0 cursor-pointer"
+          aria-label="프로필 이미지 변경"
+        >
+          {/* R2 이미지는 도메인이 환경별로 달라 next/image 허용 목록에 넣을 수 없어 img 사용 */}
+          <img
+            src={mypageData.profile_image_url || '/file.svg'}
+            alt="프로필 이미지"
+            className={`w-[84px] h-[84px] rounded-full object-cover ${
+              isUploadingImage ? 'opacity-50' : ''
+            }`}
+          />
+          <span className="absolute bottom-0 right-0 flex items-center justify-center w-6 h-6 rounded-full bg-secondary border border-border">
+            <Image src="/plus-gray.svg" alt="" width={10} height={10} />
+          </span>
+          <input
+            type="file"
+            accept={ALLOWED_IMAGE_TYPES.join(',')}
+            className="hidden"
+            disabled={isUploadingImage}
+            onChange={(e) => {
+              onSelectProfileImage(e.target.files?.[0])
+              e.target.value = ''
+            }}
+          />
+        </label>
         <div className="flex-1">
           <p className="text-sm text-gray-500">안녕하세요!</p>
           <p className="text-lg font-semibold">{mypageData.nickname} 님</p>

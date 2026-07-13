@@ -1,6 +1,7 @@
 export interface VoteOption {
   id: number
   content: string
+  imageUrl: string | null
 }
 
 export interface Vote {

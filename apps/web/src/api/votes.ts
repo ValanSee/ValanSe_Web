@@ -19,6 +19,7 @@ export const fetchBestVote = async () => {
 export interface VoteOption {
   optionId: number
   content: string
+  imageUrl: string | null
   vote_count: number
 }
 
@@ -58,9 +59,31 @@ export const voteOption = async (
   }
 }
 
+// 옵션 인덱스와 이미지 파일 파트를 잇는 imageKey. 백엔드는 imageKey와
+// 같은 이름의 파일 파트를 찾아 해당 옵션의 이미지로 업로드한다.
+const optionImageKey = (index: number) => `option-${index}-image`
+
 export const createVote = async (voteData: CreateVoteData) => {
+  const request = {
+    title: voteData.title,
+    category: voteData.category,
+    ...(voteData.content ? { content: voteData.content } : {}),
+    options: voteData.options.map((option, index) => ({
+      content: option.content,
+      ...(option.imageFile ? { imageKey: optionImageKey(index) } : {}),
+    })),
+  }
+
+  const formData = new FormData()
+  formData.append('request', JSON.stringify(request))
+  voteData.options.forEach((option, index) => {
+    if (option.imageFile) {
+      formData.append(optionImageKey(index), option.imageFile)
+    }
+  })
+
   try {
-    const response = await authApi.post('/votes', voteData)
+    const response = await authApi.post('/votes', formData)
     return response.data.voteId
   } catch (error) {
     throw error

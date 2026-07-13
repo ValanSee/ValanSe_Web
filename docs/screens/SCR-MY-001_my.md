@@ -9,7 +9,7 @@
 | 경로 | `/my` |
 | 인증 필요 | ✓ |
 | 작성일 | 2026-05-16 |
-| 최종 수정일 | 2026-05-19 |
+| 최종 수정일 | 2026-07-13 |
 
 ## 🎯 화면 목적
 
@@ -35,10 +35,19 @@
 | 항목 | 출처 | 비고 |
 |---|---|---|
 | 닉네임 | `fetchMypageDataThunk` | - |
-| 프로필 이미지 | 동일 | - |
+| 프로필 이미지 | 동일 | 우하단에 변경 배지 표시 |
 | 성별/나이/MBTI | 동일 | TODO: 표시 여부 확인 |
 
-**사용자 액션**: 클릭 → `/my/edit` 이동
+**사용자 액션**
+
+- 프로필 이미지 클릭 → 파일 선택 → 이미지 업로드(JPG/PNG/WEBP/GIF, 5MB 이하) → 즉시 반영
+- "수정" 버튼 클릭 → `/my/edit` 이동
+
+**상태별 처리**
+
+- **이미지 업로드 중**: 아바타 반투명 + 파일 입력 비활성화
+- **이미지 검증 실패**: 형식/용량 위반 시 alert, 업로드 안 함
+- **이미지 업로드 실패**: alert 후 기존 이미지 유지
 
 ### 1-1. 내 포인트 진입 영역 (프로필 섹션 내)
 
@@ -87,6 +96,7 @@
 |---|---|---|
 | GET | `/member/mypage` (via `fetchMypageDataThunk`) | 마이페이지 종합 데이터 |
 | GET | `/member/point-history` (via `fetchPointHistoryThunk`) | 잔액 표시용. 진입 시 캐시 없으면 호출 (silent) |
+| PUT | `/member/profile-image` (via `updateProfileImageThunk`) | 프로필 이미지 업로드 (`multipart/form-data`, `file` 파트) |
 
 ## 📎 관련 문서
 

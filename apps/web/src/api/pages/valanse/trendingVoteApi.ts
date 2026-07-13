@@ -14,6 +14,7 @@ export type TrendingVoteResponse = {
   options: {
     optionId: number
     content: string
+    imageUrl: string | null
     vote_count: number
   }[]
 }

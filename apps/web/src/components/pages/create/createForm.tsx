@@ -1,11 +1,12 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CreateVoteData } from '@/types/api/votes'
 import { VoteCategory } from '@/types/_shared/vote'
 import { createVote } from '@/api/votes'
 import { useRouter } from 'next/navigation'
+import { ALLOWED_IMAGE_TYPES, validateImageFile } from '@/utils/imageFile'
 
 const categories = [
   { label: '음식', value: 'FOOD' },
@@ -13,18 +14,75 @@ const categories = [
   { label: '기타', value: 'ETC' },
 ]
 
+type OptionInput = {
+  content: string
+  imageFile: File | null
+  previewUrl: string | null
+}
+
+const emptyOption = (): OptionInput => ({
+  content: '',
+  imageFile: null,
+  previewUrl: null,
+})
+
 const CreateForm = () => {
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
   const [category, setCategory] = useState<string | null>(null)
-  const [options, setOptions] = useState<string[]>(['', '']) // A, B
+  const [options, setOptions] = useState<OptionInput[]>([
+    emptyOption(),
+    emptyOption(),
+  ]) // A, B
   const [content, setContent] = useState<string>('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // 언마운트 시 미리보기 object URL 해제
+  const optionsRef = useRef(options)
+  optionsRef.current = options
+  useEffect(() => {
+    return () => {
+      optionsRef.current.forEach((option) => {
+        if (option.previewUrl) URL.revokeObjectURL(option.previewUrl)
+      })
+    }
+  }, [])
+
+  const onSelectImage = (index: number, file: File | undefined) => {
+    if (!file) return
+    const errorMessage = validateImageFile(file)
+    if (errorMessage) {
+      alert(errorMessage)
+      return
+    }
+    setOptions((prev) =>
+      prev.map((option, i) => {
+        if (i !== index) return option
+        if (option.previewUrl) URL.revokeObjectURL(option.previewUrl)
+        return {
+          ...option,
+          imageFile: file,
+          previewUrl: URL.createObjectURL(file),
+        }
+      }),
+    )
+  }
+
+  const onRemoveImage = (index: number) => {
+    setOptions((prev) =>
+      prev.map((option, i) => {
+        if (i !== index) return option
+        if (option.previewUrl) URL.revokeObjectURL(option.previewUrl)
+        return { ...option, imageFile: null, previewUrl: null }
+      }),
+    )
+  }
 
   const isFormValid = () => {
     if (title.trim() === '') return false
     if (!category) return false
     for (const option of options) {
-      if (option.trim() === '') return false
+      if (option.content.trim() === '') return false
     }
     return true
   }
@@ -36,7 +94,10 @@ const CreateForm = () => {
     }
     const voteData: CreateVoteData = {
       title,
-      options,
+      options: options.map(({ content, imageFile }) => ({
+        content,
+        imageFile,
+      })),
       category: category as VoteCategory,
       ...(content.trim()
         ? ({ content: content.trim() } as Pick<CreateVoteData, 'content'>)
@@ -134,21 +195,68 @@ const CreateForm = () => {
           {options.map((option, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 w-full border border-[#C6C6C6] rounded-lg px-5 py-3"
+              className="flex flex-col gap-3 w-full border border-[#C6C6C6] rounded-lg px-5 py-3"
             >
-              <div className="text-[18px] font-[500] leading-none">
-                {String.fromCharCode(65 + index)}
+              <div className="flex items-center gap-3 w-full">
+                <div className="text-[18px] font-[500] leading-none">
+                  {String.fromCharCode(65 + index)}
+                </div>
+                <input
+                  type="text"
+                  className="w-full text-[18px] text-[#1D1D1D] font-[500]"
+                  value={option.content}
+                  onChange={(e) => {
+                    const newOptions = [...options]
+                    newOptions[index] = {
+                      ...newOptions[index],
+                      content: e.target.value,
+                    }
+                    setOptions(newOptions)
+                  }}
+                />
               </div>
-              <input
-                type="text"
-                className="w-full text-[18px] text-[#1D1D1D] font-[500]"
-                value={option}
-                onChange={(e) => {
-                  const newOptions = [...options]
-                  newOptions[index] = e.target.value
-                  setOptions(newOptions)
-                }}
-              />
+              {option.previewUrl ? (
+                <div className="relative self-start pt-2 pr-2">
+                  {/* object URL 미리보기는 next/image 최적화 대상이 아니므로 img 사용 */}
+                  <img
+                    src={option.previewUrl}
+                    alt={`선택지 ${String.fromCharCode(65 + index)} 이미지 미리보기`}
+                    className="w-20 h-20 rounded-lg object-cover"
+                  />
+                  <button
+                    type="button"
+                    aria-label="이미지 삭제"
+                    onClick={() => onRemoveImage(index)}
+                    className="absolute top-0 right-0"
+                  >
+                    <Image
+                      src="/letter-x-circle.svg"
+                      alt=""
+                      width={20}
+                      height={20}
+                    />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 self-start cursor-pointer typo-body-c-01 text-brand-gray-300">
+                  <Image
+                    src="/plus-gray.svg"
+                    alt=""
+                    width={10}
+                    height={10}
+                  />
+                  이미지 추가
+                  <input
+                    type="file"
+                    accept={ALLOWED_IMAGE_TYPES.join(',')}
+                    className="hidden"
+                    onChange={(e) => {
+                      onSelectImage(index, e.target.files?.[0])
+                      e.target.value = ''
+                    }}
+                  />
+                </label>
+              )}
             </div>
           ))}
         </div>
@@ -159,7 +267,7 @@ const CreateForm = () => {
             className="flex items-center pt-4 ml-auto gap-3 text-[#555555] text-[14px] font-[400] leading-none"
             onClick={() => {
               if (options.length < 4) {
-                setOptions([...options, ''])
+                setOptions([...options, emptyOption()])
               }
             }}
           >
@@ -196,7 +304,10 @@ const CreateForm = () => {
             취소
           </button>
           <button
+            disabled={isSubmitting}
             onClick={async () => {
+              if (isSubmitting) return
+              setIsSubmitting(true)
               try {
                 const voteId = await onSubmit()
                 if (voteId) {
@@ -204,11 +315,13 @@ const CreateForm = () => {
                 }
               } catch {
                 alert('업로드 실패')
+              } finally {
+                setIsSubmitting(false)
               }
             }}
-            className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#839DB7] rounded-lg text-[18px] text-white font-[400]"
+            className="w-full h-[60px] pl-5 pr-4 py-3 bg-[#839DB7] rounded-lg text-[18px] text-white font-[400] disabled:opacity-50"
           >
-            업로드
+            {isSubmitting ? '업로드 중...' : '업로드'}
           </button>
         </div>
       </div>

@@ -22,6 +22,7 @@ interface PollCardProps {
   options: {
     optionId: number
     content: string
+    imageUrl?: string | null
     vote_count: number
   }[]
   totalParticipants: number
@@ -214,6 +215,14 @@ function PollCard({
                 onClick={() => handleClickPercentage(option.optionId)}
                 key={option.optionId ?? idx}
               >
+                {option.imageUrl && (
+                  /* R2 이미지는 도메인이 환경별로 달라 next/image 허용 목록에 넣을 수 없어 img 사용 */
+                  <img
+                    src={option.imageUrl}
+                    alt={`선택지 ${String.fromCharCode(65 + idx)} 이미지`}
+                    className="relative z-10 w-full h-32 mb-2 rounded-md object-cover"
+                  />
+                )}
                 <div className="flex justify-between relative z-10 font-medium">
                   <span>
                     <strong>{String.fromCharCode(65 + idx)}</strong>{' '}

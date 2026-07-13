@@ -34,8 +34,21 @@ export default function BalanseHistoryCard({
         )}
         <div className="text-sm text-gray-700 space-y-1">
           {data.options.map((opt, index) => (
-            <div key={index} className="text-[16px] font-[400] text-[#555555]">
-              {numberToAlphabet(index)} {opt}
+            <div
+              key={index}
+              className="flex items-center gap-2 text-[16px] font-[400] text-[#555555]"
+            >
+              <span>
+                {numberToAlphabet(index)} {opt.content}
+              </span>
+              {opt.imageUrl && (
+                /* R2 이미지는 도메인이 환경별로 달라 next/image 허용 목록에 넣을 수 없어 img 사용 */
+                <img
+                  src={opt.imageUrl}
+                  alt={`선택지 ${numberToAlphabet(index)} 이미지`}
+                  className="w-8 h-8 rounded object-cover"
+                />
+              )}
             </div>
           ))}
         </div>
