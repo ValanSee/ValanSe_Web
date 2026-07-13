@@ -10,12 +10,9 @@ import { BestVoteResponse, fetchBestVote } from '@/api/votes'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
 import HomeVoteCard from './homeVoteCard'
+import { CATEGORY_META } from '@/constants/category'
 
-const CATEGORIES = [
-  { label: '연애', param: 'LOVE', icon: 'noto:sparkling-heart' },
-  { label: '음식', param: 'FOOD', icon: 'noto:fork-and-knife-with-plate' },
-  { label: '기타', param: 'ETC', icon: 'noto:speech-balloon' },
-] as const
+const HOME_CATEGORY_PARAMS = ['LOVE', 'FOOD', 'ETC'] as const
 
 const MainPage = () => {
   const [featured, setFeatured] = useState<BestVoteResponse | null>(null)
@@ -51,18 +48,21 @@ const MainPage = () => {
       <section className="mt-6 flex flex-col gap-3 border-b-8 border-brand-gray-50 bg-card px-4 py-5">
         <h2 className="typo-heading-06 text-foreground">이런 주제는 어때요?</h2>
         <div className="flex items-start justify-around">
-          {CATEGORIES.map((c) => (
-            <Link
-              key={c.param}
-              href={`/balanse?category=${c.param}`}
-              className="flex flex-col items-center gap-2"
-            >
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gray-50">
-                <Icon icon={c.icon} width={32} aria-hidden />
-              </span>
-              <span className="typo-title-03 text-foreground">{c.label}</span>
-            </Link>
-          ))}
+          {HOME_CATEGORY_PARAMS.map((param) => {
+            const c = CATEGORY_META[param]
+            return (
+              <Link
+                key={c.param}
+                href={`/balanse?category=${c.param}`}
+                className="flex flex-col items-center gap-2"
+              >
+                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gray-50">
+                  <Icon icon={c.icon} width={32} aria-hidden />
+                </span>
+                <span className="typo-title-03 text-foreground">{c.label}</span>
+              </Link>
+            )
+          })}
         </div>
       </section>
 
