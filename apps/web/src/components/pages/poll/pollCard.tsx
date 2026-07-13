@@ -171,7 +171,7 @@ function PollCard({
         <div className="relative flex flex-col gap-3">
           {localOptions.length === 2 && (
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-card typo-title-04 text-primary shadow-[0_0_4px_rgba(0,0,0,0.12)]"
+              className="typo-title-04 pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-card text-foreground"
               aria-hidden
             >
               VS
@@ -234,8 +234,8 @@ function PollCard({
           })}
         </div>
 
-        <div className="typo-body-c-01 text-right text-brand-gray-100">
-          총 {localTotalParticipants.toLocaleString()}명 투표
+        <div className="typo-label-03 text-primary">
+          {localTotalParticipants.toLocaleString()}명 참여 중
         </div>
       </article>
 

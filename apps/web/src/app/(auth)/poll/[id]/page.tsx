@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import {
   useParams,
   usePathname,
@@ -10,6 +10,7 @@ import { authApi } from '@/api/instance/authApi'
 import PollCard from '@/components/pages/poll/pollCard'
 import PreviewCommentCard from '@/components/pages/poll/Comment/previewCommentCard'
 import CommentDetail from '@/components/pages/poll/Comment/commentDetail'
+import CommentInput from '@/components/pages/poll/Comment/commentInput'
 import {
   fetchBestComment,
   fetchComments,
@@ -122,6 +123,16 @@ function PollDetailContent() {
     fetchAll()
   }, [id])
 
+  const refetchComments = useCallback(async () => {
+    if (!id || id === 'hot') return
+    try {
+      const r = await fetchComments(id)
+      setComments(r.comments)
+    } catch (e) {
+      console.error('댓글 새로고침 실패:', e)
+    }
+  }, [id])
+
   // 인기 탭에서 로딩 중일 때
   if (id === 'hot') {
     return <Loading />
@@ -189,7 +200,7 @@ function PollDetailContent() {
         showBackButton={shouldShowBackButton()}
         onBackClick={handleBackClick}
       />
-      <div className="max-w-xl mx-auto p-4 pb-24">
+      <div className="max-w-xl mx-auto p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
         {data && (
           <PollCard
             voteId={data.voteId}
@@ -227,6 +238,18 @@ function PollDetailContent() {
             setShowStatsAction={setShowStats}
           />
         )}
+      </div>
+      <div
+        className="fixed inset-x-0 bottom-0 z-30 bg-card"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="mx-auto max-w-xl">
+          <CommentInput
+            voteId={data.voteId}
+            onCommentCreated={refetchComments}
+            postLoginReturnPath={postLoginReturnPath}
+          />
+        </div>
       </div>
       {(source === 'hot' || isFromHot) && <BottomNavBar />}
       {isAdmin && (

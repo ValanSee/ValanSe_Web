@@ -88,16 +88,6 @@ const CommentDetail = ({
     }
   }
 
-  const handleCommentCreated = async () => {
-    if (!voteId) return
-    try {
-      const r = await fetchComments(voteId, { sort: currentSort })
-      setLocalComments(r.comments)
-    } catch (e) {
-      console.error('댓글 새로고침 실패:', e)
-    }
-  }
-
   const handleReplyCreated = async (commentId: number) => {
     if (!voteId) return
     try {
@@ -351,14 +341,6 @@ const CommentDetail = ({
             </article>
           )
         })}
-
-      {voteId && (
-        <CommentInput
-          voteId={voteId as number}
-          onCommentCreated={handleCommentCreated}
-          postLoginReturnPath={postLoginReturnPath}
-        />
-      )}
 
       {onClose && (
         <button
