@@ -6,12 +6,14 @@ import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
+import SectionHeader from '@/components/_shared/sectionHeader'
+import EmptyState from '@/components/_shared/emptyState'
+import SearchIconButton from '@/components/_shared/searchIconButton'
 import BalanseVoteCard from '@/components/pages/balanse/balanseVoteCard'
 import { BestVoteResponse, fetchBestVote } from '@/api/votes'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
 import HomeVoteCard from './homeVoteCard'
-import SearchIconButton from '@/components/_shared/searchIconButton'
 import { CATEGORIES } from '@/constants/category'
 
 const MainPage = () => {
@@ -51,7 +53,7 @@ const MainPage = () => {
         {featured ? (
           <HomeVoteCard data={featured} />
         ) : (
-          <EmptyLine text="아직 인기 밸런스가 없어요" />
+          <EmptyState text="아직 인기 밸런스가 없어요" />
         )}
       </section>
 
@@ -80,7 +82,7 @@ const MainPage = () => {
       <section className="mt-4 flex flex-col gap-3 px-4">
         <SectionHeader title="올라오고 있는 밸런스" moreHref="/balanse" />
         {latest.length === 0 ? (
-          <EmptyLine text="아직 올라온 밸런스가 없어요" />
+          <EmptyState text="아직 올라온 밸런스가 없어요" />
         ) : (
           <div className="flex flex-col gap-3">
             {latest.map((v) => (
@@ -92,35 +94,6 @@ const MainPage = () => {
 
       <BottomNavBar />
     </div>
-  )
-}
-
-function SectionHeader({
-  title,
-  moreHref,
-}: {
-  title: string
-  moreHref?: string
-}) {
-  return (
-    <div className="flex items-center justify-between">
-      <h2 className="typo-heading-06 text-foreground">{title}</h2>
-      {moreHref && (
-        <Link
-          href={moreHref}
-          className="typo-label-02 flex items-center gap-0.5 text-brand-gray-200"
-        >
-          더보기
-          <Icon icon="icon-park-outline:right" width={16} aria-hidden />
-        </Link>
-      )}
-    </div>
-  )
-}
-
-function EmptyLine({ text }: { text: string }) {
-  return (
-    <p className="typo-body-b-01 py-8 text-center text-brand-gray-100">{text}</p>
   )
 }
 

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { Icon } from '@iconify/react'
 import Header from '@/components/_shared/header'
+import Avatar from '@/components/_shared/avatar'
 import { Button } from '@/components/ui/button'
 import { MyCommentsResponse } from '@/types/api/myComments'
 import { deleteMyComments, fetchMyComments } from '@/api/myComments'
@@ -82,7 +82,7 @@ const CommentPage = () => {
             className="flex flex-col gap-3 rounded-2xl bg-card p-4 shadow-[0_0_4px_rgba(0,0,0,0.06)]"
           >
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-brand-gray-75" />
+              <Avatar size="sm" />
               <div className="flex flex-col">
                 <span className="typo-label-03 text-foreground">
                   {comment.voteOwnerNickname}
@@ -104,12 +104,10 @@ const CommentPage = () => {
               />
               <div className="flex flex-1 flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <Image
-                    src={memberState?.profile_image_url || '/profile-example.svg'}
+                  <Avatar
+                    size="xs"
+                    src={memberState?.profile_image_url}
                     alt="프로필"
-                    width={24}
-                    height={24}
-                    className="rounded-full"
                   />
                   <span className="typo-label-03 text-foreground">
                     {memberState?.nickname}

@@ -4,11 +4,11 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Icon } from '@iconify/react'
-import Image from 'next/image'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'
 import SearchIconButton from '@/components/_shared/searchIconButton'
+import Avatar from '@/components/_shared/avatar'
 import { IconButton } from '@/components/ui/iconButton'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
@@ -77,13 +77,7 @@ function MyPage() {
 
       {/* 프로필 */}
       <section className="flex items-center gap-4 bg-card px-5 py-6">
-        <Image
-          src={mypageData.profile_image_url || '/file.svg'}
-          alt="프로필 이미지"
-          width={72}
-          height={72}
-          className="h-[72px] w-[72px] rounded-full bg-brand-gray-75 object-cover"
-        />
+        <Avatar src={mypageData.profile_image_url} size="lg" />
         <div className="flex flex-1 flex-col gap-1">
           <p className="typo-heading-05 text-foreground">
             {mypageData.nickname}
