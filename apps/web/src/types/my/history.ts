@@ -1,3 +1,8 @@
+export type MyVoteHistoryOption = {
+  content: string
+  imageUrl?: string | null
+}
+
 export type MyVoteHistoryItem = {
   voteId: number
   title: string
@@ -5,5 +10,5 @@ export type MyVoteHistoryItem = {
   category: string
   totalVoteCount: number
   createdAt: string
-  options: string[]
+  options: MyVoteHistoryOption[]
 }
