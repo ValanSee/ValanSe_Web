@@ -49,7 +49,7 @@ export default function BalanseHistoryCard({
             className="typo-body-b-01 text-brand-gray-200"
           >
             <span className="mr-1 text-primary">{numberToAlphabet(index)}</span>
-            {opt}
+            {opt.content}
           </div>
         ))}
       </div>
