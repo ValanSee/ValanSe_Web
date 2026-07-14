@@ -35,7 +35,7 @@ export default function BalanseHistoryCard({
         <div className="text-sm text-gray-700 space-y-1">
           {data.options.map((opt, index) => (
             <div key={index} className="text-[16px] font-[400] text-[#555555]">
-              {numberToAlphabet(index)} {opt}
+              {numberToAlphabet(index)} {opt.content}
             </div>
           ))}
         </div>
