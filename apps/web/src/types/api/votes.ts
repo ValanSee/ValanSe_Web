@@ -7,6 +7,11 @@ export type CreateVoteData = {
   content?: string
 }
 
+export type MineVoteOption = {
+  content: string
+  imageUrl?: string | null
+}
+
 export type MineVotesResponse = {
   voteId: number
   title: string
@@ -14,5 +19,5 @@ export type MineVotesResponse = {
   category: string
   totalVoteCount: number
   createdAt: string
-  options: string[]
+  options: MineVoteOption[]
 }[]
