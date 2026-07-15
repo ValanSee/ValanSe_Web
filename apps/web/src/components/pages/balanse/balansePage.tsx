@@ -10,7 +10,6 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
-import SearchIconButton from '@/components/_shared/searchIconButton'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
@@ -95,7 +94,7 @@ function BalancePageContent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">
-      <Header title="밸런스 게임" trailing={<SearchIconButton />} />
+      <Header title="밸런스 게임" />
 
       <TabBar>
         {TABS.map((tab) => (

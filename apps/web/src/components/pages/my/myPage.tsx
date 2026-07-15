@@ -7,7 +7,6 @@ import { Icon } from '@iconify/react'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'
-import SearchIconButton from '@/components/_shared/searchIconButton'
 import Avatar from '@/components/_shared/avatar'
 import { IconButton } from '@/components/ui/iconButton'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
@@ -73,7 +72,7 @@ function MyPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">
-      <Header title="마이" trailing={<SearchIconButton />} />
+      <Header title="마이" />
 
       {/* 프로필 */}
       <section className="flex items-center gap-4 bg-card px-5 py-6">

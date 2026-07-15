@@ -28,7 +28,7 @@ function KakaoLoginButton() {
     <button
       type="button"
       onClick={goKakao}
-      className="typo-label-01 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-brand-kakao text-brand-black hover:brightness-95"
+      className="typo-label-02 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-brand-kakao font-semibold text-brand-black hover:brightness-95"
     >
       <Icon icon="ri:kakao-talk-fill" width={24} aria-hidden />
       카카오로 시작하기
