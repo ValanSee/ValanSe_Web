@@ -35,13 +35,3 @@ export async function fetchHotPinned(): Promise<PinnedVote | null> {
     throw err
   }
 }
-
-export async function fetchTrendingPinned(): Promise<PinnedVote | null> {
-  try {
-    const res = await publicApi.get<PinnedVote>('/votes/trending')
-    return res.data
-  } catch (err) {
-    if (axios.isAxiosError(err) && err.response?.status === 404) return null
-    throw err
-  }
-}

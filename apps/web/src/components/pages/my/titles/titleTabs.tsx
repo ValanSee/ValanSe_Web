@@ -1,5 +1,7 @@
 'use client'
 
+import { TabBar, TabItem } from '@/components/ui/tabBar'
+
 export type TitleTabKey = 'owned' | 'locked'
 
 interface TitleTabsProps {
@@ -21,22 +23,16 @@ const TitleTabs = ({
   ]
 
   return (
-    <div className="flex border-b border-[#F0F0F0]">
+    <TabBar>
       {tabs.map((tab) => (
-        <button
+        <TabItem
           key={tab.key}
-          type="button"
+          label={`${tab.label} ${tab.count}`}
+          selected={tab.key === active}
           onClick={() => onChange(tab.key)}
-          className={`flex-1 h-12 text-[15px] font-semibold transition-colors ${
-            active === tab.key
-              ? 'text-[#1D1D1D] border-b-2 border-[#1D1D1D]'
-              : 'text-[#8E8E8E]'
-          }`}
-        >
-          {tab.label} {tab.count}
-        </button>
+        />
       ))}
-    </div>
+    </TabBar>
   )
 }
 

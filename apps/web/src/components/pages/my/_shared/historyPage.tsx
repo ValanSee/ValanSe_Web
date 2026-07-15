@@ -1,17 +1,20 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Header from '@/components/pages/my/_shared/header'
+import { useRouter } from 'next/navigation'
+import { Icon } from '@iconify/react'
+import Header from '@/components/_shared/header'
 import BalanseHistoryCard from '@/components/pages/my/_shared/balanseHistoryCard'
-import FilterTabs from '@/components/pages/balanse/filtertabs'
+import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchMineVotesCreated, fetchMineVotesVoted } from '@/api/votes'
 import { MyVoteHistoryItem } from '@/types/my/history'
-import { useRouter } from 'next/navigation'
 
-const sortOptions = [
-  { label: '최신순', value: 'latest' },
-  { label: '인기순', value: 'popular' },
-]
+const CATEGORIES = [
+  { label: '전체', value: 'ALL' },
+  { label: '연애', value: 'LOVE' },
+  { label: '음식', value: 'FOOD' },
+  { label: '기타', value: 'ETC' },
+] as const
 
 interface HistoryPageProps {
   mode: 'created' | 'voted'
@@ -24,15 +27,11 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
   const [votes, setVotes] = useState<MyVoteHistoryItem[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const handleVoteClick = (voteId: string) => {
-    router.push(`/poll/${voteId}`)
-  }
-
   const title =
     mode === 'created' ? '내가 만든 밸런스 게임' : '내가 투표한 밸런스 게임'
 
   useEffect(() => {
-    const getVotes = async () => {
+    ;(async () => {
       try {
         const data =
           mode === 'created'
@@ -43,34 +42,50 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
       } catch {
         setError('불러오기 실패')
       }
-    }
-    getVotes()
+    })()
   }, [category, sort, mode])
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <Header title={title} />
-      <div className="flex items-center gap-2 px-4 mt-2">
-        <FilterTabs selected={category} onChangeCategory={setCategory} />
-        <select
-          className="ml-auto border rounded px-2 py-1 text-sm"
-          value={sort}
-          onChange={(e) => setSort(e.target.value as 'latest' | 'popular')}
+    <div className="flex min-h-screen flex-col bg-card">
+      <Header title={title} showBackButton onBackClick={() => router.push('/my')} />
+      <TabBar>
+        {CATEGORIES.map((tab) => (
+          <TabItem
+            key={tab.value}
+            label={tab.label}
+            selected={tab.value === category}
+            onClick={() => setCategory(tab.value)}
+          />
+        ))}
+      </TabBar>
+      <div className="flex items-center justify-end gap-1 px-4 pt-3">
+        <button
+          type="button"
+          onClick={() =>
+            setSort((prev) => (prev === 'latest' ? 'popular' : 'latest'))
+          }
+          className="typo-label-03 flex items-center gap-1 text-brand-gray-200"
         >
-          {sortOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {sort === 'latest' ? '최신순' : '인기순'}
+          <Icon icon="icon-park-solid:down-one" width={14} aria-hidden />
+        </button>
       </div>
-      <div className="px-4 mt-4 space-y-4 pb-28">
-        {error && <div>{error}</div>}
+      <div className="flex flex-col gap-3 px-4 pb-24 pt-3">
+        {error && (
+          <p className="typo-body-b-01 py-8 text-center text-destructive">
+            {error}
+          </p>
+        )}
+        {!error && votes.length === 0 && (
+          <p className="typo-body-b-01 py-8 text-center text-brand-gray-100">
+            아직 활동 내역이 없어요
+          </p>
+        )}
         {votes.map((vote) => (
           <BalanseHistoryCard
             key={vote.voteId}
             data={vote}
-            onClick={() => handleVoteClick(String(vote.voteId))}
+            onClick={() => router.push(`/poll/${vote.voteId}`)}
           />
         ))}
       </div>

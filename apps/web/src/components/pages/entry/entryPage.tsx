@@ -1,49 +1,49 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { Suspense } from 'react'
-// import Divider from './_components/divider'
 import KakaoLoginButton from './_components/kakaoLoginButton'
 
 function EntryPage() {
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex flex-col justify-center items-center px-6 py-10 text-center">
-      {/* 로고 영역 */}
-      <div className="flex flex-col items-center mb-6">
+    <div className="flex min-h-screen flex-col items-center justify-between bg-card px-6 pb-10 pt-20 text-center">
+      {/* 로고 & 슬로건 */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-6">
         <Image
           src="/assets/logo.svg"
           alt="Valanse Logo"
           width={104}
           height={96}
-          className="mb-2"
+          priority
         />
-        <h1 className="text-2xl font-bold text-[#5B6B8A]">VALANSE</h1>
+        <div className="flex flex-col items-center gap-3">
+          <h1 className="typo-heading-01 text-primary">VALANSE</h1>
+          <p className="typo-body-b-01 text-brand-gray-200">
+            밸런스 게임에 진심인 사람들을 위한
+            <br />
+            밸런스 게임 플랫폼
+          </p>
+        </div>
       </div>
 
-      {/* 설명 */}
-      <p className="text-sm text-gray-700 mb-12">
-        밸런스 게임에 진심인 사람들을 위한
-        <br />
-        밸런스 게임 플랫폼
-      </p>
-
-      <div className="w-full max-w-xs">
+      {/* CTA 영역 */}
+      <div className="flex w-full max-w-sm flex-col items-center gap-4">
         <Suspense
           fallback={
-            <div className="w-full max-w-xs py-3 rounded-xl bg-[#FEE500]/60 text-center text-sm text-gray-600 mb-4">
-              로그인 준비 중…
+            <div className="typo-label-02 flex h-14 w-full items-center justify-center rounded-xl bg-brand-kakao/60 font-semibold text-brand-gray-200">
+              시작 준비 중…
             </div>
           }
         >
           <KakaoLoginButton />
         </Suspense>
-        {/*
-        <Divider />
-
-        <button className="w-full max-w-xs bg-white/60 text-gray-600 border border-gray-300 py-3 rounded-xl font-medium hover:bg-white/80">
+        <Link
+          href="/main"
+          className="typo-label-03 text-brand-gray-200"
+        >
           로그인 없이 시작하기
-        </button>
-        */}
+        </Link>
       </div>
     </div>
   )

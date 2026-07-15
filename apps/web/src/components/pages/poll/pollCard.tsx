@@ -1,17 +1,19 @@
 'use client'
+
 import { useCallback, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Icon } from '@iconify/react'
 import { voteOption, VoteResponse } from '@/api/votes'
 import { getAccessToken } from '@/utils/tokenUtils'
 import {
   clearPendingVote,
-  entryHrefWithRedirect,
   peekPendingVote,
   releasePendingVoteClaim,
-  setPendingVote,
   tryClaimPendingVoteSubmit,
 } from '@/utils/authRedirect'
-import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
+import { Chip } from '@/components/ui/chip'
+import VsBadge from '@/components/_shared/vsBadge'
+import { useVoteAction } from '@/hooks/utils/useVoteAction'
+import { cn } from '@/lib/utils'
 
 interface PollCardProps {
   voteId: number | string
@@ -27,10 +29,16 @@ interface PollCardProps {
   totalParticipants: number
   hasVoted?: boolean
   votedOptionLabel?: string | null
-  /** 비로그인 시 로그인 후 돌아올 현재 투표 페이지 경로 */
   postLoginReturnPath: string
 }
 
+/**
+ * 투표 카드. Figma 노드 6397:26836 참조.
+ *
+ * - 미투표: 옵션 A/B G50 배경, V300 텍스트. 클릭 시 V200 배경 white 텍스트
+ * - 투표 후: 선택한 옵션 V200 배경 · white 텍스트 + check 아이콘.
+ *   미선택 옵션은 G50 배경 + 결과 바(Y300) 오버레이 + %
+ */
 function PollCard({
   voteId,
   createdBy,
@@ -43,45 +51,51 @@ function PollCard({
   votedOptionLabel,
   postLoginReturnPath,
 }: PollCardProps) {
-  const router = useRouter()
-  // 초기 상태를 API 응답으로 설정
   const [voted, setVoted] = useState(hasVoted)
   const [selectedId, setSelectedId] = useState<number | null>(() => {
     if (hasVoted && votedOptionLabel) {
-      // votedOptionLabel이 "A", "B", "C" 등이므로 해당 인덱스의 optionId를 찾음
-      const optionIndex = votedOptionLabel.charCodeAt(0) - 65 // 'A' = 0, 'B' = 1, ...
-      return options[optionIndex]?.optionId || null
+      const idx = votedOptionLabel.charCodeAt(0) - 65
+      return options[idx]?.optionId ?? null
     }
     return null
   })
   const [localOptions, setLocalOptions] = useState(options)
   const [localTotalParticipants, setLocalTotalParticipants] =
     useState(totalParticipants)
-  const [isVoting, setIsVoting] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [pendingOptionId, setPendingOptionId] = useState<number | null>(null)
+  const [pendingClaimRunning, setPendingClaimRunning] = useState(false)
 
   const applyVoteResponse = useCallback(
     (response: VoteResponse, prevSelectedId: number | null) => {
       setVoted(response.voted)
       setSelectedId(response.voted ? response.voteOptionId : null)
       setLocalTotalParticipants(response.totalVoteCount)
-      setLocalOptions((prevOptions) =>
-        prevOptions.map((option) => {
-          if (option.optionId === response.voteOptionId) {
-            return { ...option, vote_count: response.voteOptionCount }
+      setLocalOptions((prev) =>
+        prev.map((opt) => {
+          if (opt.optionId === response.voteOptionId) {
+            return { ...opt, vote_count: response.voteOptionCount }
           }
-          if (prevSelectedId === option.optionId && response.voted) {
-            return { ...option, vote_count: Math.max(0, option.vote_count - 1) }
+          if (prevSelectedId === opt.optionId && response.voted) {
+            return { ...opt, vote_count: Math.max(0, opt.vote_count - 1) }
           }
-          return option
+          return opt
         }),
       )
     },
     [],
   )
 
-  // 로그인 후 돌아왔을 때, 직전에 눌렀던 옵션으로 자동 투표
+  const { submit, isVoting, loginModal } = useVoteAction({
+    voteId,
+    detailHref: postLoginReturnPath,
+    onVoted: (response) => {
+      setSelectedId((prev) => {
+        applyVoteResponse(response, prev)
+        return response.voted ? response.voteOptionId : null
+      })
+    },
+  })
+
+  // 로그인 리디렉트 후 pending vote 자동 제출
   useEffect(() => {
     const pending = peekPendingVote()
     if (!pending || Number(pending.voteId) !== Number(voteId)) return
@@ -96,18 +110,16 @@ function PollCard({
     let cancelled = false
     void (async () => {
       try {
-        setIsVoting(true)
+        setPendingClaimRunning(true)
         const response = await voteOption(voteId, pending.optionId)
         if (cancelled) return
         clearPendingVote()
         applyVoteResponse(response, null)
       } catch {
-        if (!cancelled) {
-          alert('투표에 실패했습니다.')
-        }
+        if (!cancelled) alert('투표에 실패했습니다.')
       } finally {
         releasePendingVoteClaim()
-        if (!cancelled) setIsVoting(false)
+        if (!cancelled) setPendingClaimRunning(false)
       }
     })()
 
@@ -116,146 +128,87 @@ function PollCard({
     }
   }, [voteId, hasVoted, localOptions, applyVoteResponse])
 
-  const handleClickPercentage = async (id: number) => {
-    if (isVoting) return // 중복 클릭 방지
-
-    if (!getAccessToken()) {
-      setPendingOptionId(id)
-      setShowLoginModal(true)
-      return
-    }
-
-    const prevSelected = selectedId
-
-    try {
-      setIsVoting(true)
-
-      if (prevSelected === id) {
-        setSelectedId(null)
-        setVoted(false)
-      } else {
-        setSelectedId(id)
-        setVoted(true)
-      }
-
-      const response: VoteResponse = await voteOption(voteId, id)
-      applyVoteResponse(response, prevSelected)
-    } catch (error) {
-      console.error('투표 실패:', error)
-      alert('투표에 실패했습니다.')
-      setSelectedId(null)
-      setVoted(false)
-    } finally {
-      setIsVoting(false)
-    }
-  }
-
-  const getOptionColor = (index: number) => {
-    const colors = [
-      '#6C8BA7', // A - 푸른색 계열 (통계 차트와 동일)
-      '#F28C4A', // B - 붉은색 계열 (통계 차트와 동일)
-      '#10B981', // C - 초록색 계열
-      '#8B5CF6', // D - 보라색 계열
-    ]
-    return colors[index] || '#6C8BA7'
-  }
-
-  const getOptionLightColor = (index: number) => {
-    const lightColors = [
-      '#E3F2FD', // A - 연한 푸른색
-      '#FFF3E0', // B - 연한 붉은색
-      '#E8F5E8', // C - 연한 초록색
-      '#F3E5F5', // D - 연한 보라색
-    ]
-    return lightColors[index] || '#E3F2FD'
-  }
+  const disabled = isVoting || pendingClaimRunning
 
   return (
     <>
-      <div className="mx-auto p-4 space-y-4 rounded-xl shadow bg-white mb-6">
+      <article className="flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-[0_0_4px_rgba(0,0,0,0.08)]">
         <div className="flex items-center gap-2">
           {creatorTitle && (
-            <span className="inline-flex items-center rounded-full bg-[#4D7298] px-2 py-0.5 text-[11px] font-medium text-white">
+            <Chip size="s" status="secondary">
               {creatorTitle}
-            </span>
+            </Chip>
           )}
-          <span className="text-sm font-medium text-gray-700">{createdBy}</span>
+          <span className="typo-body-c-01 text-brand-gray-100">{createdBy}</span>
         </div>
-        <div className="text-base font-semibold">{title}</div>
+        <h2 className="typo-heading-04 text-foreground">{title}</h2>
         {content && (
-          <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+          <p className="typo-body-a-01 whitespace-pre-wrap text-brand-gray-200">
             {content}
-          </div>
+          </p>
         )}
-        <div className="space-y-2">
+
+        <div className="relative flex flex-col gap-3">
+          {localOptions.length === 2 && <VsBadge />}
           {localOptions.map((option, idx) => {
             const isSelected = selectedId === option.optionId
             const percentage =
               localTotalParticipants > 0
-                ? Math.round((option.vote_count / localTotalParticipants) * 100)
+                ? Math.round(
+                    (option.vote_count / localTotalParticipants) * 100,
+                  )
                 : 0
-            const optionColor = getOptionColor(idx)
-            const optionLightColor = getOptionLightColor(idx)
-
+            const unvotedAfterVote = voted && !isSelected
             return (
-              <div
-                className={`relative border rounded-md px-4 py-3 cursor-pointer transition-all ${
-                  isSelected ? `ring-2` : ''
-                } ${isVoting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                style={{
-                  borderColor: isSelected ? optionColor : undefined,
-                  backgroundColor: isSelected
-                    ? optionColor // 선택된 옵션은 진한 색상
-                    : voted
-                      ? optionLightColor // 투표된 옵션은 연한 색상
-                      : undefined,
-                  color: isSelected ? '#fff' : undefined, // 선택된 옵션은 글씨 흰색
-                }}
-                onClick={() => handleClickPercentage(option.optionId)}
+              <button
                 key={option.optionId ?? idx}
-              >
-                <div className="flex justify-between relative z-10 font-medium">
-                  <span>
-                    <strong>{String.fromCharCode(65 + idx)}</strong>{' '}
-                    {option.content}
-                  </span>
-                  {voted && <span>{percentage}%</span>}
-                </div>
-                {/* 선택된 옵션이 아니고, 투표가 완료된 경우에만 퍼센트 바 표시 */}
-                {voted && !isSelected && (
-                  <div
-                    className="absolute left-0 top-0 h-full rounded-md -z-10 transition-all duration-500 ease-in-out"
-                    style={{
-                      width: `${percentage}%`,
-                      backgroundColor: optionLightColor,
-                    }}
-                  />
+                type="button"
+                onClick={() => submit(option.optionId)}
+                disabled={disabled}
+                aria-pressed={isSelected}
+                className={cn(
+                  'relative flex min-h-14 items-center gap-3 overflow-hidden rounded-xl px-4 py-3 text-left transition-colors',
+                  isSelected
+                    ? 'bg-primary text-primary-foreground'
+                    : unvotedAfterVote
+                      ? 'bg-brand-gray-200 text-primary-foreground'
+                      : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
+                  disabled && 'cursor-not-allowed opacity-70',
                 )}
-              </div>
+              >
+                <div className="relative z-10 flex w-full items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="typo-heading-06">
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                    <span className="typo-label-02">{option.content}</span>
+                  </div>
+                  {isSelected && (
+                    <Icon
+                      icon="tabler:check"
+                      className="text-primary-foreground"
+                      width={20}
+                      aria-hidden
+                    />
+                  )}
+                  {unvotedAfterVote && (
+                    <span className="typo-label-02 text-primary-foreground">
+                      {percentage}%
+                    </span>
+                  )}
+                </div>
+              </button>
             )
           })}
         </div>
-        <div className="text-sm text-gray-400 text-right">
-          총 {localTotalParticipants}명 투표
-        </div>
-      </div>
 
-      <LoginRequiredModal
-        open={showLoginModal}
-        onClose={() => {
-          setShowLoginModal(false)
-          setPendingOptionId(null)
-        }}
-        onLogin={() => {
-          if (pendingOptionId !== null) {
-            setPendingVote(voteId, pendingOptionId)
-          }
-          setShowLoginModal(false)
-          setPendingOptionId(null)
-          router.replace(entryHrefWithRedirect(postLoginReturnPath))
-        }}
-      />
+        <div className="typo-label-03 text-primary">
+          {localTotalParticipants.toLocaleString()}명 참여 중
+        </div>
+      </article>
+      {loginModal}
     </>
   )
 }
+
 export default PollCard

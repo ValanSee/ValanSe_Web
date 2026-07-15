@@ -1,31 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import styles from './loading.module.css'
 
-const messages = [
-  '당신의 선택을 기다리는 중...',
-  '오늘은 어떤 선택을 하시겠어요?',
-]
+const MESSAGE = '오늘은 어떤 선택을 하시겠어요?'
 
 export default function Loading() {
-  const [mounted, setMounted] = useState(false)
-  const [message, setMessage] = useState('')
-
-  useEffect(() => {
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)]
-    setMessage(randomMessage)
-    setMounted(true)
-
-    const timer = setTimeout(() => {}, 800)
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (!mounted) return null
-
   return (
     <div className={styles.loadingContainer}>
-      <div className="text-center text-xl font-bold text-gray-700 mb-8">
+      <div className="typo-heading-05 mb-8 text-center text-brand-gray-200">
         밸런스게임 플랫폼 ValanSe
       </div>
 
@@ -40,13 +22,13 @@ export default function Loading() {
         <rect width="130" height="130" rx="21.6667" />
         <path
           d="M38.3861 95.1753L59.4066 77.6582C62.6206 74.9799 67.2891 74.9799 70.5031 77.6582L91.5237 95.1754C97.7508 100.365 94.0814 110.5 85.9755 110.5H43.9343C35.8284 110.5 32.1589 100.365 38.3861 95.1753Z"
-          fill="#4D7298"
+          fill="#9E6BE6"
         />
 
         <g className={styles.bubble}>
           <path
             d="M38.7295 20.5834C51.1442 20.5836 61.208 30.6481 61.208 43.0629C61.2078 55.3143 51.4069 65.2756 39.2178 65.5355L39.2246 65.5414H16.667L16.2637 43.8002C16.2558 43.5554 16.25 43.3096 16.25 43.0629C16.25 30.648 26.3146 20.5834 38.7295 20.5834Z"
-            fill="#E4E4E4"
+            fill="#D7C2F5"
           />
           <rect
             x="23.7431"
@@ -54,7 +36,7 @@ export default function Loading() {
             width="29.9722"
             height="3.74653"
             rx="1.87326"
-            fill="#B6B6B6"
+            fill="#AE84EA"
           />
           <rect
             x="23.7431"
@@ -62,18 +44,18 @@ export default function Loading() {
             width="18.7326"
             height="3.74653"
             rx="1.87326"
-            fill="#B6B6B6"
+            fill="#AE84EA"
           />
         </g>
 
         <g className={styles.heart}>
           <path
             d="M91.1809 20.5834C103.596 20.5835 113.659 30.6481 113.659 43.0629C113.659 43.3211 113.653 43.5782 113.645 43.8344L113.242 65.5414H90.6848L90.6906 65.5355C78.5021 65.2749 68.7016 55.3139 68.7014 43.0629C68.7014 30.648 78.766 20.5834 91.1809 20.5834Z"
-            fill="#E4E4E4"
+            fill="#D7C2F5"
           />
           <path
             d="M99.1024 36.1233C98.6447 35.6508 98.1012 35.2759 97.5031 35.0202C96.9049 34.7644 96.2638 34.6328 95.6163 34.6328C94.9689 34.6328 94.3277 34.7644 93.7296 35.0202C93.1314 35.2759 92.588 35.6508 92.1303 36.1233L91.1803 37.1035L90.2304 36.1233C89.3058 35.1693 88.0518 34.6333 86.7443 34.6333C85.4368 34.6333 84.1828 35.1693 83.2582 36.1233C82.3337 37.0773 81.8142 38.3713 81.8142 39.7205C81.8142 41.0697 82.3337 42.3636 83.2582 43.3176L84.2082 44.2978L91.1803 51.4922L98.1525 44.2978L99.1024 43.3176C99.5604 42.8453 99.9236 42.2846 100.171 41.6673C100.419 41.0501 100.547 40.3886 100.547 39.7205C100.547 39.0524 100.419 38.3908 100.171 37.7736C99.9236 37.1564 99.5604 36.5956 99.1024 36.1233Z"
-            fill="#EB5E28"
+            fill="#F80E5C"
           />
         </g>
 
@@ -84,12 +66,12 @@ export default function Loading() {
           width="97.4097"
           height="7.49306"
           rx="3.74653"
-          fill="#4D7298"
+          fill="#9E6BE6"
         />
       </svg>
 
-      <div className="mt-6 text-center text-lg font-bold text-gray-700">
-        {message}
+      <div className="typo-heading-06 mt-6 text-center text-brand-gray-200">
+        {MESSAGE}
       </div>
     </div>
   )

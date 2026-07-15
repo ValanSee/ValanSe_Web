@@ -1,16 +1,6 @@
 'use client'
 
-import {
-  Modal,
-  ModalOverlay,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  ModalBody,
-  ModalFooter,
-  ModalCloseButton,
-} from '@/components/ui/modal'
-import { Button } from '@/components/ui/button'
+import { Popup } from '@/components/ui/popup'
 
 interface DeleteConfirmModalProps {
   open: boolean
@@ -24,32 +14,19 @@ export default function DeleteConfirmModal({
   open,
   onClose,
   onConfirm,
-  title = '삭제하시겠습니까?',
-  description = '이 작업은 되돌릴 수 없습니다. 정말 삭제하시겠습니까?',
+  title = '삭제할까요?',
+  description = '삭제한 항목은 복구할 수 없어요',
 }: DeleteConfirmModalProps) {
-  if (!open) return null
-
   return (
-    <ModalOverlay onClose={onClose}>
-      <Modal>
-        <ModalHeader>
-          <ModalTitle>{title}</ModalTitle>
-          <ModalCloseButton onClick={onClose} />
-        </ModalHeader>
-
-        <ModalBody>
-          <ModalDescription>{description}</ModalDescription>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button variant="secondary" onClick={onClose}>
-            취소
-          </Button>
-          <Button variant="destructive" onClick={onConfirm}>
-            삭제
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </ModalOverlay>
+    <Popup
+      open={open}
+      onClose={onClose}
+      variant="confirm"
+      title={title}
+      description={description}
+      confirmLabel="삭제"
+      cancelLabel="취소"
+      onConfirm={onConfirm}
+    />
   )
 }

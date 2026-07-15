@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { MoreVertical, Flame, TrendingUp, PinOff, Trash2 } from 'lucide-react'
+import { MoreVertical, Flame, PinOff, Trash2 } from 'lucide-react'
 import { pinVote, deleteVote } from '@/lib/votes'
 import type { PinType } from '@/types/vote'
 
@@ -76,17 +76,6 @@ export function PinMenu({ voteId, onChange }: Props) {
             >
               <Flame className="mr-3 h-4 w-4 text-orange-500" />
               핫이슈 고정
-            </button>
-          </li>
-          <li>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => onSelect('TRENDING')}
-              className="flex w-full items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-            >
-              <TrendingUp className="mr-3 h-4 w-4 text-blue-500" />
-              인기 급상승 고정
             </button>
           </li>
           <li className="border-t border-gray-100">

@@ -43,11 +43,10 @@ authApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // refresh 토큰 재발급 API 호출 실패 시 -> 재시도 하지 않고 토큰 삭제, 로그아웃, 에러 반환
+    // refresh 토큰 재발급 API 호출 실패 시 -> 재시도 하지 않고 토큰 삭제, 로그아웃, 즉시 entry로 이동
     if (originalRequest.url?.includes('/auth/reissue')) {
       clearTokens()
       store.dispatch(logout())
-      alert('로그인 정보가 만료되었습니다. 다시 로그인해주세요.')
       window.location.replace(entryHrefFromCurrentLocation())
       return Promise.reject(error)
     }
