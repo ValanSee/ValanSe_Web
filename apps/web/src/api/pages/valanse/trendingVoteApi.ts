@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios'
 import { publicApi } from '../../instance/publicApi'
 import { PinType } from '@/types/balanse/vote'
 
@@ -19,6 +20,13 @@ export type TrendingVoteResponse = {
 }
 
 export async function fetchTrendingVotes() {
-  const res = await publicApi.get<TrendingVoteResponse>('/votes/trending')
-  return res.data
+  try {
+    const res = await publicApi.get<TrendingVoteResponse>('/votes/trending')
+    return res.data
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 404) {
+      return null
+    }
+    throw error
+  }
 }

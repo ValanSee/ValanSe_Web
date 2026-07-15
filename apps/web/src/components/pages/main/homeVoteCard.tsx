@@ -4,10 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useVoteAction } from '@/hooks/utils/useVoteAction'
 import { cn } from '@/lib/utils'
-import type { BestVoteResponse } from '@/api/votes'
+import type { TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
 
 interface Props {
-  data: BestVoteResponse
+  data: TrendingVoteResponse
 }
 
 /**
@@ -15,7 +15,7 @@ interface Props {
  * 큰 보라 그라디언트 배경 + 흰 타이틀 + 상단 노란 chip + 중앙 VS 뱃지 + 하단 옵션 버튼.
  */
 export default function HomeVoteCard({ data }: Props) {
-  const detailHref = `/poll/${data.voteId}?source=hot`
+  const detailHref = `/poll/${data.voteId}`
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const { submit, isVoting, loginModal } = useVoteAction({
     voteId: data.voteId,
@@ -29,7 +29,7 @@ export default function HomeVoteCard({ data }: Props) {
 
   return (
     <>
-      <article className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-violet-100 to-brand-violet-200 p-5 shadow-[0_0_4px_rgba(0,0,0,0.08)]">
+      <article className="bg-hero-trending relative overflow-hidden rounded-2xl p-5 shadow-[0_0_4px_rgba(0,0,0,0.08)]">
         <Link href={detailHref} className="flex flex-col items-center gap-3">
           <span className="typo-label-03 rounded-full bg-brand-yellow-300 px-3 py-1 text-brand-black">
             {data.totalParticipants.toLocaleString()}명 투표 중

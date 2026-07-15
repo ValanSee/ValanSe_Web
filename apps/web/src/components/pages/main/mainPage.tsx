@@ -8,20 +8,23 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import SectionHeader from '@/components/_shared/sectionHeader'
 import EmptyState from '@/components/_shared/emptyState'
-import SearchIconButton from '@/components/_shared/searchIconButton'
+import HorizontalScroll from '@/components/_shared/horizontalScroll'
 import BalanseVoteCard from '@/components/pages/balanse/balanseVoteCard'
-import { BestVoteResponse, fetchBestVote } from '@/api/votes'
+import {
+  fetchTrendingVotes,
+  type TrendingVoteResponse,
+} from '@/api/pages/valanse/trendingVoteApi'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
 import HomeVoteCard from './homeVoteCard'
 import { CATEGORIES } from '@/constants/category'
 
 const MainPage = () => {
-  const [featured, setFeatured] = useState<BestVoteResponse | null>(null)
+  const [featured, setFeatured] = useState<TrendingVoteResponse | null>(null)
   const [latest, setLatest] = useState<Vote[]>([])
 
   useEffect(() => {
-    fetchBestVote()
+    fetchTrendingVotes()
       .then(setFeatured)
       .catch(() => {})
     fetchVotes({ category: 'ALL', sort: 'latest', size: 3 })
@@ -41,7 +44,6 @@ const MainPage = () => {
             priority
           />
         }
-        trailing={<SearchIconButton />}
       />
 
       {/* 뜨고 있는 밸런스 */}
@@ -62,7 +64,7 @@ const MainPage = () => {
         <h2 className="typo-heading-06 px-4 text-foreground">
           이런 주제는 어때요?
         </h2>
-        <div className="scrollbar-hide flex gap-4 overflow-x-auto px-4">
+        <HorizontalScroll className="flex gap-4 px-4">
           {CATEGORIES.map((c) => (
             <Link
               key={c.param}
@@ -75,7 +77,7 @@ const MainPage = () => {
               <span className="typo-title-03 text-foreground">{c.label}</span>
             </Link>
           ))}
-        </div>
+        </HorizontalScroll>
       </section>
 
       {/* 올라오고 있는 밸런스 */}

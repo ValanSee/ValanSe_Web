@@ -11,6 +11,16 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* "뜨고 있는 밸런스" 히어로 카드 그라디언트 (Figma 메인홈 카드) */
+  .bg-hero-trending {
+    background: radial-gradient(
+      ellipse at 50% 43%,
+      #db91d9 10%,
+      #6e7afe 52%,
+      #2b0933 120%
+    );
+  }
 }
 
 @layer base {
