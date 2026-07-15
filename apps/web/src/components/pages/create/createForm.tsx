@@ -3,16 +3,19 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { CreateVoteData } from '@/types/api/votes'
-import { VoteCategory } from '@/types/_shared/vote'
+import {
+  CREATABLE_VOTE_CATEGORIES,
+  VOTE_CATEGORY_LABEL,
+  VoteCategory,
+} from '@/types/_shared/vote'
 import { createVote } from '@/api/votes'
 import { useRouter } from 'next/navigation'
 import RequiredMark from '@/components/_shared/requiredMark'
 
-const categories = [
-  { label: '음식', value: 'FOOD' },
-  { label: '연애', value: 'LOVE' },
-  { label: '기타', value: 'ETC' },
-]
+const categories = CREATABLE_VOTE_CATEGORIES.map((value) => ({
+  label: VOTE_CATEGORY_LABEL[value],
+  value,
+}))
 
 const CreateForm = () => {
   const router = useRouter()
@@ -100,11 +103,11 @@ const CreateForm = () => {
           <div>주제를 선택해주세요</div>
           <RequiredMark />
         </div>
-        <div className="flex gap-2 w-full">
+        <div className="flex flex-wrap gap-2 w-full">
           {categories.map((c) => (
             <button
               key={c.label}
-              className={`w-[68px] h-10 rounded-full ${
+              className={`px-3 py-2 rounded-full font-medium ${
                 category === c.value
                   ? 'bg-[#839DB7] text-white'
                   : 'bg-white text-[#8E8E8E] border border-[#C6C6C6]'
