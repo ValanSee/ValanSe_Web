@@ -37,6 +37,27 @@ export const updateMemberProfile = async (
   }
 }
 
+export type UpdateProfileImageResponse = {
+  profile_image_url: string
+}
+
+export const updateProfileImage = async (
+  file: File,
+): Promise<UpdateProfileImageResponse> => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await authApi.put<UpdateProfileImageResponse>(
+      '/member/profile-image',
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
+    )
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 // TODO : 마이페이지 타입 정리
 export type fetchMemberMypageResponse = {
   profile: {
