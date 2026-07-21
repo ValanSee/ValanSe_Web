@@ -1,8 +1,13 @@
 import { VoteCategory } from '../_shared/vote'
 
+export type CreateVoteOption = {
+  content: string
+  imageFile?: File | null
+}
+
 export type CreateVoteData = {
   title: string
-  options: string[]
+  options: CreateVoteOption[]
   category: VoteCategory
   content?: string
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Icon } from '@iconify/react'
@@ -12,6 +12,7 @@ import { checkNickname } from '@/api/member/member'
 import {
   fetchMypageDataThunk,
   updateProfileThunk,
+  updateProfileImageThunk,
 } from '@/store/thunks/memberThunks'
 import { useDebounce } from '@/hooks/useDebounce'
 import Header from '@/components/_shared/header'
@@ -22,6 +23,14 @@ import { cn } from '@/lib/utils'
 const genderOptions: { label: string; value: Gender }[] = [
   { label: '남성', value: 'MALE' },
   { label: '여성', value: 'FEMALE' },
+]
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 서버(R2StorageService) 제한과 동일
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
 ]
 
 const ageOptions: { label: string; value: Age }[] = [
@@ -46,6 +55,9 @@ const EditPage = () => {
   const [mbti, setMbti] = useState<MBTI | null>(
     (myPageData?.mbti as MBTI) ?? null,
   )
+
+  const [isImageUploading, setIsImageUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [isNicknameEditing, setIsNicknameEditing] = useState(false)
   const [nickNameMessage, setNickNameMessage] = useState<string | null>(null)
@@ -79,6 +91,32 @@ const EditPage = () => {
     }
   }, [myPageData, dispatch])
 
+  const handleImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // 같은 파일 재선택 시에도 change 이벤트가 발생하도록 초기화
+    if (!file) return
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      alert('jpg, png, webp, gif 형식만 지원해요')
+      return
+    }
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert('5MB 이하 이미지만 올릴 수 있어요')
+      return
+    }
+
+    setIsImageUploading(true)
+    try {
+      await dispatch(updateProfileImageThunk(file))
+    } catch {
+      alert('이미지 업로드에 실패했어요. 잠시 후 다시 시도해주세요')
+    } finally {
+      setIsImageUploading(false)
+    }
+  }
+
   const handleSubmit = async () => {
     if (!mbti || !age || !gender) return
     if (nickNameMessage) {
@@ -105,12 +143,45 @@ const EditPage = () => {
       <Header title="프로필 수정" showBackButton />
       <div className="flex flex-col gap-8 px-5 pb-8 pt-6">
         <div className="flex flex-col items-center gap-3">
-          <Image
-            src={myPageData.profile_image_url || '/profile-example.svg'}
-            alt="프로필"
-            width={84}
-            height={84}
-            className="h-[84px] w-[84px] rounded-full bg-brand-gray-75 object-cover"
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isImageUploading}
+            aria-label="프로필 이미지 변경"
+            className="relative"
+          >
+            <Image
+              src={myPageData.profile_image_url || '/profile-example.svg'}
+              alt="프로필"
+              width={84}
+              height={84}
+              className="h-[84px] w-[84px] rounded-full bg-brand-gray-75 object-cover"
+            />
+            {isImageUploading && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+                <Icon
+                  icon="line-md:loading-twotone-loop"
+                  width={28}
+                  className="text-white"
+                  aria-hidden
+                />
+              </div>
+            )}
+            <span className="absolute -bottom-0.5 -right-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-brand-gray-75 bg-card">
+              <Icon
+                icon="icon-park-solid:camera"
+                width={16}
+                className="text-brand-gray-100"
+                aria-hidden
+              />
+            </span>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={ALLOWED_IMAGE_TYPES.join(',')}
+            onChange={handleImageChange}
+            className="hidden"
           />
           <p className="typo-title-02 text-foreground">{myPageData.kakaoname}</p>
         </div>
