@@ -29,6 +29,7 @@ import { buildCurrentReturnPath } from '@/utils/authRedirect'
 interface PollOption {
   optionId: number
   content: string
+  imageUrl: string | null
   voteCount: number
   label: string
 }
@@ -172,6 +173,7 @@ function PollDetailContent() {
             options={data.options.map((opt) => ({
               optionId: opt.optionId,
               content: opt.content,
+              imageUrl: opt.imageUrl,
               vote_count: opt.voteCount,
             }))}
             totalParticipants={data.totalVoteCount}
