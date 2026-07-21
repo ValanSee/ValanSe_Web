@@ -1,66 +1,40 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { Icon } from '@iconify/react'
 
-const navOptions: NavOption[] = [
-  {
-    label: '홈',
-    icon: '/home.svg',
-    activeIcon: '/home-blue.svg',
-    route: '/main',
-  },
-  {
-    label: '인기',
-    icon: '/hotissue.svg',
-    activeIcon: '/hotissue-blue.svg',
-    route: '/poll/hot',
-  },
-  {
-    label: '밸런스',
-    route: '/balanse',
-    icon: '/poll.svg',
-    activeIcon: '/poll-blue.svg',
-  },
-  {
-    label: '만들기',
-    icon: '/create.svg',
-    activeIcon: '/create-blue.svg',
-    route: '/create',
-  },
-  {
-    label: '내 정보',
-    icon: '/mypage.svg',
-    activeIcon: '/mypage-blue.svg',
-    route: '/my',
-  },
+type NavItem = {
+  label: string
+  route: string
+  icon: string
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: '홈', route: '/main', icon: 'ic:round-home' },
+  { label: '밸런스', route: '/balanse', icon: 'heroicons:scale' },
+  { label: '만들기', route: '/create', icon: 'jam:write' },
+  { label: '마이', route: '/my', icon: 'weui:setting-filled' },
 ]
 
 function NavBarContent() {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   return (
-    <nav className="fixed bottom-0 w-full h-20 bg-white border-t flex items-center shadow-2xl shadow-black z-50">
-      {navOptions.map((option) => {
-        const isActive = isNavActive(pathname, searchParams, option)
-
+    <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center bg-card pt-ds-2 pb-[calc(0.6875rem+env(safe-area-inset-bottom))] shadow-[0_0_2.3px_rgba(0,0,0,0.11)] backdrop-blur-2xl">
+      {NAV_ITEMS.map(({ label, route, icon }) => {
+        const isActive = pathname.startsWith(route)
         return (
           <Link
-            key={option.label}
-            href={option.route}
-            className={`flex flex-col items-center justify-center w-full h-10 gap-1 text-xs font-bold leading-none ${isActive ? 'text-[#4D7298]' : 'text-[#1D1D1D]'}`}
+            key={route}
+            href={route}
+            aria-current={isActive ? 'page' : undefined}
+            className={`typo-label-03 flex flex-1 flex-col items-center justify-center gap-1 px-ds-2 text-center transition-colors ${
+              isActive ? 'text-primary' : 'text-brand-gray-75'
+            }`}
           >
-            <div className="flex items-center justify-center w-6 h-6">
-              <Image
-                src={isActive ? option.activeIcon : option.icon}
-                alt={option.label}
-                width={20}
-                height={20}
-              />
-            </div>
-            {option.label}
+            <Icon icon={icon} width={28} height={28} aria-hidden />
+            {label}
           </Link>
         )
       })}
@@ -69,26 +43,3 @@ function NavBarContent() {
 }
 
 export default NavBarContent
-
-type NavOption = {
-  label: string
-  icon: string
-  activeIcon: string
-  route: string
-}
-
-const isNavActive = (
-  pathname: string,
-  searchParams: URLSearchParams,
-  option: NavOption,
-): boolean => {
-  if (option.label === '인기') {
-    const isPollDetail = /^\/poll\/\d+$/.test(pathname)
-    const isSourceHot = searchParams.get('source') === 'hot'
-    return pathname.startsWith('/poll/hot') || (isPollDetail && isSourceHot)
-  }
-
-  const route = option.route
-
-  return pathname.startsWith(route)
-}

@@ -77,6 +77,33 @@ export default {
             200: 'hsl(var(--color-r200))',
             300: 'hsl(var(--color-r300))',
           },
+          kakao: 'hsl(var(--color-kakao))',
+        },
+        tier: {
+          basic: {
+            DEFAULT: 'var(--tier-basic-bg)',
+            foreground: 'var(--tier-basic-fg)',
+          },
+          1: {
+            DEFAULT: 'var(--tier-1-bg)',
+            foreground: 'var(--tier-1-fg)',
+          },
+          2: {
+            DEFAULT: 'var(--tier-2-bg)',
+            foreground: 'var(--tier-2-fg)',
+          },
+          3: {
+            DEFAULT: 'var(--tier-3-bg)',
+            foreground: 'var(--tier-3-fg)',
+          },
+          season: {
+            DEFAULT: 'var(--tier-season-bg)',
+            foreground: 'var(--tier-season-fg)',
+          },
+          rare: {
+            DEFAULT: 'var(--tier-rare-bg)',
+            foreground: 'var(--tier-rare-fg)',
+          },
         },
       },
       borderRadius: {

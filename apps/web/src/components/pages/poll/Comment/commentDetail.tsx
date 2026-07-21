@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { Icon } from '@iconify/react'
 import {
   Comment,
   fetchComments,
@@ -8,31 +9,15 @@ import {
   toggleCommentLike,
   deleteComment,
 } from '@/api/comment/commentApi'
-import CommentInput from './commentInput'
-import {
-  ChevronDown,
-  ChevronUp,
-  ThumbsUp,
-  MessageCircle,
-  MoreVertical,
-  Trash2,
-} from 'lucide-react'
-import {
-  Modal,
-  ModalOverlay,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  ModalBody,
-  ModalFooter,
-} from '@/components/ui/modal'
+import { Popup } from '@/components/ui/popup'
 import { Profile } from '@/types/member'
+import { cn } from '@/lib/utils'
+import CommentInput from './commentInput'
 
 interface CommentDetailProps {
   comments?: Comment[]
   voteId?: number | string
   onClose?: () => void
-  /** 비로그인 시 null — 삭제 메뉴 등은 로그인 사용자에게만 표시 */
   profile: Profile | null
   postLoginReturnPath?: string
 }
@@ -45,9 +30,7 @@ const CommentDetail = ({
   postLoginReturnPath,
 }: CommentDetailProps) => {
   const [openReplies, setOpenReplies] = useState<Record<number, boolean>>({})
-  const [currentSort, setCurrentSort] = useState<'popular' | 'latest'>(
-    'popular',
-  )
+  const [currentSort, setCurrentSort] = useState<'popular' | 'latest'>('popular')
   const [localComments, setLocalComments] = useState<Comment[]>(comments)
   const [loading, setLoading] = useState(false)
   const [replies, setReplies] = useState<Record<number, Reply[]>>({})
@@ -55,58 +38,36 @@ const CommentDetail = ({
     {},
   )
   const [openMenus, setOpenMenus] = useState<Record<number, boolean>>({})
-  const [deleteConfirmModal, setDeleteConfirmModal] = useState<{
+  const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean
     commentId: number | null
   }>({ isOpen: false, commentId: null })
 
-  // 초기 댓글 설정
-  useEffect(() => {
-    setLocalComments(comments)
-  }, [comments])
+  useEffect(() => setLocalComments(comments), [comments])
 
-  // 메뉴 외부 클릭 시 메뉴 닫기
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
-      if (!target.closest('.menu-container')) {
-        setOpenMenus({})
-      }
+    const handleOutside = (e: MouseEvent) => {
+      const target = e.target as Element
+      if (!target.closest('.menu-container')) setOpenMenus({})
     }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
+    document.addEventListener('mousedown', handleOutside)
+    return () => document.removeEventListener('mousedown', handleOutside)
   }, [])
 
   const toggleReplies = async (commentId: number) => {
-    // 이미 열려있으면 닫기
     if (openReplies[commentId]) {
-      setOpenReplies((prev) => ({
-        ...prev,
-        [commentId]: false,
-      }))
+      setOpenReplies((prev) => ({ ...prev, [commentId]: false }))
       return
     }
-
-    // 닫혀있으면 열고 대댓글 불러오기
-    setOpenReplies((prev) => ({
-      ...prev,
-      [commentId]: true,
-    }))
-
-    // 대댓글이 이미 로드되어 있지 않으면 불러오기
+    setOpenReplies((prev) => ({ ...prev, [commentId]: true }))
     if (!replies[commentId] && voteId) {
       setRepliesLoading((prev) => ({ ...prev, [commentId]: true }))
       try {
         const response = await fetchReplies(voteId, commentId)
-        const replyList = Array.isArray(response)
-          ? response
-          : response.replies || []
-        setReplies((prev) => ({ ...prev, [commentId]: replyList }))
-      } catch (error) {
-        console.error('Failed to fetch replies:', error)
+        const list = Array.isArray(response) ? response : response.replies || []
+        setReplies((prev) => ({ ...prev, [commentId]: list }))
+      } catch (e) {
+        console.error('Failed to fetch replies:', e)
       } finally {
         setRepliesLoading((prev) => ({ ...prev, [commentId]: false }))
       }
@@ -115,304 +76,255 @@ const CommentDetail = ({
 
   const handleSortChange = async (sort: 'popular' | 'latest') => {
     if (!voteId) return
-
     setCurrentSort(sort)
     setLoading(true)
-
     try {
-      const response = await fetchComments(voteId, { sort })
-      setLocalComments(response.comments)
-    } catch (error) {
-      console.error('댓글 정렬 실패:', error)
+      const r = await fetchComments(voteId, { sort })
+      setLocalComments(r.comments)
+    } catch (e) {
+      console.error('댓글 정렬 실패:', e)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCommentCreated = async () => {
-    if (!voteId) return
-
-    try {
-      const response = await fetchComments(voteId, { sort: currentSort })
-      setLocalComments(response.comments)
-    } catch (error) {
-      console.error('댓글 새로고침 실패:', error)
-    }
-  }
-
   const handleReplyCreated = async (commentId: number) => {
     if (!voteId) return
-
     try {
-      // 대댓글 목록 새로고침
-      const response = await fetchReplies(voteId, commentId)
-      const replyList = Array.isArray(response)
-        ? response
-        : response.replies || []
-      setReplies((prev) => ({ ...prev, [commentId]: replyList }))
-
-      // 댓글 목록도 새로고침 (replyCount 업데이트를 위해)
-      const commentResponse = await fetchComments(voteId, { sort: currentSort })
-      setLocalComments(commentResponse.comments)
-    } catch (error) {
-      console.error('대댓글 새로고침 실패:', error)
+      const r = await fetchReplies(voteId, commentId)
+      const list = Array.isArray(r) ? r : r.replies || []
+      setReplies((prev) => ({ ...prev, [commentId]: list }))
+      const cr = await fetchComments(voteId, { sort: currentSort })
+      setLocalComments(cr.comments)
+    } catch (e) {
+      console.error('대댓글 새로고침 실패:', e)
     }
   }
 
   const handleLikeToggle = async (commentId: number) => {
     if (!voteId) return
-
     try {
-      const response = await toggleCommentLike(voteId, commentId)
-
-      // 댓글 목록에서 해당 댓글의 likeCount 업데이트
+      const r = await toggleCommentLike(voteId, commentId)
       setLocalComments((prev) =>
-        prev.map((comment) =>
-          comment.commentId === commentId
-            ? { ...comment, likeCount: response.likeCount }
-            : comment,
+        prev.map((c) =>
+          c.commentId === commentId ? { ...c, likeCount: r.likeCount } : c,
         ),
       )
-    } catch (error) {
-      console.error('좋아요 토글 실패:', error)
+    } catch (e) {
+      console.error('좋아요 실패:', e)
       alert('좋아요 처리에 실패했습니다.')
     }
   }
 
   const handleReplyLikeToggle = async (commentId: number, replyId: number) => {
     if (!voteId) return
-
     try {
-      const response = await toggleCommentLike(voteId, replyId)
-
-      // 대댓글 목록에서 해당 대댓글의 likeCount 업데이트
+      const r = await toggleCommentLike(voteId, replyId)
       setReplies((prev) => ({
         ...prev,
         [commentId]:
           prev[commentId]?.map((reply) =>
-            reply.id === replyId
-              ? { ...reply, likeCount: response.likeCount }
-              : reply,
+            reply.id === replyId ? { ...reply, likeCount: r.likeCount } : reply,
           ) || [],
       }))
-    } catch (error) {
-      console.error('대댓글 좋아요 토글 실패:', error)
+    } catch (e) {
+      console.error('대댓글 좋아요 실패:', e)
       alert('좋아요 처리에 실패했습니다.')
     }
   }
 
-  const handleCommentDelete = async (commentId: number) => {
-    setDeleteConfirmModal({ isOpen: true, commentId })
-  }
-
   const confirmDelete = async () => {
-    const { commentId } = deleteConfirmModal
+    const { commentId } = deleteModal
     if (!commentId || !voteId) return
-
     try {
       await deleteComment(commentId)
-      const response = await fetchComments(voteId, { sort: currentSort })
-      setLocalComments(response.comments)
-      setDeleteConfirmModal({ isOpen: false, commentId: null })
-    } catch (error) {
-      console.error('댓글 삭제 실패:', error)
+      const r = await fetchComments(voteId, { sort: currentSort })
+      setLocalComments(r.comments)
+      setDeleteModal({ isOpen: false, commentId: null })
+    } catch (e) {
+      console.error('댓글 삭제 실패:', e)
       alert('댓글 삭제에 실패했습니다.')
     }
   }
 
-  const cancelDelete = () => {
-    setDeleteConfirmModal({ isOpen: false, commentId: null })
-  }
-
-  const toggleMenu = (commentId: number) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [commentId]: !prev[commentId],
-    }))
-  }
-
-  // daysAgo, hoursAgo 필드를 사용해 시간 포맷
   const formatTimeAgo = (daysAgo: number, hoursAgo: number) => {
-    if (daysAgo > 0) return `${daysAgo}일 ${hoursAgo}시간 전`
-    return `${hoursAgo}시간 전`
+    if (daysAgo > 0) return `${daysAgo}일 전`
+    if (hoursAgo > 0) return `${hoursAgo}시간 전`
+    return '방금 전'
   }
 
   return (
-    <div className="bg-white rounded-xl shadow p-6 mt-4 mb-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">댓글 {localComments.length}</h3>
-        <div className="flex gap-2">
-          <button
-            className={`px-3 py-1 text-sm rounded-full ${
-              currentSort === 'popular'
-                ? 'bg-blue-100 text-blue-600'
-                : 'bg-white text-gray-600'
-            } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            onClick={() => handleSortChange('popular')}
-            disabled={loading}
-          >
-            인기순
-          </button>
-          <button
-            className={`px-3 py-1 text-sm rounded-full ${
-              currentSort === 'latest'
-                ? 'bg-blue-100 text-blue-600'
-                : 'bg-white text-gray-600'
-            } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            onClick={() => handleSortChange('latest')}
-            disabled={loading}
-          >
-            최신순
-          </button>
+    <div className="flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-[0_0_4px_rgba(0,0,0,0.06)]">
+      <div className="flex items-center justify-between">
+        <h3 className="typo-title-02 text-foreground">
+          댓글{' '}
+          <span className="text-brand-gray-100">{localComments.length}</span>
+        </h3>
+        <div className="flex gap-1">
+          {(['popular', 'latest'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              disabled={loading}
+              onClick={() => handleSortChange(s)}
+              className={cn(
+                'typo-label-03 rounded-full px-3 py-1 transition-colors',
+                currentSort === s
+                  ? 'bg-brand-violet-50 text-primary'
+                  : 'text-brand-gray-200 hover:bg-brand-gray-50',
+                loading && 'cursor-not-allowed opacity-50',
+              )}
+            >
+              {s === 'popular' ? '인기순' : '최신순'}
+            </button>
+          ))}
         </div>
       </div>
 
       {loading && (
-        <div className="text-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4D7298] mx-auto"></div>
-          <p className="text-sm text-gray-500 mt-2">댓글을 불러오는 중...</p>
-        </div>
+        <p className="typo-body-c-01 py-4 text-center text-brand-gray-100">
+          댓글을 불러오는 중…
+        </p>
       )}
 
       {!loading &&
-        localComments.map((comment, index) => {
-          const commentKey = `${comment.commentId}-${index}`
+        localComments.map((comment, idx) => {
+          const key = `${comment.commentId}-${idx}`
           const commentReplies = replies[comment.commentId] || []
           const isRepliesLoading = repliesLoading[comment.commentId] || false
+          const isMenuOpen = openMenus[comment.commentId]
+          const canManage =
+            profile?.role === 'ADMIN' ||
+            (profile && comment.nickname === profile.nickname)
 
           return (
-            <div key={commentKey} className="pb-4 last:pb-0 space-y-3">
+            <article key={key} className="flex flex-col gap-2 pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                    <span className="text-xs text-gray-600">
-                      {comment.nickname.charAt(0).toUpperCase()}
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-gray-75 typo-label-03 text-primary-foreground">
+                    {comment.nickname.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="typo-label-03 text-foreground">
+                      {comment.nickname}
+                    </span>
+                    <span className="typo-body-c-02 text-brand-gray-100">
+                      {formatTimeAgo(comment.daysAgo, comment.hoursAgo)}
                     </span>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium">
-                      {comment.nickname}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {formatTimeAgo(comment.daysAgo, comment.hoursAgo)}
-                    </div>
-                  </div>
                 </div>
-                <div className="relative menu-container">
-                  {(profile?.role === 'ADMIN' ||
-                    (profile && comment.nickname === profile.nickname)) && (
+                {canManage && (
+                  <div className="menu-container relative">
                     <button
-                      className="text-gray-400 hover:text-gray-600 p-1"
-                      onClick={() => toggleMenu(comment.commentId)}
+                      type="button"
+                      onClick={() =>
+                        setOpenMenus((prev) => ({
+                          ...prev,
+                          [comment.commentId]: !prev[comment.commentId],
+                        }))
+                      }
+                      aria-label="댓글 메뉴"
+                      className="p-1 text-brand-gray-100"
                     >
-                      <MoreVertical size={16} />
+                      <Icon icon="tabler:dots-vertical" width={18} />
                     </button>
-                  )}
-                  {openMenus[comment.commentId] && (
-                    <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
-                      <button
-                        className="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                        onClick={() => {
-                          handleCommentDelete(comment.commentId)
-                          toggleMenu(comment.commentId)
-                        }}
-                      >
-                        <Trash2 size={14} />
-                        삭제
-                      </button>
-                    </div>
-                  )}
-                </div>
+                    {isMenuOpen && (
+                      <div className="absolute right-0 top-8 z-10 min-w-[120px] rounded-xl bg-card shadow-[0_0_8px_rgba(0,0,0,0.12)]">
+                        <button
+                          type="button"
+                          className="typo-label-03 flex w-full items-center gap-2 px-4 py-2 text-destructive"
+                          onClick={() => {
+                            setDeleteModal({
+                              isOpen: true,
+                              commentId: comment.commentId,
+                            })
+                            setOpenMenus({})
+                          }}
+                        >
+                          <Icon icon="tabler:trash" width={16} />
+                          삭제
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <p className="text-sm text-gray-800 whitespace-pre-wrap">
-                {comment.label} {comment.content}
+              <p className="typo-body-b-01 whitespace-pre-wrap text-foreground">
+                {comment.label && (
+                  <span className="mr-1 text-primary">{comment.label}</span>
+                )}
+                {comment.content}
               </p>
 
-              <div className="flex items-center gap-4 text-xs text-gray-500">
+              <div className="flex items-center gap-4 typo-body-c-02 text-brand-gray-100">
                 <button
-                  className="flex items-center gap-1 hover:text-blue-600"
+                  type="button"
                   onClick={() => handleLikeToggle(comment.commentId)}
+                  className="flex items-center gap-1"
                 >
-                  <ThumbsUp size={14} />
+                  <Icon icon="tabler:heart" width={16} />
                   <span>{comment.likeCount}</span>
                 </button>
                 <button
-                  className="flex items-center gap-1 hover:text-blue-600"
+                  type="button"
                   onClick={() => toggleReplies(comment.commentId)}
+                  className="flex items-center gap-1"
                 >
-                  <MessageCircle size={14} />
+                  <Icon icon="tabler:message" width={16} />
                   <span>{comment.replyCount}</span>
+                  <Icon
+                    icon={
+                      openReplies[comment.commentId]
+                        ? 'icon-park-outline:up'
+                        : 'icon-park-outline:down'
+                    }
+                    width={14}
+                  />
                 </button>
               </div>
 
-              <button
-                onClick={() => toggleReplies(comment.commentId)}
-                className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
-              >
-                {comment.replyCount > 0 ? '대댓글 더보기' : '대댓글 남기기'}
-                {openReplies[comment.commentId] ? (
-                  <ChevronUp size={14} />
-                ) : (
-                  <ChevronDown size={14} />
-                )}
-              </button>
-
-              {/* 대댓글 섹션 - 토글 상태에 따라 표시 */}
               {openReplies[comment.commentId] && (
-                <div className="mt-3 pl-4 border-l-2 border-gray-200 space-y-3">
-                  {/* 대댓글 로딩 */}
+                <div className="mt-2 flex flex-col gap-3 border-l-2 border-brand-gray-75 pl-4">
                   {isRepliesLoading && (
-                    <div className="text-sm text-gray-500">
-                      대댓글을 불러오는 중...
-                    </div>
+                    <p className="typo-body-c-02 text-brand-gray-100">
+                      대댓글을 불러오는 중…
+                    </p>
                   )}
-
-                  {/* 기존 대댓글 목록 */}
                   {!isRepliesLoading && commentReplies.length === 0 && (
-                    <div className="text-sm text-gray-500">
-                      대댓글이 없습니다.
-                    </div>
+                    <p className="typo-body-c-02 text-brand-gray-100">
+                      대댓글이 없어요
+                    </p>
                   )}
-
-                  {!isRepliesLoading && commentReplies.length > 0 && (
-                    <div className="space-y-3">
-                      {commentReplies.map((reply, replyIndex) => (
-                        <div
-                          key={`${comment.commentId}-reply-${replyIndex}`}
-                          className="space-y-1"
-                        >
-                          <div className="flex items-center gap-2 text-xs text-gray-600">
-                            <span className="font-medium">
-                              {reply.nickname}
-                            </span>
-                            <span>
-                              {formatTimeAgo(reply.daysAgo, reply.hoursAgo)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-800">
-                            {reply.content}
-                          </p>
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <button
-                              className="flex items-center gap-1 hover:text-blue-600"
-                              onClick={() =>
-                                handleReplyLikeToggle(
-                                  comment.commentId,
-                                  reply.id,
-                                )
-                              }
-                            >
-                              <ThumbsUp size={12} />
-                              <span>좋아요 {reply.likeCount}</span>
-                            </button>
-                          </div>
+                  {!isRepliesLoading &&
+                    commentReplies.map((reply, ri) => (
+                      <div
+                        key={`${comment.commentId}-reply-${ri}`}
+                        className="flex flex-col gap-1"
+                      >
+                        <div className="flex items-center gap-2 typo-body-c-02 text-brand-gray-100">
+                          <span className="typo-label-03 text-foreground">
+                            {reply.nickname}
+                          </span>
+                          <span>
+                            {formatTimeAgo(reply.daysAgo, reply.hoursAgo)}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* 대댓글 입력 필드 */}
+                        <p className="typo-body-b-01 text-foreground">
+                          {reply.content}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleReplyLikeToggle(comment.commentId, reply.id)
+                          }
+                          className="typo-body-c-02 flex items-center gap-1 text-brand-gray-100"
+                        >
+                          <Icon icon="tabler:heart" width={14} />
+                          <span>{reply.likeCount}</span>
+                        </button>
+                      </div>
+                    ))}
                   {voteId && (
                     <CommentInput
                       voteId={voteId}
@@ -426,57 +338,30 @@ const CommentDetail = ({
                   )}
                 </div>
               )}
-            </div>
+            </article>
           )
         })}
-      {/* 최상위 댓글 입력창 - 접기 버튼 바로 위 */}
-      <div className="mt-4">
-        <CommentInput
-          voteId={voteId as number}
-          onCommentCreated={handleCommentCreated}
-          postLoginReturnPath={postLoginReturnPath}
-        />
-      </div>
+
       {onClose && (
         <button
-          className="w-full py-2 mt-4 rounded bg-gray-100 text-gray-600 text-sm"
+          type="button"
           onClick={onClose}
+          className="typo-label-03 mt-2 rounded-xl bg-brand-gray-50 py-3 text-brand-gray-200"
         >
           접기
         </button>
       )}
 
-      {/* 삭제 확인 모달 */}
-      {deleteConfirmModal.isOpen && (
-        <ModalOverlay onClose={cancelDelete}>
-          <Modal>
-            <ModalHeader>
-              <ModalTitle>댓글 삭제</ModalTitle>
-              <ModalTitle></ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <ModalDescription>
-                정말로 이 댓글을 삭제하시겠습니까? <br /> 이 작업은 되돌릴 수
-                없습니다.
-              </ModalDescription>
-            </ModalBody>
-            <ModalFooter>
-              <button
-                className="px-4 py-2 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
-                onClick={cancelDelete}
-              >
-                취소
-              </button>
-              <button
-                className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-700"
-                onClick={confirmDelete}
-              >
-                삭제
-              </button>
-            </ModalFooter>
-          </Modal>
-        </ModalOverlay>
-      )}
+      <Popup
+        open={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, commentId: null })}
+        variant="confirm"
+        title="댓글을 삭제할까요?"
+        description="삭제한 댓글은 복구할 수 없어요"
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        onConfirm={confirmDelete}
+      />
     </div>
   )
 }

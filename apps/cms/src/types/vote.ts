@@ -1,4 +1,4 @@
-export type PinType = 'HOT' | 'TRENDING' | 'NONE'
+export type PinType = 'HOT' | 'NONE'
 
 export interface VoteOption {
   id: number

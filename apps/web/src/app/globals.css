@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  /* 가로 스크롤 컨테이너에서 스크롤바 숨김 (기능은 유지) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* "뜨고 있는 밸런스" 히어로 카드 그라디언트 (Figma 메인홈 카드) */
+  .bg-hero-trending {
+    background: radial-gradient(
+      ellipse at 50% 43%,
+      #db91d9 10%,
+      #6e7afe 52%,
+      #2b0933 120%
+    );
+  }
+}
+
 @layer base {
   :root {
     /* ==========================================================
@@ -42,6 +63,23 @@
     --color-r100: 340 100% 85.5%; /* #FFB5CE */
     --color-r200: 340 100% 67.8%; /* #FF5B91 */
     --color-r300: 340 94.4% 51.4%; /* #F80E5C */
+
+    /* 3rd-party brand */
+    --color-kakao: 51 100% 50%; /* #FEE500 */
+
+    /* 칭호 티어 팔레트 (임시. 디자인 확정 시 브랜드 스케일로 교체) */
+    --tier-basic-bg: #f0f0f0;
+    --tier-basic-fg: #8e8e8e;
+    --tier-1-bg: #e6eef5;
+    --tier-1-fg: #4d7298;
+    --tier-2-bg: #ede4fb;
+    --tier-2-fg: #7e5bef;
+    --tier-3-bg: #fff4d6;
+    --tier-3-fg: #b88600;
+    --tier-season-bg: #fce4f0;
+    --tier-season-fg: #ec4899;
+    --tier-rare-bg: #ffe3d9;
+    --tier-rare-fg: #eb5e28;
 
     /* ==========================================================
      * shadcn Semantic Mapping → Brand

@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import Header from '../_shared/header'
+import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
@@ -17,34 +17,31 @@ const PointPage = () => {
   const pathname = usePathname()
   const dispatch = useAppDispatch()
   const pointHistory = useAppSelector((state) => state.member.pointHistory)
-  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    let cancelled = false
     void (async () => {
       try {
         await dispatch(fetchPointHistoryThunk())
-        if (!cancelled) setLoaded(true)
       } catch {
         router.replace(entryHrefWithRedirect(pathname))
       }
     })()
-    return () => {
-      cancelled = true
-    }
   }, [dispatch, pathname, router])
 
-  if (!loaded || !pointHistory) return <Loading />
+  if (!pointHistory) return <Loading />
 
-  // 가장 최신 항목의 remainingPoint가 현재 잔액. 내역이 없으면 0.
   const currentPoint = pointHistory[0]?.remainingPoint ?? 0
 
   return (
-    <div className="flex flex-col min-h-screen bg-white font-pretendard">
-      <Header title="내 포인트" />
+    <div className="flex min-h-screen flex-col bg-card">
+      <Header
+        title="내 포인트"
+        showBackButton
+        onBackClick={() => router.push('/my')}
+      />
       <PointHeaderSection point={currentPoint} />
       <PointPolicyNotice />
-      <div className="w-full h-3 bg-[#F0F0F0]" />
+      <div className="h-2 bg-brand-gray-50" />
       <PointHistoryList items={pointHistory} />
     </div>
   )

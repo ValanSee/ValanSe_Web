@@ -1,38 +1,10 @@
 import { CreateVoteData, MineVotesResponse } from '@/types/api/votes'
-import type { PinType } from '@/types/balanse/vote'
 import { authApi } from './instance/authApi'
-import { VoteCategory } from '@/types/_shared/vote'
-import { isAxiosError } from 'axios'
-
-export const fetchBestVote = async () => {
-  try {
-    const response = await authApi.get<BestVoteResponse>('/votes/best')
-    return response.data
-  } catch (error) {
-    if (isAxiosError(error) && error.response?.status === 404) {
-      return null
-    }
-    throw error
-  }
-}
 
 export interface VoteOption {
   optionId: number
   content: string
   vote_count: number
-}
-
-export interface BestVoteResponse {
-  voteId: number
-  title: string
-  content: string | null
-  category: VoteCategory
-  totalParticipants: number
-  createdBy: string
-  creatorTitle: string | null
-  createdAt: string
-  options: VoteOption[]
-  pinType: PinType
 }
 
 // 투표 API 응답 타입

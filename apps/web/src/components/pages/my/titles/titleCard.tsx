@@ -1,7 +1,9 @@
 'use client'
 
 import { Title } from '@/types/_shared/title'
-import { TIER_BADGE_CLASS, TIER_LABEL } from './tierStyle'
+import { Chip } from '@/components/ui/chip'
+import { Button } from '@/components/ui/button'
+import { TIER_LABEL } from './tierStyle'
 
 interface TitleCardProps {
   title: Title
@@ -21,45 +23,47 @@ const TitleCard = ({ title, onAction }: TitleCardProps) => {
     title.equipped ||
     (title.locked && title.acquisitionType !== 'POINT_PURCHASE')
 
+  const buttonVariant =
+    title.equipped || buttonDisabled
+      ? 'gray'
+      : title.locked
+        ? 'destructive'
+        : 'primary'
+
   return (
-    <li className="flex items-start justify-between gap-3 py-4 border-b border-[#F0F0F0] last:border-b-0">
-      <div className="flex-1 min-w-0">
+    <li className="flex items-start justify-between gap-3 border-b border-brand-gray-75 py-4 last:border-b-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span
-            className={`px-2 py-0.5 rounded text-[11px] font-semibold ${TIER_BADGE_CLASS[title.tier]}`}
-          >
+          <Chip size="s" status="secondary">
             {TIER_LABEL[title.tier]}
-          </span>
-          <span className="text-[15px] font-semibold text-[#1D1D1D] truncate">
+          </Chip>
+          <span className="typo-title-03 truncate text-foreground">
             {title.title}
           </span>
         </div>
-        <p className="text-xs text-[#8E8E8E] mt-1">{title.description}</p>
+        <p className="typo-body-c-02 mt-1 text-brand-gray-100">
+          {title.description}
+        </p>
         {title.locked && title.lockReason && (
-          <p className="text-xs text-[#EB5E28] mt-1">{title.lockReason}</p>
+          <p className="typo-body-c-02 mt-1 text-destructive">
+            {title.lockReason}
+          </p>
         )}
         {!title.locked && title.requirementText && (
-          <p className="text-xs text-[#8E8E8E] mt-1">
+          <p className="typo-body-c-02 mt-1 text-brand-gray-100">
             획득 조건: {title.requirementText}
           </p>
         )}
       </div>
-      <button
-        type="button"
+      <Button
+        size="s"
+        variant={buttonVariant}
         onClick={() => onAction(title)}
         disabled={buttonDisabled}
-        className={`shrink-0 h-9 px-3 rounded-md text-[13px] font-semibold transition-colors ${
-          title.equipped
-            ? 'bg-[#F0F0F0] text-[#8E8E8E]'
-            : buttonDisabled
-              ? 'bg-[#F0F0F0] text-[#C6C6C6]'
-              : title.locked
-                ? 'bg-[#EB5E28] text-white hover:bg-[#c94e21]'
-                : 'bg-[#4D7298] text-white hover:bg-[#3f5f7e]'
-        }`}
+        className="shrink-0"
       >
         {buttonLabel}
-      </button>
+      </Button>
     </li>
   )
 }

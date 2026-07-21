@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Icon } from '@iconify/react'
 
 const POLICIES: { label: string; amount: string }[] = [
   { label: '회원가입', amount: '40P' },
@@ -14,26 +15,29 @@ const PointPolicyNotice = () => {
   const [open, setOpen] = useState(false)
 
   return (
-    <section className="mx-4 mb-2 border border-[#F0F0F0] rounded-lg">
+    <section className="mx-4 rounded-xl border border-brand-gray-75 bg-card">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left"
+        className="flex w-full items-center justify-between px-4 py-3 text-left"
         aria-expanded={open}
       >
-        <span className="text-sm font-semibold text-[#1D1D1D]">
+        <span className="typo-title-03 text-foreground">
           포인트 적립 정책
         </span>
-        <span className="text-xs text-[#8E8E8E]">
-          {open ? '접기' : '펼치기'}
-        </span>
+        <Icon
+          icon={open ? 'icon-park-outline:up' : 'icon-park-outline:down'}
+          className="text-brand-gray-100"
+          width={18}
+          aria-hidden
+        />
       </button>
       {open && (
-        <ul className="px-4 pb-3 space-y-1.5 text-sm">
+        <ul className="flex flex-col gap-2 px-4 pb-3 typo-body-b-01">
           {POLICIES.map((p) => (
             <li key={p.label} className="flex justify-between">
-              <span className="text-[#1D1D1D]">{p.label}</span>
-              <span className="text-[#4D7298] font-medium">{p.amount}</span>
+              <span className="text-foreground">{p.label}</span>
+              <span className="text-primary">{p.amount}</span>
             </li>
           ))}
         </ul>

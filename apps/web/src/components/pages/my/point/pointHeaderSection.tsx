@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 
 interface PointHeaderSectionProps {
   point: number
@@ -10,21 +11,26 @@ const PointHeaderSection = ({ point }: PointHeaderSectionProps) => {
   const router = useRouter()
 
   return (
-    <section className="px-4 pt-6 pb-5">
-      <div className="text-sm text-[#8E8E8E]">현재 보유 포인트</div>
-      <div className="flex items-baseline gap-1 mt-1">
-        <span className="text-[32px] font-bold text-[#1D1D1D]">
-          {point.toLocaleString()}
+    <section className="flex flex-col gap-4 bg-card px-5 pb-6 pt-4">
+      <div className="flex flex-col gap-1">
+        <span className="typo-body-c-01 text-brand-gray-100">
+          현재 보유 포인트
         </span>
-        <span className="text-[20px] font-semibold text-[#1D1D1D]">P</span>
+        <div className="flex items-baseline gap-1">
+          <span className="typo-heading-01 text-foreground">
+            {point.toLocaleString()}
+          </span>
+          <span className="typo-title-02 text-foreground">P</span>
+        </div>
       </div>
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="l"
+        fullWidth
         onClick={() => router.push('/my/titles')}
-        className="mt-4 w-full h-12 rounded-lg bg-[#4D7298] text-white text-[15px] font-semibold transition-colors hover:bg-[#3f5f7e]"
       >
         칭호 상점 가기
-      </button>
+      </Button>
     </section>
   )
 }

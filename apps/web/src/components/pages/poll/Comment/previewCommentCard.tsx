@@ -1,36 +1,28 @@
 'use client'
-import { Dispatch, SetStateAction } from 'react'
+import { Icon } from '@iconify/react'
 
 interface CommentCardProps {
   content: string
   commentsNumber: number
-  open: boolean
-  setOpen: Dispatch<SetStateAction<boolean>>
 }
+
 const PreviewCommentCard = ({
   content,
   commentsNumber,
-  open,
-  setOpen,
 }: CommentCardProps) => {
   return (
-    <>
-      <div className="bg-white rounded-xl shadow p-6 mb-4">
-        <div className="flex justify-between text-sm text-gray-500 gap-2">
-          <div className="flex items-center">
-            <span className="font-semibold text-black mr-2">댓글</span>
-            <span>{commentsNumber}</span>
-          </div>
-          <button
-            onClick={() => setOpen(!open)}
-            className="transition text-blue-600 font-medium"
-          >
-            {open ? '접기' : '자세히 보기'}
-          </button>
+    <div className="flex flex-col gap-3 rounded-2xl bg-brand-violet-50 p-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 typo-title-03 text-primary">
+          <Icon icon="tabler:crown" width={18} aria-hidden />
+          베스트 댓글
         </div>
-        <p className="mt-2 text-gray-800 text-sm">{content}</p>
+        <span className="typo-body-c-02 text-brand-gray-100">
+          총 {commentsNumber}개
+        </span>
       </div>
-    </>
+      <p className="typo-body-b-01 text-foreground">{content}</p>
+    </div>
   )
 }
 export default PreviewCommentCard

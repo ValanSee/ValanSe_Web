@@ -3,13 +3,14 @@
 import { ModalOverlay } from '@/components/ui/modal'
 import { useState } from 'react'
 import { MBTI } from '@/types/member'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface MBTIBottomSheetProps {
   onClose: () => void
   setMbti: (mbti: MBTI) => void
 }
 
-// MBTI 각 속성별 라디오 한 칸. 같은 name으로 묶여 네이티브 단일 선택/방향키 이동을 제공한다.
 const MBTIOption = ({
   name,
   value,
@@ -30,7 +31,15 @@ const MBTIOption = ({
       onChange={onChange}
       className="peer sr-only"
     />
-    <span className="w-20 h-10 flex items-center justify-center rounded-full border text-lg border-gray-300 text-[#8E8E8E] peer-checked:border-[#4D7298] peer-checked:text-[#4D7298] peer-focus-visible:ring-2 peer-focus-visible:ring-[#4D7298]">
+    <span
+      className={cn(
+        'flex h-11 w-20 items-center justify-center rounded-full border transition-colors',
+        'typo-heading-06',
+        checked
+          ? 'border-primary bg-brand-violet-50 text-primary'
+          : 'border-brand-gray-75 bg-card text-brand-gray-100',
+      )}
+    >
       {value}
     </span>
   </label>
@@ -43,93 +52,70 @@ const MBTIBottomSheet = ({ onClose, setMbti }: MBTIBottomSheetProps) => {
   const [selectedPJ, setSelectedPJ] = useState('')
 
   const isComplete =
-    Boolean(selectedEI) &&
-    Boolean(selectedNS) &&
-    Boolean(selectedTF) &&
-    Boolean(selectedPJ)
+    !!selectedEI && !!selectedNS && !!selectedTF && !!selectedPJ
 
-  const handleSelectMBTI = () => {
-    if (!isComplete) {
-      return
-    }
+  const handleConfirm = () => {
+    if (!isComplete) return
     onClose()
     setMbti(`${selectedEI}${selectedNS}${selectedTF}${selectedPJ}` as MBTI)
   }
 
   return (
-    <ModalOverlay onClose={onClose} className="items-end z-[100]">
-      <div className="flex flex-col w-full pt-5 px-4 pb-20 bg-white rounded-t-xl border-t-2">
-        <div className="text-xl font-bold">MBTI를 알려주세요</div>
-
-        <div className="grid grid-cols-2 pt-7">
-          <div className="flex items-center justify-between pr-3 pb-4 border-r border-b">
-            <MBTIOption
-              name="mbti-ei"
-              value="E"
-              checked={selectedEI === 'E'}
-              onChange={() => setSelectedEI('E')}
-            />
-            <MBTIOption
-              name="mbti-ei"
-              value="I"
-              checked={selectedEI === 'I'}
-              onChange={() => setSelectedEI('I')}
-            />
-          </div>
-          <div className="flex items-center justify-between pl-3 pb-4 border-l border-b">
-            <MBTIOption
-              name="mbti-ns"
-              value="N"
-              checked={selectedNS === 'N'}
-              onChange={() => setSelectedNS('N')}
-            />
-            <MBTIOption
-              name="mbti-ns"
-              value="S"
-              checked={selectedNS === 'S'}
-              onChange={() => setSelectedNS('S')}
-            />
-          </div>
-          <div className="flex items-center justify-between pr-3 pt-4 border-r border-t">
-            <MBTIOption
-              name="mbti-tf"
-              value="T"
-              checked={selectedTF === 'T'}
-              onChange={() => setSelectedTF('T')}
-            />
-            <MBTIOption
-              name="mbti-tf"
-              value="F"
-              checked={selectedTF === 'F'}
-              onChange={() => setSelectedTF('F')}
-            />
-          </div>
-          <div className="flex items-center justify-between pl-3 pt-4 border-l border-t">
-            <MBTIOption
-              name="mbti-pj"
-              value="P"
-              checked={selectedPJ === 'P'}
-              onChange={() => setSelectedPJ('P')}
-            />
-            <MBTIOption
-              name="mbti-pj"
-              value="J"
-              checked={selectedPJ === 'J'}
-              onChange={() => setSelectedPJ('J')}
-            />
-          </div>
+    <ModalOverlay onClose={onClose} className="z-[100] items-end">
+      <div className="flex w-full flex-col gap-8 rounded-t-[20px] bg-card px-5 pb-10 pt-6">
+        <h2 className="typo-heading-05 text-foreground">MBTI를 알려주세요</h2>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+          {[
+            {
+              name: 'mbti-ei',
+              options: ['E', 'I'] as const,
+              value: selectedEI,
+              set: setSelectedEI,
+            },
+            {
+              name: 'mbti-ns',
+              options: ['N', 'S'] as const,
+              value: selectedNS,
+              set: setSelectedNS,
+            },
+            {
+              name: 'mbti-tf',
+              options: ['T', 'F'] as const,
+              value: selectedTF,
+              set: setSelectedTF,
+            },
+            {
+              name: 'mbti-pj',
+              options: ['P', 'J'] as const,
+              value: selectedPJ,
+              set: setSelectedPJ,
+            },
+          ].map((row) => (
+            <div
+              key={row.name}
+              className="flex items-center justify-around border-b border-brand-gray-75 pb-4 last:border-b-0"
+            >
+              {row.options.map((v) => (
+                <MBTIOption
+                  key={v}
+                  name={row.name}
+                  value={v}
+                  checked={row.value === v}
+                  onChange={() => row.set(v)}
+                />
+              ))}
+            </div>
+          ))}
         </div>
-
-        <div className="flex items-center justify-center pt-10">
-          <button
-            type="button"
-            className="w-full h-16 rounded-md bg-[#839DB7] text-white disabled:opacity-40"
-            onClick={handleSelectMBTI}
-            disabled={!isComplete}
-          >
-            선택 완료
-          </button>
-        </div>
+        <Button
+          variant="primary"
+          size="xl"
+          fullWidth
+          onClick={handleConfirm}
+          disabled={!isComplete}
+        >
+          선택 완료
+        </Button>
       </div>
     </ModalOverlay>
   )
