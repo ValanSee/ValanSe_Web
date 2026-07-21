@@ -2,6 +2,7 @@ import {
   fetchMemberMypage,
   fetchMemberProfile,
   updateMemberProfile,
+  updateProfileImage,
 } from '@/api/member/member'
 import { fetchPointHistory } from '@/api/member/point'
 import {
@@ -126,6 +127,22 @@ export const purchaseTitleThunk =
         }
       }
       return res
+    } catch (err) {
+      throw err
+    }
+  }
+
+// 프로필 이미지 업로드: 서버가 기존 이미지 삭제까지 처리하므로 응답 URL로 store만 갱신
+export const updateProfileImageThunk =
+  (file: File) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const { profile_image_url } = await updateProfileImage(file)
+      const current = getState().member.mypageData
+      if (current) {
+        dispatch(setMypageData({ ...current, profile_image_url }))
+      }
+      return profile_image_url
     } catch (err) {
       throw err
     }

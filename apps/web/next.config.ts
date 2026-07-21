@@ -3,7 +3,15 @@ import type { NextConfig } from 'next'
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   images: {
-    domains: ['k.kakaocdn.net', 'img1.kakaocdn.net', 'img2.kakaocdn.net'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'k.kakaocdn.net' },
+      { protocol: 'https', hostname: 'img1.kakaocdn.net' },
+      { protocol: 'https', hostname: 'img2.kakaocdn.net' },
+      {
+        protocol: 'https',
+        hostname: 'pub-87cd0d25fe40436d83d5fb49e513cd55.r2.dev',
+      },
+    ],
   },
 }
 

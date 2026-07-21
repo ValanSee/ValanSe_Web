@@ -30,9 +30,39 @@ export const voteOption = async (
   }
 }
 
+// 선택지 이미지 파트 이름 규칙(백엔드 imageKey와 매칭): option-a-image, option-b-image ...
+const optionImageKey = (index: number) =>
+  `option-${String.fromCharCode(97 + index)}-image`
+
 export const createVote = async (voteData: CreateVoteData) => {
   try {
-    const response = await authApi.post('/votes', voteData)
+    // 선택지별로 이미지 유무에 따라 imageKey를 부여하고, 같은 이름의 파일 파트를 첨부한다.
+    const options = voteData.options.map((option, index) => ({
+      option,
+      imageKey: option.imageFile ? optionImageKey(index) : undefined,
+    }))
+
+    const requestPayload = {
+      title: voteData.title,
+      ...(voteData.content ? { content: voteData.content } : {}),
+      category: voteData.category,
+      options: options.map(({ option, imageKey }) => ({
+        content: option.content,
+        ...(imageKey ? { imageKey } : {}),
+      })),
+    }
+
+    const formData = new FormData()
+    formData.append('request', JSON.stringify(requestPayload))
+    options.forEach(({ option, imageKey }) => {
+      if (imageKey && option.imageFile) {
+        formData.append(imageKey, option.imageFile)
+      }
+    })
+
+    const response = await authApi.post('/votes', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
     return response.data.voteId
   } catch (error) {
     throw error

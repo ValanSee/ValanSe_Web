@@ -1,7 +1,7 @@
 'use client'
 
 import { Icon } from '@iconify/react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
@@ -13,16 +13,97 @@ import { VoteCategory } from '@/types/_shared/vote'
 import { CATEGORIES } from '@/constants/category'
 import { cn } from '@/lib/utils'
 
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 서버(R2StorageService) 제한과 동일
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+]
+
+type OptionDraft = {
+  content: string
+  imageFile: File | null
+  preview: string | null
+}
+
+const emptyOption = (): OptionDraft => ({
+  content: '',
+  imageFile: null,
+  preview: null,
+})
+
 const CreatePage = () => {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState<VoteCategory | null>(null)
-  const [options, setOptions] = useState<string[]>(['', ''])
+  const [options, setOptions] = useState<OptionDraft[]>([
+    emptyOption(),
+    emptyOption(),
+  ])
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  // 언마운트 시 미리보기 objectURL 정리 (최신 options 참조)
+  const optionsRef = useRef(options)
+  optionsRef.current = options
+  useEffect(
+    () => () => {
+      optionsRef.current.forEach(
+        (o) => o.preview && URL.revokeObjectURL(o.preview),
+      )
+    },
+    [],
+  )
+
   const isValid =
-    title.trim() !== '' && !!category && options.every((o) => o.trim() !== '')
+    title.trim() !== '' &&
+    !!category &&
+    options.every((o) => o.content.trim() !== '')
+
+  const updateContent = (index: number, value: string) => {
+    setOptions((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], content: value }
+      return next
+    })
+  }
+
+  const handleImageSelect = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // 같은 파일 재선택 시에도 change 이벤트가 발생하도록 초기화
+    if (!file) return
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      alert('jpg, png, webp, gif 형식만 지원해요')
+      return
+    }
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert('5MB 이하 이미지만 올릴 수 있어요')
+      return
+    }
+    setOptions((prev) => {
+      const next = [...prev]
+      if (next[index].preview) URL.revokeObjectURL(next[index].preview!)
+      next[index] = {
+        ...next[index],
+        imageFile: file,
+        preview: URL.createObjectURL(file),
+      }
+      return next
+    })
+  }
+
+  const removeImage = (index: number) => {
+    setOptions((prev) => {
+      const next = [...prev]
+      if (next[index].preview) URL.revokeObjectURL(next[index].preview!)
+      next[index] = { ...next[index], imageFile: null, preview: null }
+      return next
+    })
+  }
 
   const submit = async () => {
     if (!isValid || submitting) return
@@ -30,7 +111,10 @@ const CreatePage = () => {
     try {
       const voteData: CreateVoteData = {
         title,
-        options,
+        options: options.map((o) => ({
+          content: o.content,
+          imageFile: o.imageFile,
+        })),
         category: category as VoteCategory,
         ...(content.trim() ? { content: content.trim() } : {}),
       }
@@ -133,33 +217,63 @@ const CreatePage = () => {
               선택지를 작성해주세요 <span className="text-destructive">*</span>
             </span>
             <div className="flex flex-col gap-2">
-              {options.map((option, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 rounded-xl border border-brand-gray-75 bg-card px-4 py-3"
-                >
-                  <span className="typo-heading-06 text-foreground">
-                    {String.fromCharCode(65 + index)}
-                  </span>
-                  <input
-                    type="text"
-                    className="typo-label-02 w-full bg-transparent text-foreground outline-none placeholder:text-brand-gray-100"
-                    placeholder={`선택지 ${String.fromCharCode(65 + index)}`}
-                    value={option}
-                    onChange={(e) => {
-                      const next = [...options]
-                      next[index] = e.target.value
-                      setOptions(next)
-                    }}
-                  />
-                </div>
-              ))}
+              {options.map((option, index) => {
+                const label = String.fromCharCode(65 + index)
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 rounded-xl border border-brand-gray-75 bg-card px-4 py-3"
+                  >
+                    <span className="typo-heading-06 text-foreground">
+                      {label}
+                    </span>
+                    <input
+                      type="text"
+                      className="typo-label-02 w-full bg-transparent text-foreground outline-none placeholder:text-brand-gray-100"
+                      placeholder={`선택지 ${label}`}
+                      value={option.content}
+                      onChange={(e) => updateContent(index, e.target.value)}
+                    />
+                    {option.preview ? (
+                      <div className="relative h-11 w-11 shrink-0">
+                        {/* 로컬 미리보기는 objectURL이라 next/image 대신 img 사용 */}
+                        <img
+                          src={option.preview}
+                          alt={`선택지 ${label} 이미지 미리보기`}
+                          className="h-11 w-11 rounded-lg object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          aria-label={`선택지 ${label} 이미지 삭제`}
+                          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand-black text-white"
+                        >
+                          <Icon icon="tabler:x" width={12} aria-hidden />
+                        </button>
+                      </div>
+                    ) : (
+                      <label
+                        className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-dashed border-brand-gray-100 text-brand-gray-100"
+                        aria-label={`선택지 ${label} 이미지 추가`}
+                      >
+                        <Icon icon="tabler:camera-plus" width={20} aria-hidden />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleImageSelect(index, e)}
+                        />
+                      </label>
+                    )}
+                  </div>
+                )
+              })}
             </div>
             {options.length < 4 && (
               <button
                 type="button"
                 className="typo-label-03 ml-auto flex items-center gap-1 text-brand-gray-200"
-                onClick={() => setOptions([...options, ''])}
+                onClick={() => setOptions([...options, emptyOption()])}
               >
                 <Icon icon="tabler:plus" width={16} aria-hidden />
                 선택지 추가
