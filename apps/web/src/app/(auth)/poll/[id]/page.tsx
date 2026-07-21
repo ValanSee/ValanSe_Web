@@ -162,7 +162,7 @@ function PollDetailContent() {
         showBackButton
         onBackClick={handleBackClick}
       />
-      <div className="max-w-xl mx-auto p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
         {data && (
           <PollCard
             voteId={data.voteId}
