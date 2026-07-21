@@ -29,6 +29,7 @@ import { buildCurrentReturnPath } from '@/utils/authRedirect'
 interface PollOption {
   optionId: number
   content: string
+  imageUrl: string | null
   voteCount: number
   label: string
 }
@@ -161,7 +162,7 @@ function PollDetailContent() {
         showBackButton
         onBackClick={handleBackClick}
       />
-      <div className="max-w-xl mx-auto p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
+      <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
         {data && (
           <PollCard
             voteId={data.voteId}
@@ -172,6 +173,7 @@ function PollDetailContent() {
             options={data.options.map((opt) => ({
               optionId: opt.optionId,
               content: opt.content,
+              imageUrl: opt.imageUrl,
               vote_count: opt.voteCount,
             }))}
             totalParticipants={data.totalVoteCount}
