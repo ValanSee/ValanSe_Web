@@ -14,6 +14,7 @@ import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
 import BalanseVoteCard from './balanseVoteCard'
+import HotTrendingBar from './hotTrendingBar'
 import { CATEGORIES } from '@/constants/category'
 
 const TABS = [
@@ -107,6 +108,8 @@ function BalancePageContent() {
         ))}
       </TabBar>
 
+      <HotTrendingBar />
+
       <div className="flex flex-col gap-3 px-4 pt-4">
         {error && (
           <p className="typo-body-b-01 py-8 text-center text-destructive">
@@ -118,8 +121,14 @@ function BalancePageContent() {
             해당 카테고리의 밸런스게임이 아직 없어요
           </p>
         )}
-        {votes.map((vote) => (
-          <BalanseVoteCard key={vote.id} data={vote} />
+        {votes.map((vote, index) => (
+          <div
+            key={vote.id}
+            className="duration-300 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
+            style={{ animationDelay: `${Math.min(index, 6) * 50}ms` }}
+          >
+            <BalanseVoteCard data={vote} />
+          </div>
         ))}
         {hasNextPage && (
           <div ref={loadingRef} className="py-4 text-center">

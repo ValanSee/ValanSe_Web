@@ -12,7 +12,7 @@ import HorizontalScroll from '@/components/_shared/horizontalScroll'
 import BalanseVoteCard from '@/components/pages/balanse/balanseVoteCard'
 import {
   fetchTrendingVotes,
-  type TrendingVoteResponse,
+  type TrendingVoteItem,
 } from '@/api/pages/valanse/trendingVoteApi'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
@@ -20,12 +20,12 @@ import HomeVoteCard from './homeVoteCard'
 import { CATEGORIES } from '@/constants/category'
 
 const MainPage = () => {
-  const [featured, setFeatured] = useState<TrendingVoteResponse | null>(null)
+  const [featured, setFeatured] = useState<TrendingVoteItem | null>(null)
   const [latest, setLatest] = useState<Vote[]>([])
 
   useEffect(() => {
-    fetchTrendingVotes()
-      .then(setFeatured)
+    fetchTrendingVotes(7)
+      .then((res) => setFeatured(res?.votes[0] ?? null))
       .catch(() => {})
     fetchVotes({ category: 'ALL', sort: 'latest', size: 3 })
       .then((data) => setLatest(data.votes))
@@ -65,11 +65,12 @@ const MainPage = () => {
           이런 주제는 어때요?
         </h2>
         <HorizontalScroll className="flex gap-4 px-4">
-          {CATEGORIES.map((c) => (
+          {CATEGORIES.map((c, index) => (
             <Link
               key={c.param}
               href={`/balanse?category=${c.param}`}
-              className="flex shrink-0 flex-col items-center gap-2"
+              style={{ animationDelay: `${index * 50}ms` }}
+              className="flex shrink-0 flex-col items-center gap-2 duration-300 animate-in fade-in slide-in-from-bottom-2 fill-mode-both transition-transform active:scale-95"
             >
               <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gray-50">
                 <Icon icon={c.icon} width={32} aria-hidden />
@@ -87,8 +88,14 @@ const MainPage = () => {
           <EmptyState text="아직 올라온 밸런스가 없어요" />
         ) : (
           <div className="flex flex-col gap-3">
-            {latest.map((v) => (
-              <BalanseVoteCard key={v.id} data={v} />
+            {latest.map((v, index) => (
+              <div
+                key={v.id}
+                className="duration-300 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                <BalanseVoteCard data={v} />
+              </div>
             ))}
           </div>
         )}

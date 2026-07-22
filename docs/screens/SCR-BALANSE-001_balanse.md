@@ -9,6 +9,7 @@
 | 경로 | `/balanse` |
 | 인증 필요 | ✗ |
 | 작성일 | 2026-05-16 |
+| 최종 수정일 | 2026-07-22 |
 
 ## 🎯 화면 목적
 
@@ -23,20 +24,25 @@
 ## 📐 레이아웃 구성
 
 1. **헤더**
-2. **인기 급상승 섹션** (SectionHeader + MockPollCard 슬라이드)
-3. **카테고리/정렬 필터 탭 (FilterTabs)**
+2. **카테고리 필터 탭 (FilterTabs)**
+3. **HOT 인기 급상승 드롭다운 (HotTrendingBar)** — 카테고리 탭 바로 아래. 접힘 시 1위 제목만, 펼침 시 1~5위 랭킹 노출
 4. **전체 목록 (BalanceList)** — 무한 스크롤
 5. **하단 네비게이션 바**
 
 ## 🧩 섹션별 상세 명세
 
-### 1. 인기 급상승 (Trending)
+### 1. HOT 인기 급상승 드롭다운 (HotTrendingBar)
 
-**표시 데이터**: 상위 N개 토픽
+**표시 데이터**: 통합 트렌딩 API의 상위 1~5위 (`votes[]`). 각 항목은 순위(`displayOrder`)·`displayType`(PINNED 관리자 고정 / RANKED 반응성 순위)·제목을 가진다.
 
-**사용 API**: `fetchTrendingVotes`
+- **접힘 상태**: `[HOT]` 칩 + 1위(`votes[0]`) 제목 + 펼침 화살표(▼)
+- **펼침 상태**: 1~5위 순위 리스트
 
-**사용자 액션**: 카드 클릭 → `/poll/[id]`
+**사용 API**: `fetchTrendingVotes(7)` → `GET /votes/trending?days=7` (hotissue/trending 통합 API, 기간 7일)
+
+**사용자 액션**: 바 클릭 → 펼침/접힘 토글 · 랭킹 항목 클릭 → `/poll/[voteId]`
+
+**상태별 처리**: `votes`가 비면 바 자체를 렌더하지 않음
 
 ### 2. FilterTabs
 
@@ -81,8 +87,7 @@
 | Method | Endpoint | 용도 |
 |---|---|---|
 | GET | `/votes` (필터 파라미터) | 목록 |
-| GET | (`fetchTrendingVotes`) | 인기 급상승 |
-| PUT | `/votes/{id}/pin` | 핀 고정 (관리자) |
+| GET | `/votes/trending?days=7` (`fetchTrendingVotes`) | HOT 인기 급상승 1~5위 |
 
 ## 📎 관련 문서
 

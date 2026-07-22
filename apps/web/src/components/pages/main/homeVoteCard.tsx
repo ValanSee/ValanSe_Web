@@ -4,10 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useVoteAction } from '@/hooks/utils/useVoteAction'
 import { cn } from '@/lib/utils'
-import type { TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
+import type { TrendingVoteItem } from '@/api/pages/valanse/trendingVoteApi'
 
 interface Props {
-  data: TrendingVoteResponse
+  data: TrendingVoteItem
 }
 
 /**
@@ -29,7 +29,7 @@ export default function HomeVoteCard({ data }: Props) {
 
   return (
     <>
-      <article className="bg-hero-trending relative overflow-hidden rounded-2xl p-5 shadow-[0_0_4px_rgba(0,0,0,0.08)]">
+      <article className="bg-hero-trending relative overflow-hidden rounded-2xl p-5 shadow-[0_0_4px_rgba(0,0,0,0.08)] duration-500 animate-in fade-in slide-in-from-bottom-2">
         <Link href={detailHref} className="flex flex-col items-center gap-3">
           <span className="typo-label-03 rounded-full bg-brand-yellow-300 px-3 py-1 text-brand-black">
             {data.totalParticipants.toLocaleString()}명 투표 중
@@ -87,7 +87,7 @@ function HeroOptionButton({
       disabled={disabled}
       aria-pressed={selected}
       className={cn(
-        'typo-label-02 flex min-h-12 items-center justify-center rounded-xl px-4 py-3 text-center transition-colors',
+        'typo-label-02 flex min-h-12 items-center justify-center rounded-xl px-4 py-3 text-center transition-[colors,transform] active:scale-[0.98] disabled:active:scale-100',
         selected
           ? 'bg-card text-primary'
           : 'bg-card/90 text-primary hover:bg-card',

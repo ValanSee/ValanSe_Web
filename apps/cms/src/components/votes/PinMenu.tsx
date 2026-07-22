@@ -71,7 +71,7 @@ export function PinMenu({ voteId, onChange }: Props) {
             <button
               type="button"
               disabled={busy}
-              onClick={() => onSelect('HOT')}
+              onClick={() => onSelect('TRENDING')}
               className="flex w-full items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
             >
               <Flame className="mr-3 h-4 w-4 text-orange-500" />
