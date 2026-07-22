@@ -13,6 +13,7 @@ const ModalOverlay = React.forwardRef<
     ref={ref}
     className={cn(
       'fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center',
+      'animate-in fade-in duration-200',
       className,
     )}
     onClick={(e) => {
