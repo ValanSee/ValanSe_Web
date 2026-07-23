@@ -110,6 +110,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  // WebView edge-to-edge 환경에서 env(safe-area-inset-*) 값이 채워지도록 cover 지정
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
