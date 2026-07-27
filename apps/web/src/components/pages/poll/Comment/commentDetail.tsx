@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Icon } from '@iconify/react'
 import {
   Comment,
@@ -9,7 +10,9 @@ import {
   toggleCommentLike,
   deleteComment,
 } from '@/api/comment/commentApi'
+import MoreMenu, { type MoreMenuItem } from '@/components/_shared/moreMenu'
 import { Popup } from '@/components/ui/popup'
+import { useReportAction } from '@/hooks/utils/useReportAction'
 import { Profile } from '@/types/member'
 import { cn } from '@/lib/utils'
 import CommentInput from './commentInput'
@@ -30,29 +33,26 @@ const CommentDetail = ({
   postLoginReturnPath,
 }: CommentDetailProps) => {
   const [openReplies, setOpenReplies] = useState<Record<number, boolean>>({})
-  const [currentSort, setCurrentSort] = useState<'popular' | 'latest'>('popular')
+  const [currentSort, setCurrentSort] = useState<'popular' | 'latest'>(
+    'popular',
+  )
   const [localComments, setLocalComments] = useState<Comment[]>(comments)
   const [loading, setLoading] = useState(false)
   const [replies, setReplies] = useState<Record<number, Reply[]>>({})
   const [repliesLoading, setRepliesLoading] = useState<Record<number, boolean>>(
     {},
   )
-  const [openMenus, setOpenMenus] = useState<Record<number, boolean>>({})
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean
     commentId: number | null
   }>({ isOpen: false, commentId: null })
 
-  useEffect(() => setLocalComments(comments), [comments])
+  const pathname = usePathname()
+  const { openReport, reportUi } = useReportAction({
+    returnPath: postLoginReturnPath ?? pathname,
+  })
 
-  useEffect(() => {
-    const handleOutside = (e: MouseEvent) => {
-      const target = e.target as Element
-      if (!target.closest('.menu-container')) setOpenMenus({})
-    }
-    document.addEventListener('mousedown', handleOutside)
-    return () => document.removeEventListener('mousedown', handleOutside)
-  }, [])
+  useEffect(() => setLocalComments(comments), [comments])
 
   const toggleReplies = async (commentId: number) => {
     if (openReplies[commentId]) {
@@ -192,10 +192,35 @@ const CommentDetail = ({
           const key = `${comment.commentId}-${idx}`
           const commentReplies = replies[comment.commentId] || []
           const isRepliesLoading = repliesLoading[comment.commentId] || false
-          const isMenuOpen = openMenus[comment.commentId]
-          const canManage =
-            profile?.role === 'ADMIN' ||
-            (profile && comment.nickname === profile.nickname)
+          const isOwn = !!profile && comment.nickname === profile.nickname
+          const canDelete = profile?.role === 'ADMIN' || isOwn
+          const menuItems: MoreMenuItem[] = [
+            ...(canDelete
+              ? [
+                  {
+                    label: '삭제',
+                    icon: 'tabler:trash',
+                    destructive: true,
+                    onSelect: () =>
+                      setDeleteModal({
+                        isOpen: true,
+                        commentId: comment.commentId,
+                      }),
+                  },
+                ]
+              : []),
+            // 본인 댓글은 서버에서 신고를 거부하고, 삭제된 댓글은 신고 대상이 아님
+            // (서버 응답은 deleted 대신 deletedAt 을 내려준다)
+            ...(!isOwn && !comment.deletedAt
+              ? [
+                  {
+                    label: '신고',
+                    icon: 'tabler:flag',
+                    onSelect: () => openReport('COMMENT', comment.commentId),
+                  },
+                ]
+              : []),
+          ]
 
           return (
             <article key={key} className="flex flex-col gap-2 pb-3">
@@ -213,41 +238,7 @@ const CommentDetail = ({
                     </span>
                   </div>
                 </div>
-                {canManage && (
-                  <div className="menu-container relative">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setOpenMenus((prev) => ({
-                          ...prev,
-                          [comment.commentId]: !prev[comment.commentId],
-                        }))
-                      }
-                      aria-label="댓글 메뉴"
-                      className="p-1 text-brand-gray-100"
-                    >
-                      <Icon icon="tabler:dots-vertical" width={18} />
-                    </button>
-                    {isMenuOpen && (
-                      <div className="absolute right-0 top-8 z-10 min-w-[120px] rounded-xl bg-card shadow-[0_0_8px_rgba(0,0,0,0.12)]">
-                        <button
-                          type="button"
-                          className="typo-label-03 flex w-full items-center gap-2 px-4 py-2 text-destructive"
-                          onClick={() => {
-                            setDeleteModal({
-                              isOpen: true,
-                              commentId: comment.commentId,
-                            })
-                            setOpenMenus({})
-                          }}
-                        >
-                          <Icon icon="tabler:trash" width={16} />
-                          삭제
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <MoreMenu items={menuItems} label="댓글 메뉴" />
               </div>
 
               <p className="typo-body-b-01 whitespace-pre-wrap text-foreground">
@@ -302,13 +293,29 @@ const CommentDetail = ({
                         key={`${comment.commentId}-reply-${ri}`}
                         className="flex flex-col gap-1"
                       >
-                        <div className="flex items-center gap-2 typo-body-c-02 text-brand-gray-100">
-                          <span className="typo-label-03 text-foreground">
-                            {reply.nickname}
-                          </span>
-                          <span>
-                            {formatTimeAgo(reply.daysAgo, reply.hoursAgo)}
-                          </span>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2 typo-body-c-02 text-brand-gray-100">
+                            <span className="typo-label-03 text-foreground">
+                              {reply.nickname}
+                            </span>
+                            <span>
+                              {formatTimeAgo(reply.daysAgo, reply.hoursAgo)}
+                            </span>
+                          </div>
+                          {!(profile && reply.nickname === profile.nickname) &&
+                            !reply.deletedAt && (
+                              <MoreMenu
+                                label="대댓글 메뉴"
+                                items={[
+                                  {
+                                    label: '신고',
+                                    icon: 'tabler:flag',
+                                    onSelect: () =>
+                                      openReport('COMMENT', reply.id),
+                                  },
+                                ]}
+                              />
+                            )}
                         </div>
                         <p className="typo-body-b-01 text-foreground">
                           {reply.content}
@@ -362,6 +369,8 @@ const CommentDetail = ({
         cancelLabel="취소"
         onConfirm={confirmDelete}
       />
+
+      {reportUi}
     </div>
   )
 }
