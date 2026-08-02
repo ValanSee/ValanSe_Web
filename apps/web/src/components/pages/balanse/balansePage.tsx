@@ -1,18 +1,13 @@
 'use client'
 
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
+import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import BalanseVoteCard from './balanseVoteCard'
 import { CATEGORIES } from '@/constants/category'
 
@@ -34,6 +29,10 @@ function BalancePageContent() {
 
   const category = searchParams.get('category') || 'ALL'
   const sort = (searchParams.get('sort') as 'latest' | 'popular') || 'latest'
+
+  const { isReported } = useReportedContent()
+  // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
+  const visibleVotes = votes.filter((v) => !isReported('VOTE', v.id))
 
   const updateCategory = (newCategory: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -113,12 +112,12 @@ function BalancePageContent() {
             {error}
           </p>
         )}
-        {!error && !loading && votes.length === 0 && (
+        {!error && !loading && visibleVotes.length === 0 && (
           <p className="typo-body-b-01 py-8 text-center text-brand-gray-100">
             해당 카테고리의 밸런스게임이 아직 없어요
           </p>
         )}
-        {votes.map((vote) => (
+        {visibleVotes.map((vote) => (
           <BalanseVoteCard key={vote.id} data={vote} />
         ))}
         {hasNextPage && (

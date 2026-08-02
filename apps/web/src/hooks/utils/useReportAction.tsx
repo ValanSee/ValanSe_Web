@@ -9,6 +9,7 @@ import ReportSheet from '@/components/ui/modal/reportSheet'
 import { Popup } from '@/components/ui/popup'
 import { getAccessToken } from '@/utils/tokenUtils'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
+import { markReported } from '@/utils/reportedContent'
 
 interface Options {
   /** 로그인 후 되돌아올 경로 */
@@ -69,11 +70,13 @@ export function useReportAction({ returnPath }: Options) {
         reason,
         ...(content ? { content } : {}),
       })
+      // 관리자 처리 전까지 신고자에게만 가려 보여준다
+      markReported(target.type, target.id)
       setSheetOpen(false)
       setResult({
         variant: 'alert',
-        title: '신고가 접수되었어요',
-        description: '관리자 검토 후 조치할 예정이에요',
+        title: '신고가 접수되었습니다.',
+        description: '검토에는 최대 24시간이 소요됩니다.',
       })
     } catch (e) {
       console.error('신고 실패:', e)

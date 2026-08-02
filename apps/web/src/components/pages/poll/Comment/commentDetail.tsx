@@ -13,6 +13,7 @@ import {
 import MoreMenu, { type MoreMenuItem } from '@/components/_shared/moreMenu'
 import { Popup } from '@/components/ui/popup'
 import { useReportAction } from '@/hooks/utils/useReportAction'
+import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import { Profile } from '@/types/member'
 import { cn } from '@/lib/utils'
 import CommentInput from './commentInput'
@@ -24,6 +25,13 @@ interface CommentDetailProps {
   profile: Profile | null
   postLoginReturnPath?: string
 }
+
+/** 내가 신고한 댓글·대댓글 자리에 대신 노출되는 블라인드 표시 */
+const BlindedContent = () => (
+  <p className="typo-body-c-01 rounded-xl bg-brand-gray-50 px-4 py-3 text-center text-brand-gray-100">
+    신고한 콘텐츠입니다
+  </p>
+)
 
 const CommentDetail = ({
   comments = [],
@@ -51,6 +59,7 @@ const CommentDetail = ({
   const { openReport, reportUi } = useReportAction({
     returnPath: postLoginReturnPath ?? pathname,
   })
+  const { isReported } = useReportedContent()
 
   useEffect(() => setLocalComments(comments), [comments])
 
@@ -190,6 +199,16 @@ const CommentDetail = ({
       {!loading &&
         localComments.map((comment, idx) => {
           const key = `${comment.commentId}-${idx}`
+
+          // 내가 신고한 댓글은 관리자 처리 전까지 가려 둔다
+          if (isReported('COMMENT', comment.commentId)) {
+            return (
+              <article key={key} className="pb-3">
+                <BlindedContent />
+              </article>
+            )
+          }
+
           const commentReplies = replies[comment.commentId] || []
           const isRepliesLoading = repliesLoading[comment.commentId] || false
           const isOwn = !!profile && comment.nickname === profile.nickname
@@ -288,50 +307,58 @@ const CommentDetail = ({
                     </p>
                   )}
                   {!isRepliesLoading &&
-                    commentReplies.map((reply, ri) => (
-                      <div
-                        key={`${comment.commentId}-reply-${ri}`}
-                        className="flex flex-col gap-1"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2 typo-body-c-02 text-brand-gray-100">
-                            <span className="typo-label-03 text-foreground">
-                              {reply.nickname}
-                            </span>
-                            <span>
-                              {formatTimeAgo(reply.daysAgo, reply.hoursAgo)}
-                            </span>
-                          </div>
-                          {!(profile && reply.nickname === profile.nickname) &&
-                            !reply.deletedAt && (
-                              <MoreMenu
-                                label="대댓글 메뉴"
-                                items={[
-                                  {
-                                    label: '신고',
-                                    icon: 'tabler:flag',
-                                    onSelect: () =>
-                                      openReport('COMMENT', reply.id),
-                                  },
-                                ]}
-                              />
-                            )}
-                        </div>
-                        <p className="typo-body-b-01 text-foreground">
-                          {reply.content}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleReplyLikeToggle(comment.commentId, reply.id)
-                          }
-                          className="typo-body-c-02 flex items-center gap-1 text-brand-gray-100"
+                    commentReplies.map((reply, ri) =>
+                      isReported('COMMENT', reply.id) ? (
+                        <BlindedContent
+                          key={`${comment.commentId}-reply-${ri}`}
+                        />
+                      ) : (
+                        <div
+                          key={`${comment.commentId}-reply-${ri}`}
+                          className="flex flex-col gap-1"
                         >
-                          <Icon icon="tabler:heart" width={14} />
-                          <span>{reply.likeCount}</span>
-                        </button>
-                      </div>
-                    ))}
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2 typo-body-c-02 text-brand-gray-100">
+                              <span className="typo-label-03 text-foreground">
+                                {reply.nickname}
+                              </span>
+                              <span>
+                                {formatTimeAgo(reply.daysAgo, reply.hoursAgo)}
+                              </span>
+                            </div>
+                            {!(
+                              profile && reply.nickname === profile.nickname
+                            ) &&
+                              !reply.deletedAt && (
+                                <MoreMenu
+                                  label="대댓글 메뉴"
+                                  items={[
+                                    {
+                                      label: '신고',
+                                      icon: 'tabler:flag',
+                                      onSelect: () =>
+                                        openReport('COMMENT', reply.id),
+                                    },
+                                  ]}
+                                />
+                              )}
+                          </div>
+                          <p className="typo-body-b-01 text-foreground">
+                            {reply.content}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleReplyLikeToggle(comment.commentId, reply.id)
+                            }
+                            className="typo-body-c-02 flex items-center gap-1 text-brand-gray-100"
+                          >
+                            <Icon icon="tabler:heart" width={14} />
+                            <span>{reply.likeCount}</span>
+                          </button>
+                        </div>
+                      ),
+                    )}
                   {voteId && (
                     <CommentInput
                       voteId={voteId}
