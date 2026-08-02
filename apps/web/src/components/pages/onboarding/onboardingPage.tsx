@@ -169,7 +169,9 @@ const OnboardingPage = () => {
               size="l"
               className="mt-8 shrink-0"
               onClick={handleCheckNickname}
-              disabled={checkingNickname || !nickname.trim() || nicknameVerified}
+              disabled={
+                checkingNickname || !nickname.trim() || nicknameVerified
+              }
             >
               {checkingNickname
                 ? '확인 중'

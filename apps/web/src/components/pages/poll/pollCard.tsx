@@ -148,7 +148,9 @@ function PollCard({
               {creatorTitle}
             </Chip>
           )}
-          <span className="typo-body-c-01 text-brand-gray-100">{createdBy}</span>
+          <span className="typo-body-c-01 text-brand-gray-100">
+            {createdBy}
+          </span>
         </div>
         <h2 className="typo-heading-04 text-foreground">{title}</h2>
         {content && (
@@ -185,7 +187,11 @@ function PollCard({
                           />
                         ) : (
                           <div className="flex h-full items-center justify-center text-brand-gray-100">
-                            <Icon icon="tabler:photo-off" width={28} aria-hidden />
+                            <Icon
+                              icon="tabler:photo-off"
+                              width={28}
+                              aria-hidden
+                            />
                           </div>
                         )}
                       </div>

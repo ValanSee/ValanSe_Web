@@ -49,9 +49,7 @@ const EditPage = () => {
   const [gender, setGender] = useState<Gender | null>(
     (myPageData?.gender as Gender) ?? null,
   )
-  const [age, setAge] = useState<Age | null>(
-    (myPageData?.age as Age) ?? null,
-  )
+  const [age, setAge] = useState<Age | null>((myPageData?.age as Age) ?? null)
   const [mbti, setMbti] = useState<MBTI | null>(
     (myPageData?.mbti as MBTI) ?? null,
   )
@@ -91,9 +89,7 @@ const EditPage = () => {
     }
   }, [myPageData, dispatch])
 
-  const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = '' // 같은 파일 재선택 시에도 change 이벤트가 발생하도록 초기화
     if (!file) return
@@ -183,7 +179,9 @@ const EditPage = () => {
             onChange={handleImageChange}
             className="hidden"
           />
-          <p className="typo-title-02 text-foreground">{myPageData.kakaoname}</p>
+          <p className="typo-title-02 text-foreground">
+            {myPageData.kakaoname}
+          </p>
         </div>
 
         {/* 닉네임 */}

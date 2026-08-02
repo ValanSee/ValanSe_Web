@@ -48,9 +48,7 @@ const CommentPage = () => {
   }
 
   const toggle = (id: number, on: boolean) =>
-    setSelected((prev) =>
-      on ? [...prev, id] : prev.filter((v) => v !== id),
-    )
+    setSelected((prev) => (on ? [...prev, id] : prev.filter((v) => v !== id)))
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">
@@ -60,9 +58,7 @@ const CommentPage = () => {
         onBackClick={() => router.push('/my')}
       />
       <div className="flex items-center justify-between px-4 pt-4 typo-label-03 text-brand-gray-200">
-        <span>
-          {selected.length > 0 ? `${selected.length}개 선택됨` : ' '}
-        </span>
+        <span>{selected.length > 0 ? `${selected.length}개 선택됨` : ' '}</span>
         <button
           type="button"
           onClick={() =>
@@ -92,9 +88,7 @@ const CommentPage = () => {
                 </span>
               </div>
             </div>
-            <p className="typo-title-03 text-foreground">
-              {comment.voteTitle}
-            </p>
+            <p className="typo-title-03 text-foreground">{comment.voteTitle}</p>
             <div className="flex items-start gap-3">
               <input
                 type="checkbox"

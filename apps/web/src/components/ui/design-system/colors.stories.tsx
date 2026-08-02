@@ -9,7 +9,10 @@ const Palette = ({ title, swatches }: PaletteProps) => (
     <h2 className="typo-heading-04 mb-4">{title}</h2>
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
       {swatches.map((s) => (
-        <div key={s.name} className="overflow-hidden rounded-md border border-border">
+        <div
+          key={s.name}
+          className="overflow-hidden rounded-md border border-border"
+        >
           <div className={`h-20 ${s.className}`} />
           <div className="bg-card p-3">
             <div className="typo-label-01 text-foreground">{s.name}</div>
@@ -60,7 +63,11 @@ const red: Swatch[] = [
 
 const semantic: Swatch[] = [
   { name: 'primary', className: 'bg-primary', hex: 'V300 · #9e6be6' },
-  { name: 'primary-foreground', className: 'bg-primary-foreground', hex: 'white' },
+  {
+    name: 'primary-foreground',
+    className: 'bg-primary-foreground',
+    hex: 'white',
+  },
   { name: 'secondary', className: 'bg-secondary', hex: 'G50 · #F6F6F6' },
   { name: 'accent', className: 'bg-accent', hex: 'Y300 · #ffd60a' },
   { name: 'destructive', className: 'bg-destructive', hex: 'R300 · #F80E5C' },

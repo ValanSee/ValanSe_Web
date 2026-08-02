@@ -9,10 +9,7 @@ interface TitleCurrentSectionProps {
   point: number
 }
 
-const TitleCurrentSection = ({
-  equipped,
-  point,
-}: TitleCurrentSectionProps) => {
+const TitleCurrentSection = ({ equipped, point }: TitleCurrentSectionProps) => {
   return (
     <section className="flex flex-col gap-2 bg-card px-5 pb-5 pt-4">
       <div className="flex items-center justify-between">

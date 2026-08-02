@@ -22,9 +22,7 @@ const PointPolicyNotice = () => {
         className="flex w-full items-center justify-between px-4 py-3 text-left"
         aria-expanded={open}
       >
-        <span className="typo-title-03 text-foreground">
-          포인트 적립 정책
-        </span>
+        <span className="typo-title-03 text-foreground">포인트 적립 정책</span>
         <Icon
           icon={open ? 'icon-park-outline:up' : 'icon-park-outline:down'}
           className="text-brand-gray-100"

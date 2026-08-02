@@ -43,14 +43,8 @@ const TitlePurchaseModal = ({
       </div>
       <div className="mt-1 flex justify-between border-t border-brand-gray-75 pt-2">
         <span className="text-brand-gray-100">구매 후 잔액</span>
-        <span
-          className={
-            insufficient ? 'text-destructive' : 'text-primary'
-          }
-        >
-          {insufficient
-            ? '포인트 부족'
-            : `${remainingAfter.toLocaleString()}P`}
+        <span className={insufficient ? 'text-destructive' : 'text-primary'}>
+          {insufficient ? '포인트 부족' : `${remainingAfter.toLocaleString()}P`}
         </span>
       </div>
       {insufficient && (

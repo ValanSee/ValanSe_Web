@@ -24,7 +24,8 @@ export const PrivacyPolicyPage = () => {
             관련 법령을 준수합니다.
           </p>
           <p className="typo-body-b-01 mt-2 text-brand-gray-200">
-            시행일자: <strong className="text-foreground">{EFFECTIVE_DATE}</strong>
+            시행일자:{' '}
+            <strong className="text-foreground">{EFFECTIVE_DATE}</strong>
           </p>
         </header>
 
@@ -33,8 +34,8 @@ export const PrivacyPolicyPage = () => {
             1. 수집하는 개인정보 항목
           </h2>
           <p className="typo-body-b-01 text-foreground">
-            서비스는 카카오 로그인을 통해 회원가입/로그인을 제공하며, 다음 정보를
-            수집할 수 있습니다.
+            서비스는 카카오 로그인을 통해 회원가입/로그인을 제공하며, 다음
+            정보를 수집할 수 있습니다.
           </p>
           <ul className="typo-body-b-01 mt-2 list-disc pl-5 text-foreground">
             <li>

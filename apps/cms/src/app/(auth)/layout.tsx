@@ -9,6 +9,7 @@ import { clearToken } from '@/lib/auth'
 const NAV = [
   { href: '/admin', label: '대시보드' },
   { href: '/votes', label: '투표 관리' },
+  { href: '/reports', label: '신고 관리' },
   { href: '/titles', label: '칭호 관리' },
   { href: '/analytics', label: '통계' },
 ]

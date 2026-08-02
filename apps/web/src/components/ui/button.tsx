@@ -39,7 +39,10 @@ const buttonVariants = cva(
   },
 )
 
-const SPINNER_SIZE: Record<NonNullable<VariantProps<typeof buttonVariants>['size']>, number> = {
+const SPINNER_SIZE: Record<
+  NonNullable<VariantProps<typeof buttonVariants>['size']>,
+  number
+> = {
   xl: 20,
   l: 20,
   m: 18,

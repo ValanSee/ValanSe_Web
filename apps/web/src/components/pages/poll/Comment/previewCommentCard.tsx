@@ -6,10 +6,7 @@ interface CommentCardProps {
   commentsNumber: number
 }
 
-const PreviewCommentCard = ({
-  content,
-  commentsNumber,
-}: CommentCardProps) => {
+const PreviewCommentCard = ({ content, commentsNumber }: CommentCardProps) => {
   return (
     <div className="flex flex-col gap-3 rounded-2xl bg-brand-violet-50 p-5">
       <div className="flex items-center justify-between">

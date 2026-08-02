@@ -20,9 +20,7 @@ import TitleCard from './titleCard'
 import TitleEquipModal from './titleEquipModal'
 import TitlePurchaseModal from './titlePurchaseModal'
 
-type ModalState =
-  | { mode: 'equip' | 'purchase'; title: Title }
-  | null
+type ModalState = { mode: 'equip' | 'purchase'; title: Title } | null
 
 const TitlesPage = () => {
   const router = useRouter()
@@ -116,9 +114,7 @@ const TitlesPage = () => {
       <ul className="px-4 pb-20">
         {visible.length === 0 ? (
           <li className="typo-body-b-01 py-16 text-center text-brand-gray-100">
-            {tab === 'owned'
-              ? '보유한 칭호가 없어요'
-              : '잠금 칭호가 없어요'}
+            {tab === 'owned' ? '보유한 칭호가 없어요' : '잠금 칭호가 없어요'}
           </li>
         ) : (
           visible.map((t) => (

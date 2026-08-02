@@ -1,7 +1,10 @@
 const STORAGE_KEY = 'valanse_anonymous_id'
 
 function generate(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
     return `anon-${crypto.randomUUID()}`
   }
   // 폴백: timestamp + random
