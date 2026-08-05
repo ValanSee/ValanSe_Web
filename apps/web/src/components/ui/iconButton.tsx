@@ -33,7 +33,10 @@ const iconButtonVariants = cva(
   },
 )
 
-const ICON_SIZE: Record<NonNullable<VariantProps<typeof iconButtonVariants>['size']>, number> = {
+const ICON_SIZE: Record<
+  NonNullable<VariantProps<typeof iconButtonVariants>['size']>,
+  number
+> = {
   sm: 24,
   md: 22,
   lg: 28,

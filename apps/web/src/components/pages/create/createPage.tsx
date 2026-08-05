@@ -139,9 +139,7 @@ const CreatePage = () => {
             disabled={!isValid || submitting}
             className={cn(
               'typo-label-01',
-              !isValid || submitting
-                ? 'text-brand-gray-100'
-                : 'text-primary',
+              !isValid || submitting ? 'text-brand-gray-100' : 'text-primary',
             )}
           >
             완료
@@ -256,7 +254,11 @@ const CreatePage = () => {
                         className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-dashed border-brand-gray-100 text-brand-gray-100"
                         aria-label={`선택지 ${label} 이미지 추가`}
                       >
-                        <Icon icon="tabler:camera-plus" width={20} aria-hidden />
+                        <Icon
+                          icon="tabler:camera-plus"
+                          width={20}
+                          aria-hidden
+                        />
                         <input
                           type="file"
                           accept="image/*"

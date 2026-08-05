@@ -74,12 +74,7 @@ const Popup = ({
         </div>
         <div className="flex items-center gap-3 [&>*]:flex-1">
           {variant === 'confirm' && (
-            <Button
-              size="l"
-              variant="gray"
-              onClick={handleCancel}
-              fullWidth
-            >
+            <Button size="l" variant="gray" onClick={handleCancel} fullWidth>
               {cancelLabel}
             </Button>
           )}

@@ -15,11 +15,9 @@ const chipVariants = cva(
       },
       status: {
         /** V300 배경 · white 텍스트 · 강조 */
-        primary:
-          'bg-primary text-primary-foreground hover:bg-brand-violet-400',
+        primary: 'bg-primary text-primary-foreground hover:bg-brand-violet-400',
         /** V50 배경 · V300 텍스트 · 선택된 필터 */
-        secondary:
-          'bg-brand-violet-50 text-primary hover:bg-brand-violet-75',
+        secondary: 'bg-brand-violet-50 text-primary hover:bg-brand-violet-75',
         /** 흰 배경 · V300 텍스트 · V100 border · 미선택 */
         outline:
           'border border-brand-violet-100 bg-card text-primary hover:bg-brand-violet-50',
@@ -27,8 +25,7 @@ const chipVariants = cva(
         ghost:
           'border border-brand-gray-75 bg-card text-brand-gray-200 hover:bg-brand-gray-50',
         /** G50 배경 · G100 텍스트 · 비활성 */
-        disabled:
-          'bg-brand-gray-50 text-brand-gray-75 cursor-not-allowed',
+        disabled: 'bg-brand-gray-50 text-brand-gray-75 cursor-not-allowed',
         /** Y75 배경 · G500 텍스트 · HOT 배지 */
         hot: 'bg-brand-yellow-75 text-foreground',
       },

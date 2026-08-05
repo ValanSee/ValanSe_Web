@@ -1,5 +1,5 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
+import storybook from 'eslint-plugin-storybook'
 
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
@@ -44,13 +44,13 @@ export default defineConfig([
         'warn',
         {
           selector:
-            "Literal[value=/#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3}(?:[0-9a-fA-F]{2})?)?\\b/]",
+            'Literal[value=/#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3}(?:[0-9a-fA-F]{2})?)?\\b/]',
           message:
             '하드코딩된 hex 컬러는 사용하지 마세요. 브랜드 토큰(bg-primary, bg-brand-violet-300 등) 또는 .typo-* 클래스를 사용하세요. (AGENTS.md §8)',
         },
         {
           selector:
-            "TemplateElement[value.raw=/#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3}(?:[0-9a-fA-F]{2})?)?\\b/]",
+            'TemplateElement[value.raw=/#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3}(?:[0-9a-fA-F]{2})?)?\\b/]',
           message:
             '하드코딩된 hex 컬러는 사용하지 마세요. 브랜드 토큰(bg-primary, bg-brand-violet-300 등) 또는 .typo-* 클래스를 사용하세요. (AGENTS.md §8)',
         },
@@ -67,5 +67,5 @@ export default defineConfig([
   {
     ignores: ['**/.next/**', 'eslint.config.mjs', 'postcss.config.mjs'],
   },
-  ...storybook.configs["flat/recommended"]
+  ...storybook.configs['flat/recommended'],
 ])

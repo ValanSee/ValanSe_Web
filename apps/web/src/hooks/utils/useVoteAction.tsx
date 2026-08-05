@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation'
 import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
 import { voteOption, type VoteResponse } from '@/api/votes'
 import { getAccessToken } from '@/utils/tokenUtils'
-import {
-  entryHrefWithRedirect,
-  setPendingVote,
-} from '@/utils/authRedirect'
+import { entryHrefWithRedirect, setPendingVote } from '@/utils/authRedirect'
 
 interface Options {
   voteId: number | string

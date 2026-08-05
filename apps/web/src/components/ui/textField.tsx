@@ -10,8 +10,7 @@ const fieldVariants = cva(
   {
     variants: {
       state: {
-        default:
-          'bg-card border-brand-gray-75 focus-within:border-primary',
+        default: 'bg-card border-brand-gray-75 focus-within:border-primary',
         disabled: 'bg-brand-gray-50 border-transparent cursor-not-allowed',
         error: 'bg-card border-destructive',
       },

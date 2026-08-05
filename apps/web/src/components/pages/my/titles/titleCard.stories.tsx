@@ -28,7 +28,9 @@ type Story = StoryObj<typeof meta>
 export const OwnedDefault: Story = { args: { title: base } }
 
 export const Equipped: Story = {
-  args: { title: { ...base, tier: 'TIER_2', title: '댓글 장인', equipped: true } },
+  args: {
+    title: { ...base, tier: 'TIER_2', title: '댓글 장인', equipped: true },
+  },
 }
 
 export const LockedAchievement: Story = {

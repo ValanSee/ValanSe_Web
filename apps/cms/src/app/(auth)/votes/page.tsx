@@ -6,13 +6,7 @@ import type { Vote, PinnedVote } from '@/types/vote'
 import { PinMenu } from '@/components/votes/PinMenu'
 import { ThumbsUp, MessageCircle, Flame } from 'lucide-react'
 import axios from 'axios'
-
-const CATEGORY_LABEL: Record<string, string> = {
-  FOOD: '음식',
-  LOVE: '연애',
-  ETC: '기타',
-  ALL: '전체',
-}
+import { categoryLabel } from '@/lib/category'
 
 const PAGE_SIZE = 20
 
@@ -133,7 +127,7 @@ export default function VotesPage() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
-                  {CATEGORY_LABEL[v.category] ?? v.category}
+                  {categoryLabel(v.category)}
                 </span>
                 <span className="truncate text-xs text-gray-500">
                   {v.nickname} · {v.created_at}

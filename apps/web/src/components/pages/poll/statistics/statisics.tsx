@@ -310,9 +310,7 @@ export default function VoteChart({
       >
         <span>투표 결과 자세히 보기</span>
         <Icon
-          icon={
-            showStats ? 'icon-park-outline:up' : 'icon-park-outline:down'
-          }
+          icon={showStats ? 'icon-park-outline:up' : 'icon-park-outline:down'}
           width={20}
           aria-hidden
         />
@@ -365,7 +363,10 @@ export default function VoteChart({
                   }`}
                   style={
                     genderTab === 'male'
-                      ? { backgroundColor: CHART_OPTION_COLORS[0], borderColor: CHART_OPTION_COLORS[0] }
+                      ? {
+                          backgroundColor: CHART_OPTION_COLORS[0],
+                          borderColor: CHART_OPTION_COLORS[0],
+                        }
                       : {}
                   }
                 >
@@ -380,7 +381,10 @@ export default function VoteChart({
                   }`}
                   style={
                     genderTab === 'female'
-                      ? { backgroundColor: CHART_OPTION_COLORS[1], borderColor: CHART_OPTION_COLORS[1] }
+                      ? {
+                          backgroundColor: CHART_OPTION_COLORS[1],
+                          borderColor: CHART_OPTION_COLORS[1],
+                        }
                       : {}
                   }
                 >
@@ -455,7 +459,10 @@ export default function VoteChart({
                   }`}
                   style={
                     activeTab === 'A'
-                      ? { backgroundColor: CHART_OPTION_COLORS[0], borderColor: CHART_OPTION_COLORS[0] }
+                      ? {
+                          backgroundColor: CHART_OPTION_COLORS[0],
+                          borderColor: CHART_OPTION_COLORS[0],
+                        }
                       : {}
                   }
                 >
@@ -470,7 +477,10 @@ export default function VoteChart({
                   }`}
                   style={
                     activeTab === 'B'
-                      ? { backgroundColor: CHART_OPTION_COLORS[1], borderColor: CHART_OPTION_COLORS[1] }
+                      ? {
+                          backgroundColor: CHART_OPTION_COLORS[1],
+                          borderColor: CHART_OPTION_COLORS[1],
+                        }
                       : {}
                   }
                 >

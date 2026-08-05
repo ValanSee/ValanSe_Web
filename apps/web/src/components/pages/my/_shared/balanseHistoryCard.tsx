@@ -44,10 +44,7 @@ export default function BalanseHistoryCard({
       )}
       <div className="flex flex-col gap-1">
         {data.options.map((opt, index) => (
-          <div
-            key={index}
-            className="typo-body-b-01 text-brand-gray-200"
-          >
+          <div key={index} className="typo-body-b-01 text-brand-gray-200">
             <span className="mr-1 text-primary">{numberToAlphabet(index)}</span>
             {opt.content}
           </div>

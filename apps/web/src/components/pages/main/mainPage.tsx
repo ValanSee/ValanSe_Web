@@ -16,12 +16,19 @@ import {
 } from '@/api/pages/valanse/trendingVoteApi'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
+import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import HomeVoteCard from './homeVoteCard'
 import { CATEGORIES } from '@/constants/category'
 
 const MainPage = () => {
   const [featured, setFeatured] = useState<TrendingVoteResponse | null>(null)
   const [latest, setLatest] = useState<Vote[]>([])
+  const { isReported } = useReportedContent()
+
+  // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
+  const visibleFeatured =
+    featured && !isReported('VOTE', featured.voteId) ? featured : null
+  const visibleLatest = latest.filter((v) => !isReported('VOTE', v.id))
 
   useEffect(() => {
     fetchTrendingVotes()
@@ -52,8 +59,8 @@ const MainPage = () => {
           title="뜨고 있는 밸런스"
           moreHref="/balanse?sort=popular"
         />
-        {featured ? (
-          <HomeVoteCard data={featured} />
+        {visibleFeatured ? (
+          <HomeVoteCard data={visibleFeatured} />
         ) : (
           <EmptyState text="아직 인기 밸런스가 없어요" />
         )}
@@ -83,11 +90,11 @@ const MainPage = () => {
       {/* 올라오고 있는 밸런스 */}
       <section className="mt-4 flex flex-col gap-3 px-4">
         <SectionHeader title="올라오고 있는 밸런스" moreHref="/balanse" />
-        {latest.length === 0 ? (
+        {visibleLatest.length === 0 ? (
           <EmptyState text="아직 올라온 밸런스가 없어요" />
         ) : (
           <div className="flex flex-col gap-3">
-            {latest.map((v) => (
+            {visibleLatest.map((v) => (
               <BalanseVoteCard key={v.id} data={v} />
             ))}
           </div>
