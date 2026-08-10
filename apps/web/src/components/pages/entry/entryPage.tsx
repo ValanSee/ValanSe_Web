@@ -2,20 +2,14 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
-import Header from '@/components/_shared/header'
 import KakaoLoginButton from './_components/kakaoLoginButton'
 
 function EntryPage() {
-  const router = useRouter()
-
   return (
     <div className="flex min-h-screen flex-col bg-card">
-      {/* 로그인 필요 기능에서 진입 시 막다른 길이 되지 않도록 뒤로가기 제공.
-          보호 페이지(/my 등)로 back 하면 가드가 다시 entry 로 보내 루프가 나므로
-          공개 홈으로 확실히 탈출시킨다. */}
-      <Header showBackButton onBackClick={() => router.replace('/main')} />
+      {/* 시안에 헤더/뒤로가기가 없어 제거. 보호 페이지에서 튕겨온 경우의
+          탈출로는 하단 '로그인 없이 시작하기'(→ /main)가 담당한다. */}
       <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center">
         {/* 로고 & 슬로건 */}
         <div className="flex flex-1 flex-col items-center justify-center gap-6">
