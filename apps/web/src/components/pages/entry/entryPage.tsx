@@ -28,7 +28,7 @@ function EntryPage() {
           />
           <div className="flex flex-col items-center gap-3">
             <h1 className="typo-heading-01 text-primary">VALANSE</h1>
-            <p className="typo-body-b-01 text-brand-gray-200">
+            <p className="typo-body-c-03 text-brand-black">
               밸런스 게임에 진심인 사람들을 위한
               <br />
               밸런스 게임 플랫폼
@@ -47,8 +47,8 @@ function EntryPage() {
           >
             <KakaoLoginButton />
           </Suspense>
-          <Link href="/main" className="typo-label-03 text-brand-gray-200">
-            로그인 없이 둘러보기
+          <Link href="/main" className="typo-label-03 text-brand-gray-300">
+            로그인 없이 시작하기
           </Link>
         </div>
       </div>
