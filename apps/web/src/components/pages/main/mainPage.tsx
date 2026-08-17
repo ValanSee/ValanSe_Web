@@ -47,7 +47,7 @@ const MainPage = () => {
             src="/assets/logo.svg"
             alt="Valanse"
             width={28}
-            height={26}
+            height={28}
             priority
           />
         }
