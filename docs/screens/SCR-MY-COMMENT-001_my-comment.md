@@ -70,8 +70,10 @@
 
 | Method | Endpoint | 용도 |
 |---|---|---|
-| GET | `/member/comments` (추정) | 내 댓글 목록 |
-| DELETE | (TODO) | 다중 댓글 삭제 |
+| GET | `/comments/mine?sort&size=50` | 내 댓글 목록 (응답 키 `comments`) |
+| DELETE | `/comments/{commentId}` | 댓글 삭제 (다중 선택 시 병렬 호출) |
+> **응답 형태 과도기**: 서버가 목록 응답을 배열 → `{ <목록키>, page, size, hasNext }` 엔벨로프로 전환 중이다(서버 `dev` 적용 / `main` 미적용). 프론트는 `unwrapList`로 두 형태를 모두 배열로 정규화하며, 페이지네이션 UI가 없으므로 `size=50`(서버 상한)을 요청해 기존 동작을 유지한다.
+
 
 ## 📎 관련 문서
 

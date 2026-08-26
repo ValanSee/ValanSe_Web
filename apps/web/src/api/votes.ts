@@ -1,4 +1,5 @@
-import { CreateVoteData, MineVotesResponse } from '@/types/api/votes'
+import { CreateVoteData, MineVoteItem } from '@/types/api/votes'
+import { MAX_PAGE_SIZE, unwrapList } from '@/utils/pagedResponse'
 import { authApi } from './instance/authApi'
 
 export interface VoteOption {
@@ -80,11 +81,13 @@ export const fetchMineVotesCreated = async (
       params.append('category', category)
     }
     params.append('sort', sort)
+    // 페이지네이션 UI가 없으므로 한 번에 최대치까지 받아 기존 동작을 유지한다.
+    params.append('size', String(MAX_PAGE_SIZE))
 
-    const response = await authApi.get<MineVotesResponse>(
+    const response = await authApi.get(
       `/votes/mine/created?${params.toString()}`,
     )
-    return response.data
+    return unwrapList<MineVoteItem>(response.data, 'votes')
   } catch (error) {
     throw error
   }
@@ -101,11 +104,13 @@ export const fetchMineVotesVoted = async (
       params.append('category', category)
     }
     params.append('sort', sort)
+    // 페이지네이션 UI가 없으므로 한 번에 최대치까지 받아 기존 동작을 유지한다.
+    params.append('size', String(MAX_PAGE_SIZE))
 
-    const response = await authApi.get<MineVotesResponse>(
+    const response = await authApi.get(
       `/votes/mine/voted?${params.toString()}`,
     )
-    return response.data
+    return unwrapList<MineVoteItem>(response.data, 'votes')
   } catch (error) {
     throw error
   }
