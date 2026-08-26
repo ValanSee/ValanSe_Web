@@ -12,7 +12,7 @@ import HorizontalScroll from '@/components/_shared/horizontalScroll'
 import BalanseVoteCard from '@/components/pages/balanse/balanseVoteCard'
 import {
   fetchTrendingVotes,
-  type TrendingVoteResponse,
+  type TrendingVoteItem,
 } from '@/api/pages/valanse/trendingVoteApi'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
@@ -21,7 +21,7 @@ import HomeVoteCard from './homeVoteCard'
 import { CATEGORIES } from '@/constants/category'
 
 const MainPage = () => {
-  const [featured, setFeatured] = useState<TrendingVoteResponse | null>(null)
+  const [featured, setFeatured] = useState<TrendingVoteItem | null>(null)
   const [latest, setLatest] = useState<Vote[]>([])
   const { isReported } = useReportedContent()
 
@@ -31,8 +31,8 @@ const MainPage = () => {
   const visibleLatest = latest.filter((v) => !isReported('VOTE', v.id))
 
   useEffect(() => {
-    fetchTrendingVotes()
-      .then(setFeatured)
+    fetchTrendingVotes(7)
+      .then((res) => setFeatured(res?.votes[0] ?? null))
       .catch(() => {})
     fetchVotes({ category: 'ALL', sort: 'latest', size: 3 })
       .then((data) => setLatest(data.votes))
