@@ -49,7 +49,9 @@
 
 | Method | Endpoint | 용도 |
 |---|---|---|
-| GET | (TODO: HistoryPage 컴포넌트 확인) | 내 투표 이력 |
+| GET | `/votes/mine/voted?category&sort&size=50` | 내 투표 이력 (응답 키 `votes`) |
+> **응답 형태 과도기**: 서버가 목록 응답을 배열 → `{ <목록키>, page, size, hasNext }` 엔벨로프로 전환 중이다(서버 `dev` 적용 / `main` 미적용). 프론트는 `unwrapList`로 두 형태를 모두 배열로 정규화하며, 페이지네이션 UI가 없으므로 `size=50`(서버 상한)을 요청해 기존 동작을 유지한다.
+
 
 ## 📎 관련 문서
 
