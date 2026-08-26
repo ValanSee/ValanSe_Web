@@ -4,10 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useVoteAction } from '@/hooks/utils/useVoteAction'
 import { cn } from '@/lib/utils'
-import type { TrendingVoteResponse } from '@/api/pages/valanse/trendingVoteApi'
+import type { TrendingVoteItem } from '@/api/pages/valanse/trendingVoteApi'
 
 interface Props {
-  data: TrendingVoteResponse
+  data: TrendingVoteItem
 }
 
 /**

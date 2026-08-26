@@ -9,6 +9,7 @@ import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote } from '@/types/balanse/vote'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import BalanseVoteCard from './balanseVoteCard'
+import HotTrendingBar from './hotTrendingBar'
 import { CATEGORIES } from '@/constants/category'
 
 const TABS = [
@@ -105,6 +106,8 @@ function BalancePageContent() {
           />
         ))}
       </TabBar>
+
+      <HotTrendingBar />
 
       <div className="flex flex-col gap-3 px-4 pt-4">
         {error && (
