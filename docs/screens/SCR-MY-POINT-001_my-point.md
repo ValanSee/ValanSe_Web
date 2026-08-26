@@ -126,7 +126,10 @@
 
 | Method | Endpoint | 용도 |
 |---|---|---|
-| GET | `/member/point-history` | 포인트 내역 + 잔액(각 항목 `remainingPoint`) 조회 |
+| GET | `/member/point-history?size=50` | 포인트 내역 + 잔액(각 항목 `remainingPoint`) 조회 |
+
+> **페이지네이션**: 서버 기본 `size=10`으로 내역이 잘리므로 상한 50을 명시 요청한다. 엔벨로프 키 `pointHistory`는 전환 전후 동일해 별도 정규화가 필요 없다.
+
 
 ## 🎨 디자인 토큰 참조
 
