@@ -59,6 +59,7 @@ gh pr create --base main
 - `develop`이 꼬이면 `main` 기준으로 리셋합니다.
 
   ```bash
+  git fetch origin
   git switch develop
   git reset --hard origin/main
   git push --force-with-lease origin develop
