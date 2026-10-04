@@ -1,5 +1,11 @@
 'use client'
-import { Suspense, useCallback, useEffect, useState } from 'react'
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react'
 import {
   useParams,
   usePathname,
@@ -27,6 +33,7 @@ import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useReportAction } from '@/hooks/utils/useReportAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
+import { getAccessToken } from '@/utils/tokenUtils'
 import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
 
 interface PollDetailPageProps {
@@ -64,6 +71,14 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
   const { openReport, reportUi } = useReportAction({
     returnPath: postLoginReturnPath,
   })
+
+  // 클라이언트 이동 시엔 인라인 스크립트가 안 돌므로 페인트 전에 토큰 여부를 다시 반영
+  useLayoutEffect(() => {
+    document.documentElement.toggleAttribute(
+      'data-has-token',
+      Boolean(getAccessToken()),
+    )
+  }, [])
 
   // URL 파라미터에서 출처 확인
   const source = searchParams.get('source')

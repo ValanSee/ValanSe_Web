@@ -264,3 +264,18 @@
     letter-spacing: 0.4px;
   }
 }
+
+/*
+ * 투표 상세: 로그인 사용자의 hasVoted 동기화 전(data-poll-pending) 선택지 대신 스켈레톤 노출.
+ * html[data-has-token] 은 layout.tsx 인라인 스크립트(첫 로드)와 pollDetailPage(클라이언트 이동)가 설정.
+ * SSR HTML 에는 선택지가 그대로 있어 크롤러(토큰 없음)에는 영향 없음.
+ */
+[data-poll-options-skeleton] {
+  display: none;
+}
+html[data-has-token] [data-poll-pending] [data-poll-options] {
+  display: none;
+}
+html[data-has-token] [data-poll-pending] [data-poll-options-skeleton] {
+  display: block;
+}

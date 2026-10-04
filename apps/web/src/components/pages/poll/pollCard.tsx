@@ -16,6 +16,7 @@ import VsBadge from '@/components/_shared/vsBadge'
 import HorizontalScroll from '@/components/_shared/horizontalScroll'
 import { useVoteAction } from '@/hooks/utils/useVoteAction'
 import { cn } from '@/lib/utils'
+import { PollOptionsSkeleton } from './pollOptionsSkeleton'
 
 interface PollCardProps {
   voteId: number | string
@@ -170,135 +171,143 @@ function PollCard({
           </p>
         )}
 
-        {hasImages ? (
-          <HorizontalScroll className="-mx-5 px-5" shadow={false}>
-            <div className="flex items-start gap-3">
-              {localOptions.map((option, idx) => {
-                const isSelected = selectedId === option.optionId
-                const unvotedAfterVote = voted && !isSelected
-                const label = String.fromCharCode(65 + idx)
-                return (
-                  <Fragment key={option.optionId ?? idx}>
-                    {idx > 0 && (
-                      <div className="relative flex h-[152px] w-0 shrink-0 items-center">
-                        <span className="typo-title-04 absolute left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-card text-foreground shadow-[0_0_4px_rgba(0,0,0,0.12)]">
-                          VS
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex w-[152px] shrink-0 flex-col gap-2">
-                      <div className="relative h-[152px] w-full overflow-hidden rounded-xl bg-brand-gray-50">
-                        {option.imageUrl ? (
-                          <Image
-                            src={option.imageUrl}
-                            alt={option.content}
-                            fill
-                            sizes="152px"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center text-brand-gray-100">
-                            <Icon
-                              icon="tabler:photo-off"
-                              width={28}
-                              aria-hidden
-                            />
+        {/* 동기화 전 + 로그인 사용자면 CSS 로 선택지를 숨기고 스켈레톤 노출 (globals.css) */}
+        <div data-poll-pending={ready ? undefined : ''} className="contents">
+          <div data-poll-options className="flex flex-col gap-4">
+            {hasImages ? (
+              <HorizontalScroll className="-mx-5 px-5" shadow={false}>
+                <div className="flex items-start gap-3">
+                  {localOptions.map((option, idx) => {
+                    const isSelected = selectedId === option.optionId
+                    const unvotedAfterVote = voted && !isSelected
+                    const label = String.fromCharCode(65 + idx)
+                    return (
+                      <Fragment key={option.optionId ?? idx}>
+                        {idx > 0 && (
+                          <div className="relative flex h-[152px] w-0 shrink-0 items-center">
+                            <span className="typo-title-04 absolute left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-card text-foreground shadow-[0_0_4px_rgba(0,0,0,0.12)]">
+                              VS
+                            </span>
                           </div>
                         )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleSelect(option.optionId)}
-                        disabled={disabled}
-                        aria-pressed={isSelected}
-                        className={cn(
-                          'flex min-h-12 items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left transition-colors',
-                          isSelected
-                            ? 'bg-primary text-primary-foreground'
-                            : unvotedAfterVote
-                              ? 'bg-brand-gray-200 text-primary-foreground'
-                              : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
-                          disabled && 'cursor-not-allowed opacity-70',
-                        )}
-                      >
-                        <span className="flex min-w-0 items-center gap-2">
-                          <span className="typo-heading-06">{label}</span>
-                          <span className="typo-label-02 truncate">
+                        <div className="flex w-[152px] shrink-0 flex-col gap-2">
+                          <div className="relative h-[152px] w-full overflow-hidden rounded-xl bg-brand-gray-50">
+                            {option.imageUrl ? (
+                              <Image
+                                src={option.imageUrl}
+                                alt={option.content}
+                                fill
+                                sizes="152px"
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full items-center justify-center text-brand-gray-100">
+                                <Icon
+                                  icon="tabler:photo-off"
+                                  width={28}
+                                  aria-hidden
+                                />
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleSelect(option.optionId)}
+                            disabled={disabled}
+                            aria-pressed={isSelected}
+                            className={cn(
+                              'flex min-h-12 items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left transition-colors',
+                              isSelected
+                                ? 'bg-primary text-primary-foreground'
+                                : unvotedAfterVote
+                                  ? 'bg-brand-gray-200 text-primary-foreground'
+                                  : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
+                              disabled && 'cursor-not-allowed opacity-70',
+                            )}
+                          >
+                            <span className="flex min-w-0 items-center gap-2">
+                              <span className="typo-heading-06">{label}</span>
+                              <span className="typo-label-02 truncate">
+                                {option.content}
+                              </span>
+                            </span>
+                            {isSelected && (
+                              <Icon
+                                icon="tabler:check"
+                                className="shrink-0 text-primary-foreground"
+                                width={18}
+                                aria-hidden
+                              />
+                            )}
+                            {unvotedAfterVote && (
+                              <span className="typo-label-02 shrink-0 text-primary-foreground">
+                                {percentOf(option.vote_count)}%
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      </Fragment>
+                    )
+                  })}
+                </div>
+              </HorizontalScroll>
+            ) : (
+              <div className="relative flex flex-col gap-3">
+                {localOptions.length === 2 && <VsBadge />}
+                {localOptions.map((option, idx) => {
+                  const isSelected = selectedId === option.optionId
+                  const unvotedAfterVote = voted && !isSelected
+                  return (
+                    <button
+                      key={option.optionId ?? idx}
+                      type="button"
+                      onClick={() => handleSelect(option.optionId)}
+                      disabled={disabled}
+                      aria-pressed={isSelected}
+                      className={cn(
+                        'relative flex min-h-14 items-center gap-3 overflow-hidden rounded-xl px-4 py-3 text-left transition-colors',
+                        isSelected
+                          ? 'bg-primary text-primary-foreground'
+                          : unvotedAfterVote
+                            ? 'bg-brand-gray-200 text-primary-foreground'
+                            : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
+                        disabled && 'cursor-not-allowed opacity-70',
+                      )}
+                    >
+                      <div className="relative z-10 flex w-full items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <span className="typo-heading-06">
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="typo-label-02">
                             {option.content}
                           </span>
-                        </span>
+                        </div>
                         {isSelected && (
                           <Icon
                             icon="tabler:check"
-                            className="shrink-0 text-primary-foreground"
-                            width={18}
+                            className="text-primary-foreground"
+                            width={20}
                             aria-hidden
                           />
                         )}
                         {unvotedAfterVote && (
-                          <span className="typo-label-02 shrink-0 text-primary-foreground">
+                          <span className="typo-label-02 text-primary-foreground">
                             {percentOf(option.vote_count)}%
                           </span>
                         )}
-                      </button>
-                    </div>
-                  </Fragment>
-                )
-              })}
-            </div>
-          </HorizontalScroll>
-        ) : (
-          <div className="relative flex flex-col gap-3">
-            {localOptions.length === 2 && <VsBadge />}
-            {localOptions.map((option, idx) => {
-              const isSelected = selectedId === option.optionId
-              const unvotedAfterVote = voted && !isSelected
-              return (
-                <button
-                  key={option.optionId ?? idx}
-                  type="button"
-                  onClick={() => handleSelect(option.optionId)}
-                  disabled={disabled}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    'relative flex min-h-14 items-center gap-3 overflow-hidden rounded-xl px-4 py-3 text-left transition-colors',
-                    isSelected
-                      ? 'bg-primary text-primary-foreground'
-                      : unvotedAfterVote
-                        ? 'bg-brand-gray-200 text-primary-foreground'
-                        : 'bg-brand-gray-50 text-primary hover:bg-brand-violet-50',
-                    disabled && 'cursor-not-allowed opacity-70',
-                  )}
-                >
-                  <div className="relative z-10 flex w-full items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className="typo-heading-06">
-                        {String.fromCharCode(65 + idx)}
-                      </span>
-                      <span className="typo-label-02">{option.content}</span>
-                    </div>
-                    {isSelected && (
-                      <Icon
-                        icon="tabler:check"
-                        className="text-primary-foreground"
-                        width={20}
-                        aria-hidden
-                      />
-                    )}
-                    {unvotedAfterVote && (
-                      <span className="typo-label-02 text-primary-foreground">
-                        {percentOf(option.vote_count)}%
-                      </span>
-                    )}
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        )}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
 
-        <div className="typo-label-03 text-primary">
-          {localTotalParticipants.toLocaleString()}명 참여 중
+            <div className="typo-label-03 text-primary">
+              {localTotalParticipants.toLocaleString()}명 참여 중
+            </div>
+          </div>
+          <PollOptionsSkeleton hasImages={hasImages} />
         </div>
       </article>
       {loginModal}
