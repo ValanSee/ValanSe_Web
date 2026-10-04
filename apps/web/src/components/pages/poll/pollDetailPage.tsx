@@ -58,8 +58,10 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
   const [bestComment, setBestComment] = useState<BestComment | null>(null)
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(!initialData)
-  // 로그인 기준 재조회 완료 여부. SSR 데이터만 있을 땐 false
+  // 로그인 기준 재조회 완료 여부(성공·실패 무관). SSR 데이터만 있을 땐 false
   const [synced, setSynced] = useState(!initialData)
+  // 로그인 기준 상세 조회 성공 여부. pending vote 자동 제출은 이때만 허용
+  const [detailSynced, setDetailSynced] = useState(!initialData)
   const [error, setError] = useState<string | null>(null)
   const [showStats, setShowStats] = useState(false)
   const router = useRouter()
@@ -87,26 +89,29 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
     if (!id) return
 
     const fetchAll = async () => {
-      try {
-        // 서버 데이터가 있으면 로딩 화면 없이 hasVoted 등 로그인 기준 값만 갱신
-        if (!initialData) setLoading(true)
+      // 서버 데이터가 있으면 로딩 화면 없이 hasVoted 등 로그인 기준 값만 갱신
+      if (!initialData) setLoading(true)
 
-        const [detailRes, best, allComments] = await Promise.all([
-          authApi.get<PollDetail>(`/votes/${id}`),
-          fetchBestComment(id),
-          fetchComments(id),
-        ])
+      // 댓글 실패가 상세 응답까지 버리지 않도록 분리
+      const [detailRes, bestRes, commentsRes] = await Promise.allSettled([
+        authApi.get<PollDetail>(`/votes/${id}`),
+        fetchBestComment(id),
+        fetchComments(id),
+      ])
 
-        setData(detailRes.data)
-        setBestComment(best)
-        setComments(allComments.comments)
-      } catch {
-        if (!initialData) setError('투표 정보를 불러오지 못했습니다.')
-      } finally {
-        setLoading(false)
-        // 재조회 실패 시에도 SSR 데이터로 조작은 가능하게
-        setSynced(true)
+      if (detailRes.status === 'fulfilled') {
+        setData(detailRes.value.data)
+        setDetailSynced(true)
+      } else if (!initialData) {
+        setError('투표 정보를 불러오지 못했습니다.')
       }
+      if (bestRes.status === 'fulfilled') setBestComment(bestRes.value)
+      if (commentsRes.status === 'fulfilled')
+        setComments(commentsRes.value.comments)
+
+      setLoading(false)
+      // 재조회 실패 시에도 SSR 데이터로 수동 조작은 가능하게
+      setSynced(true)
     }
 
     fetchAll()
@@ -194,6 +199,11 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
             // 재조회 후 hasVoted·득표 수로 내부 state 를 다시 초기화
             key={synced ? 'synced' : 'ssr'}
             ready={synced}
+            pendingVoteReady={detailSynced}
+            // 투표 후 결과 차트(VoteChart) 노출을 위해 부모 데이터도 갱신
+            onVoteChange={(voted) =>
+              setData((prev) => (prev ? { ...prev, hasVoted: voted } : prev))
+            }
             voteId={data.voteId}
             createdBy={data.creatorNickname}
             creatorTitle={data.creatorTitle}

@@ -39,6 +39,10 @@ export const fetchPollDetailForServer = cache(
     if (!/^\d+$/.test(id)) return { status: 'not-found' }
 
     const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? '').replace(/\/+$/, '')
+    if (!baseUrl) {
+      console.error('[poll SSR] NEXT_PUBLIC_BASE_URL 미설정 — 서버 조회 생략')
+      return { status: 'error' }
+    }
 
     try {
       const res = await fetch(`${baseUrl}/votes/${id}`, {
@@ -46,9 +50,13 @@ export const fetchPollDetailForServer = cache(
         signal: AbortSignal.timeout(TIMEOUT_MS),
       })
       if (res.status === 404) return { status: 'not-found' }
-      if (!res.ok) return { status: 'error' }
+      if (!res.ok) {
+        console.error(`[poll SSR] GET /votes/${id} ${res.status}`)
+        return { status: 'error' }
+      }
       return { status: 'ok', data: (await res.json()) as PollDetail }
-    } catch {
+    } catch (error) {
+      console.error(`[poll SSR] GET /votes/${id} 실패`, error)
       return { status: 'error' }
     }
   },

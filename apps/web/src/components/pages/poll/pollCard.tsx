@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Icon } from '@iconify/react'
 import { voteOption, VoteResponse } from '@/api/votes'
@@ -39,6 +39,10 @@ interface PollCardProps {
    * SSR 초기 데이터는 비로그인 기준이라 hasVoted 가 항상 false.
    */
   ready?: boolean
+  /** false 면 로그인 리디렉트 후 pending vote 자동 제출을 막음 (로그인 기준 hasVoted 미확인) */
+  pendingVoteReady?: boolean
+  /** 투표·취소 결과를 부모에 알림 */
+  onVoteChange?: (voted: boolean) => void
 }
 
 /**
@@ -60,6 +64,8 @@ function PollCard({
   votedOptionLabel,
   postLoginReturnPath,
   ready = true,
+  pendingVoteReady = true,
+  onVoteChange,
 }: PollCardProps) {
   const [voted, setVoted] = useState(hasVoted)
   const [selectedId, setSelectedId] = useState<number | null>(() => {
@@ -73,6 +79,8 @@ function PollCard({
   const [localTotalParticipants, setLocalTotalParticipants] =
     useState(totalParticipants)
   const [pendingClaimRunning, setPendingClaimRunning] = useState(false)
+  const onVoteChangeRef = useRef(onVoteChange)
+  onVoteChangeRef.current = onVoteChange
 
   const applyVoteResponse = useCallback(
     (response: VoteResponse, prevSelectedId: number | null) => {
@@ -102,12 +110,13 @@ function PollCard({
         applyVoteResponse(response, prev)
         return response.voted ? response.voteOptionId : null
       })
+      onVoteChangeRef.current?.(response.voted)
     },
   })
 
   // 로그인 리디렉트 후 pending vote 자동 제출
   useEffect(() => {
-    if (!ready) return
+    if (!ready || !pendingVoteReady) return
     const pending = peekPendingVote()
     if (!pending || Number(pending.voteId) !== Number(voteId)) return
     if (!getAccessToken()) return
@@ -126,6 +135,7 @@ function PollCard({
         if (cancelled) return
         clearPendingVote()
         applyVoteResponse(response, null)
+        onVoteChangeRef.current?.(response.voted)
       } catch {
         if (!cancelled) alert('투표에 실패했습니다.')
       } finally {
@@ -137,7 +147,14 @@ function PollCard({
     return () => {
       cancelled = true
     }
-  }, [ready, voteId, hasVoted, localOptions, applyVoteResponse])
+  }, [
+    ready,
+    pendingVoteReady,
+    voteId,
+    hasVoted,
+    localOptions,
+    applyVoteResponse,
+  ])
 
   const disabled = isVoting || pendingClaimRunning
   const handleSelect = (optionId: number) => {
