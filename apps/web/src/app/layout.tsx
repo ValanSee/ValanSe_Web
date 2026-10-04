@@ -5,6 +5,13 @@ import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
 import { NativeBackHandler } from '@/components/_shared/nativeBackHandler'
 import { PageViewTracker } from '@/components/_shared/pageViewTracker'
+import {
+  BASE_OPEN_GRAPH,
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  SITE_NAME,
+  SITE_URL,
+} from '@/constants/seo'
 
 const pretendard = localFont({
   src: [
@@ -33,12 +40,6 @@ const pretendard = localFont({
   display: 'swap',
   preload: true,
 })
-
-const SITE_URL = 'https://valanse.kr'
-const SITE_NAME = 'ValanSe'
-const DEFAULT_TITLE = 'ValanSe(발란스) - 밸런스게임 투표 공유 서비스'
-const DEFAULT_DESCRIPTION =
-  '재미있는 밸런스게임을 만들고 친구와 공유하세요. 커플·친구·술자리에서 즐기는 둘 중 하나 선택, 이상형 밸런스게임 모음. 음식, 연애 등 카테고리별 인기 질문을 ValanSe에서 만나보세요.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -75,22 +76,7 @@ export const metadata: Metadata = {
     email: false,
     address: false,
   },
-  openGraph: {
-    type: 'website',
-    locale: 'ko_KR',
-    url: SITE_URL,
-    siteName: SITE_NAME,
-    title: DEFAULT_TITLE,
-    description: DEFAULT_DESCRIPTION,
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'ValanSe - 밸런스게임 투표 공유 서비스',
-      },
-    ],
-  },
+  openGraph: BASE_OPEN_GRAPH,
   twitter: {
     card: 'summary_large_image',
     title: DEFAULT_TITLE,
@@ -108,9 +94,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
       'max-video-preview': -1,
     },
-  },
-  alternates: {
-    canonical: SITE_URL,
   },
   verification: {
     other: {

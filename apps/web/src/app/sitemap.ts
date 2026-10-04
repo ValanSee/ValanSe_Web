@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
+import { CATEGORIES } from '@/constants/category'
+import { SITE_URL } from '@/constants/seo'
 
-const SITE_URL = 'https://valanse.kr'
 const MAX_PAGES = 200
 const PAGE_SIZE = 50 // 서버 /votes size 상한 50
 
@@ -23,24 +24,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
-    {
-      url: `${SITE_URL}/balanse?category=FOOD`,
+    ...CATEGORIES.map((c) => ({
+      url: `${SITE_URL}/balanse?category=${c.param}`,
       lastModified: now,
-      changeFrequency: 'daily',
+      changeFrequency: 'daily' as const,
       priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/balanse?category=LOVE`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/balanse?category=ETC`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
+    })),
     {
       url: `${SITE_URL}/privacy`,
       lastModified: now,
