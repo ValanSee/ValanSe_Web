@@ -41,6 +41,9 @@ const pretendard = localFont({
   preload: true,
 })
 
+// 토큰은 localStorage 에만 있어 서버가 로그인 여부를 모름 → 첫 페인트 전에 html 에 표시 (투표 상세 스켈레톤용)
+const HAS_TOKEN_SCRIPT = `try{if(localStorage.getItem('access_token'))document.documentElement.setAttribute('data-has-token','')}catch(e){}`
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -119,7 +122,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html
+      lang="ko"
+      className={pretendard.variable}
+      // 아래 인라인 스크립트가 hydration 전에 data-has-token 을 붙임
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: HAS_TOKEN_SCRIPT }} />
+      </head>
       <body
         className="bg-background font-pretendard"
         suppressHydrationWarning={true}
