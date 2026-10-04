@@ -1,16 +1,9 @@
-import type { Metadata } from 'next'
 import Header from '@/components/_shared/header'
 
 const APP_NAME = 'Valanse'
 const CONTACT_EMAIL = 'valansekr@gmail.com'
 const SERVICE_URL = 'https://valanse.kr'
 const EFFECTIVE_DATE = '2026-01-23'
-
-export const metadata: Metadata = {
-  title: `개인정보 처리방침 | ${APP_NAME}`,
-  description: `${APP_NAME} 개인정보 처리방침`,
-  robots: { index: true, follow: true },
-}
 
 export const PrivacyPolicyPage = () => {
   return (
