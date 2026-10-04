@@ -1,43 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ValanSe Web
 
+밸런스게임 투표 공유 서비스 [ValanSe](https://valanse.kr)의 웹 모노레포입니다.
 
-배포도메인 - 추후 추가 바람
-node v20
+| 패키지 | 설명 |
+|---|---|
+| `apps/web` (`valanse-web`) | 서비스 웹 (Next.js) |
+| `apps/cms` (`valanse-cms`) | 운영용 CMS |
 
 ## Getting Started
 
-node version: 20
-pnpm version: 10.12.0
-
-First, run the development server:
+- node 20
+- pnpm 10.16.1
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp apps/web/.env.example apps/web/.env   # 값 채우기
+
+pnpm dev:web   # 웹만
+pnpm dev:cms   # CMS만
+pnpm dev       # 전체
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000)에서 확인합니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm lint
+pnpm build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 브랜치 & 배포
 
-## Learn More
+트렁크 기반 개발을 사용합니다. `main`이 유일한 트렁크입니다.
 
-To learn more about Next.js, take a look at the following resources:
+| 브랜치 | 역할 | 배포 |
+|---|---|---|
+| `main` | 트렁크. 모든 작업이 PR로 들어오는 곳 | 프로덕션 ([valanse.kr](https://valanse.kr)) |
+| `develop` | 테스트 서버 배포 전용. `main`으로 머지하지 않음 | 테스트 서버 |
+| `<type>/<short-description>` | 작업 브랜치 (`feat/login-page`, `fix/api-response-parsing`) | — |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 작업 흐름
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# 1. main에서 작업 브랜치 생성
+git switch main && git pull
+git switch -c fix/some-bug
 
-## Deploy on Vercel
+# 2. (선택) 테스트 서버에 올려서 확인
+git switch develop && git pull
+git merge fix/some-bug
+git push origin develop
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 3. main으로 PR → 리뷰 → 머지 = 프로덕션 배포
+gh pr create --base main
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- PR은 항상 `main` 대상입니다. 같은 작업을 `-main` / `-develop` 브랜치로 나눠 PR 두 번 올리지 않습니다.
+- `develop`은 테스트용이라 여러 작업 브랜치가 섞일 수 있습니다. `develop` → `main` 머지는 하지 않습니다.
+- `develop`이 꼬이면 `main` 기준으로 리셋합니다.
+
+  ```bash
+  git switch develop
+  git reset --hard origin/main
+  git push --force-with-lease origin develop
+  ```
+
+- 브랜치 보호 / 룰셋은 사용하지 않습니다. `main` 대상 PR에서 lint CI(`.github/workflows/lint.yml`)가 돌아갑니다.
+
+커밋·코드 컨벤션은 [`AGENTS.md`](./AGENTS.md)를 참고하세요.

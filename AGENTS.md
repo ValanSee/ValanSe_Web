@@ -227,6 +227,13 @@ fix/api-response-parsing
 refactor/match-list
 ```
 
+**트렁크 기반 개발** — `main`이 유일한 트렁크입니다.
+
+- 작업 브랜치는 항상 `main`에서 따고, PR도 `main`으로만 올립니다. `main` 머지 = 프로덕션 배포.
+- `develop`은 **테스트 서버 배포 전용** 브랜치입니다. 작업 브랜치를 `develop`에 merge 해서 테스트 서버에 올려 확인합니다.
+- `develop` → `main` 머지는 하지 않습니다. `develop`이 꼬이면 `main` 기준으로 리셋합니다.
+- 같은 작업을 `-main` / `-develop` 접미사 브랜치로 나눠 PR 두 번 올리는 방식은 폐지합니다.
+
 ### Component Convention
 
 - **공통 컴포넌트 우선**: `src/components/common/`에 같은 역할의 컴포넌트가 있으면 재사용.
