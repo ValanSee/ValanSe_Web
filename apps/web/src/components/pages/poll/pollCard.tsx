@@ -33,6 +33,11 @@ interface PollCardProps {
   hasVoted?: boolean
   votedOptionLabel?: string | null
   postLoginReturnPath: string
+  /**
+   * false 면 로그인 기준 상세(hasVoted 등) 동기화 전 — 클릭·pending vote 자동 제출을 막음.
+   * SSR 초기 데이터는 비로그인 기준이라 hasVoted 가 항상 false.
+   */
+  ready?: boolean
 }
 
 /**
@@ -53,6 +58,7 @@ function PollCard({
   hasVoted = false,
   votedOptionLabel,
   postLoginReturnPath,
+  ready = true,
 }: PollCardProps) {
   const [voted, setVoted] = useState(hasVoted)
   const [selectedId, setSelectedId] = useState<number | null>(() => {
@@ -100,6 +106,7 @@ function PollCard({
 
   // 로그인 리디렉트 후 pending vote 자동 제출
   useEffect(() => {
+    if (!ready) return
     const pending = peekPendingVote()
     if (!pending || Number(pending.voteId) !== Number(voteId)) return
     if (!getAccessToken()) return
@@ -129,9 +136,13 @@ function PollCard({
     return () => {
       cancelled = true
     }
-  }, [voteId, hasVoted, localOptions, applyVoteResponse])
+  }, [ready, voteId, hasVoted, localOptions, applyVoteResponse])
 
   const disabled = isVoting || pendingClaimRunning
+  const handleSelect = (optionId: number) => {
+    if (!ready) return
+    submit(optionId)
+  }
   const hasImages = localOptions.some((o) => o.imageUrl)
 
   const percentOf = (voteCount: number) =>
@@ -197,7 +208,7 @@ function PollCard({
                       </div>
                       <button
                         type="button"
-                        onClick={() => submit(option.optionId)}
+                        onClick={() => handleSelect(option.optionId)}
                         disabled={disabled}
                         aria-pressed={isSelected}
                         className={cn(
@@ -246,7 +257,7 @@ function PollCard({
                 <button
                   key={option.optionId ?? idx}
                   type="button"
-                  onClick={() => submit(option.optionId)}
+                  onClick={() => handleSelect(option.optionId)}
                   disabled={disabled}
                   aria-pressed={isSelected}
                   className={cn(

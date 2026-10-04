@@ -51,6 +51,8 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
   const [bestComment, setBestComment] = useState<BestComment | null>(null)
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(!initialData)
+  // 로그인 기준 재조회 완료 여부. SSR 데이터만 있을 땐 false
+  const [synced, setSynced] = useState(!initialData)
   const [error, setError] = useState<string | null>(null)
   const [showStats, setShowStats] = useState(false)
   const router = useRouter()
@@ -87,6 +89,8 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
         if (!initialData) setError('투표 정보를 불러오지 못했습니다.')
       } finally {
         setLoading(false)
+        // 재조회 실패 시에도 SSR 데이터로 조작은 가능하게
+        setSynced(true)
       }
     }
 
@@ -172,6 +176,9 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
       <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
         {data && (
           <PollCard
+            // 재조회 후 hasVoted·득표 수로 내부 state 를 다시 초기화
+            key={synced ? 'synced' : 'ssr'}
+            ready={synced}
             voteId={data.voteId}
             createdBy={data.creatorNickname}
             creatorTitle={data.creatorTitle}
