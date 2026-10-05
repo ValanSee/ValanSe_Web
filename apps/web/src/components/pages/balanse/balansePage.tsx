@@ -6,7 +6,7 @@ import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
-import type { Vote } from '@/types/balanse/vote'
+import type { Vote, VoteListResponse } from '@/types/balanse/vote'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import BalanseVoteCard from './balanseVoteCard'
 import HotTrendingBar from './hotTrendingBar'
@@ -17,14 +17,25 @@ const TABS = [
   ...CATEGORIES.map((c) => ({ label: c.label, value: c.param })),
 ]
 
-function BalancePageContent() {
+/** 서버에서 비로그인으로 조회한 첫 페이지. key 는 `${category}|${sort}` */
+export type BalanseInitialData = VoteListResponse & { key: string }
+
+interface BalancePageProps {
+  initialData?: BalanseInitialData | null
+}
+
+function BalancePageContent({ initialData }: BalancePageProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [votes, setVotes] = useState<Vote[]>([])
+  const [votes, setVotes] = useState<Vote[]>(initialData?.votes ?? [])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [hasNextPage, setHasNextPage] = useState(false)
-  const [nextCursor, setNextCursor] = useState<string | undefined>(undefined)
+  const [hasNextPage, setHasNextPage] = useState(
+    initialData?.has_next_page ?? false,
+  )
+  const [nextCursor, setNextCursor] = useState<string | undefined>(
+    initialData?.next_cursor,
+  )
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const loadingRef = useRef<HTMLDivElement>(null)
 
@@ -75,6 +86,15 @@ function BalancePageContent() {
   }, [loadMore, hasNextPage, isLoadingMore])
 
   useEffect(() => {
+    // 카테고리·정렬 변경 시 서버 컴포넌트가 새 첫 페이지를 내려주므로 일치하면 재조회 생략
+    if (initialData?.key === `${category}|${sort}`) {
+      setVotes(initialData.votes)
+      setHasNextPage(initialData.has_next_page)
+      setNextCursor(initialData.next_cursor)
+      setError(null)
+      return
+    }
+
     const load = async () => {
       try {
         setLoading(true)
@@ -90,7 +110,7 @@ function BalancePageContent() {
       }
     }
     load()
-  }, [category, sort])
+  }, [category, sort, initialData])
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">
@@ -137,10 +157,10 @@ function BalancePageContent() {
   )
 }
 
-export default function BalancePage() {
+export default function BalancePage({ initialData }: BalancePageProps) {
   return (
     <Suspense fallback={null}>
-      <BalancePageContent />
+      <BalancePageContent initialData={initialData} />
     </Suspense>
   )
 }

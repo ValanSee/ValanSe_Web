@@ -1,11 +1,20 @@
 import type { Metadata } from 'next'
 import { BASE_OPEN_GRAPH } from '@/constants/seo'
-import BalansePage from '../../../components/pages/balanse/balansePage'
+import BalansePage, {
+  type BalanseInitialData,
+} from '../../../components/pages/balanse/balansePage'
 import { getCategoryMeta } from '@/constants/category'
+import { fetchVotesForServer } from '@/api/pages/valanse/listServer'
 
 type Props = {
-  searchParams: Promise<{ category?: string | string[] }>
+  searchParams: Promise<{
+    category?: string | string[]
+    sort?: string | string[]
+  }>
 }
+
+// 첫 화면 SSR 개수. 크롤러가 따라갈 /poll 링크를 충분히 담기 위해 클라이언트 페이지 크기(5)보다 크게
+const SSR_PAGE_SIZE = 10
 
 export async function generateMetadata({
   searchParams,
@@ -28,8 +37,28 @@ export async function generateMetadata({
   }
 }
 
-function Balanse() {
-  return <BalansePage />
+async function Balanse({ searchParams }: Props) {
+  const { category: rawCategory, sort: rawSort } = await searchParams
+  // 클라이언트(balansePage)와 같은 규칙으로 키를 만들어야 초기 데이터를 재사용함
+  const category =
+    typeof rawCategory === 'string' && rawCategory ? rawCategory : 'ALL'
+  const sort = typeof rawSort === 'string' && rawSort ? rawSort : 'latest'
+
+  const isKnown =
+    (category === 'ALL' || !!getCategoryMeta(category)) &&
+    (sort === 'latest' || sort === 'popular')
+
+  let initialData: BalanseInitialData | null = null
+  if (isKnown) {
+    const data = await fetchVotesForServer({
+      category,
+      sort: sort as 'latest' | 'popular',
+      size: SSR_PAGE_SIZE,
+    })
+    if (data) initialData = { key: `${category}|${sort}`, ...data }
+  }
+
+  return <BalansePage initialData={initialData} />
 }
 
 export default Balanse
