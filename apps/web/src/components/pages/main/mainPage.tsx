@@ -23,7 +23,6 @@ import { CATEGORIES } from '@/constants/category'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { getAccessToken } from '@/utils/tokenUtils'
-import { entryHrefWithRedirect } from '@/utils/authRedirect'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
@@ -46,14 +45,19 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
   // 화면은 막지 않고 백그라운드에서 확인
   useEffect(() => {
     if (!getAccessToken()) return
+    let cancelled = false
     dispatch(fetchProfileThunk())
       .then((profile) => {
-        if (!profile) router.replace('/onboarding')
+        // 응답 전에 홈을 떠났으면 이동하지 않음
+        if (!cancelled && !profile) router.replace('/onboarding')
       })
       .catch(() => {
-        // 토큰은 있는데 프로필 조회 실패 → 재로그인 유도 (복귀 목적지는 홈)
-        router.replace(entryHrefWithRedirect('/'))
+        // 조회 실패는 무시하고 공개 홈 유지. 토큰 무효(재발급 실패)는 authApi 인터셉터가
+        // 토큰 삭제 후 /entry 로 보냄. 여기서 /entry 로 보내면 "로그인 없이 둘러보기"(→ /)와 왕복함
       })
+    return () => {
+      cancelled = true
+    }
   }, [dispatch, router])
 
   // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
