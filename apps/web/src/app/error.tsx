@@ -17,7 +17,7 @@ export default function GlobalError({
 
   const goHome = () => {
     reset()
-    router.push('/main')
+    router.push('/')
   }
 
   return (

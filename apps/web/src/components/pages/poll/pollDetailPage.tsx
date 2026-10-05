@@ -125,7 +125,7 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
 
   const handleBackClick = () => {
     if (source === 'create') {
-      router.push('/main')
+      router.push('/')
     } else {
       router.back()
     }

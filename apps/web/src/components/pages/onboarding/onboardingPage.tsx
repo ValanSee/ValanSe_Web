@@ -127,7 +127,7 @@ const OnboardingPage = () => {
     }
     try {
       await createMemberProfile(profile)
-      router.replace(consumePostAuthRedirect() ?? '/main')
+      router.replace(consumePostAuthRedirect() ?? '/')
     } catch (e) {
       console.error('Failed to create member profile:', e)
       alert('회원 정보 생성에 실패했습니다.')

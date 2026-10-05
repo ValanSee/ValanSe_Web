@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import SectionHeader from '@/components/_shared/sectionHeader'
@@ -19,6 +20,10 @@ import type { Vote } from '@/types/balanse/vote'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import HomeVoteCard from './homeVoteCard'
 import { CATEGORIES } from '@/constants/category'
+import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
+import { fetchProfileThunk } from '@/store/thunks/memberThunks'
+import { getAccessToken } from '@/utils/tokenUtils'
+import { entryHrefWithRedirect } from '@/utils/authRedirect'
 
 interface MainPageProps {
   /** 서버 조회 결과. undefined 면 서버 조회 실패 → 클라이언트에서 조회 */
@@ -32,6 +37,22 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
   )
   const [latest, setLatest] = useState<Vote[]>(initialLatest ?? [])
   const { isReported } = useReportedContent()
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+
+  // 예전 `/` 인증 분기 화면의 역할: 로그인했지만 프로필(온보딩) 미완료면 온보딩으로.
+  // 화면은 막지 않고 백그라운드에서 확인
+  useEffect(() => {
+    if (!getAccessToken()) return
+    dispatch(fetchProfileThunk())
+      .then((profile) => {
+        if (!profile) router.replace('/onboarding')
+      })
+      .catch(() => {
+        // 토큰은 있는데 프로필 조회 실패 → 재로그인 유도 (복귀 목적지는 홈)
+        router.replace(entryHrefWithRedirect('/'))
+      })
+  }, [dispatch, router])
 
   // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
   const visibleFeatured =

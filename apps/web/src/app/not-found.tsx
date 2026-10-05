@@ -26,7 +26,7 @@ export default function NotFound() {
           </p>
         </div>
       </div>
-      <Link href="/main" className="w-full">
+      <Link href="/" className="w-full">
         <Button variant="primary" size="l" fullWidth>
           홈으로 이동
         </Button>

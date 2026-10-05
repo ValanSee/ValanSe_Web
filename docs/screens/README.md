@@ -17,8 +17,7 @@
 
 | SCR-ID | 경로 | 인증 | 파일 |
 |---|---|---|---|
-| SCR-AUTH-001 | `/` | ✓ | [SCR-AUTH-001_auth-root.md](./SCR-AUTH-001_auth-root.md) |
-| SCR-HOME-001 | `/main` | ✓ | [SCR-HOME-001_home.md](./SCR-HOME-001_home.md) |
+| SCR-HOME-001 | `/` | ✓ | [SCR-HOME-001_home.md](./SCR-HOME-001_home.md) |
 | SCR-CREATE-001 | `/create` | ✓ | [SCR-CREATE-001_create.md](./SCR-CREATE-001_create.md) |
 | SCR-ACCOUNT-001 | `/account-deletion` | ✓ | [SCR-ACCOUNT-001_account-deletion.md](./SCR-ACCOUNT-001_account-deletion.md) |
 | SCR-MY-001 | `/my` | ✓ | [SCR-MY-001_my.md](./SCR-MY-001_my.md) |
