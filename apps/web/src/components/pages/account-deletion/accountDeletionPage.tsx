@@ -7,6 +7,8 @@ import { signoutThunk } from '@/store/thunks/authThunks'
 import { Checkbox } from '@/components/ui/checkbox'
 import Header from '@/components/_shared/header'
 import { Popup } from '@/components/ui/popup'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const AccountDeletionPage = () => {
   const router = useRouter()
@@ -30,7 +32,9 @@ const AccountDeletionPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       <Header title="회원탈퇴" showBackButton />
 
       <div className="mx-auto w-full max-w-2xl flex-1 px-6 pb-10 pt-4">

@@ -1,4 +1,6 @@
 import Header from '@/components/_shared/header'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const APP_NAME = 'Valanse'
 const CONTACT_EMAIL = 'valansekr@gmail.com'
@@ -7,7 +9,9 @@ const EFFECTIVE_DATE = '2026-01-23'
 
 export const PrivacyPolicyPage = () => {
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       <Header title="개인정보 처리방침" showBackButton />
       <main className="mx-auto w-full max-w-2xl px-4 py-8 leading-relaxed">
         <header className="mb-6">

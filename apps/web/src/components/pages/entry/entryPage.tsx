@@ -6,16 +6,20 @@ import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import Header from '@/components/_shared/header'
 import KakaoLoginButton from './_components/kakaoLoginButton'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 function EntryPage() {
   const router = useRouter()
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       {/* 로그인 필요 기능에서 진입 시 막다른 길이 되지 않도록 뒤로가기 제공.
           보호 페이지(/my 등)로 back 하면 가드가 다시 entry 로 보내 루프가 나므로
           공개 홈으로 확실히 탈출시킨다. */}
-      <Header showBackButton onBackClick={() => router.replace('/main')} />
+      <Header showBackButton onBackClick={() => router.replace('/')} />
       <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center">
         {/* 로고 & 슬로건 */}
         <div className="flex flex-1 flex-col items-center justify-center gap-6">
@@ -47,7 +51,7 @@ function EntryPage() {
           >
             <KakaoLoginButton />
           </Suspense>
-          <Link href="/main" className="typo-label-03 text-brand-gray-200">
+          <Link href="/" className="typo-label-03 text-brand-gray-200">
             로그인 없이 둘러보기
           </Link>
         </div>

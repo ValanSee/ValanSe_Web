@@ -11,6 +11,8 @@ import { entryHrefWithRedirect } from '@/utils/authRedirect'
 import PointHeaderSection from './pointHeaderSection'
 import PointPolicyNotice from './pointPolicyNotice'
 import PointHistoryList from './pointHistoryList'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const PointPage = () => {
   const router = useRouter()
@@ -33,7 +35,9 @@ const PointPage = () => {
   const currentPoint = pointHistory[0]?.remainingPoint ?? 0
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       <Header
         title="내 포인트"
         showBackButton

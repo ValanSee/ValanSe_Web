@@ -5,6 +5,8 @@ import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
 import { NativeBackHandler } from '@/components/_shared/nativeBackHandler'
 import { PageViewTracker } from '@/components/_shared/pageViewTracker'
+import DesktopHeader from '@/components/_shared/nav/desktopHeader'
+import DesktopFooter from '@/components/_shared/desktopFooter'
 import { JsonLd } from '@/components/_shared/jsonLd'
 import {
   BASE_OPEN_GRAPH,
@@ -150,7 +152,12 @@ export default function RootLayout({
           <ModalRootInitializer />
           <NativeBackHandler />
           <PageViewTracker />
-          {children}
+          {/* PC(lg 이상)에서만 GNB · 푸터 노출. 모바일·WebView 화면은 그대로 */}
+          <div className="flex min-h-screen flex-col">
+            <DesktopHeader />
+            <div className="flex flex-1 flex-col">{children}</div>
+            <DesktopFooter />
+          </div>
         </Providers>
       </body>
     </html>

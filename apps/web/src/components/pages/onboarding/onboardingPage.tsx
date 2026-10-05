@@ -20,6 +20,7 @@ import Header from '@/components/_shared/header'
 import { Button } from '@/components/ui/button'
 import { TextField } from '@/components/ui/textField'
 import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const genderOptions: { value: Gender; label: string }[] = [
   { value: 'MALE', label: '남성' },
@@ -127,7 +128,7 @@ const OnboardingPage = () => {
     }
     try {
       await createMemberProfile(profile)
-      router.replace(consumePostAuthRedirect() ?? '/main')
+      router.replace(consumePostAuthRedirect() ?? '/')
     } catch (e) {
       console.error('Failed to create member profile:', e)
       alert('회원 정보 생성에 실패했습니다.')
@@ -136,7 +137,7 @@ const OnboardingPage = () => {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-card">
+    <div className={cn('flex min-h-dvh flex-col bg-card', DESKTOP_PAGE_COLUMN)}>
       <Header showBackButton title="회원가입" />
       <form
         onSubmit={handleSubmit(onSubmit)}

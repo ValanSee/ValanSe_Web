@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Icon } from '@iconify/react'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import SectionHeader from '@/components/_shared/sectionHeader'
@@ -19,6 +20,11 @@ import type { Vote } from '@/types/balanse/vote'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import HomeVoteCard from './homeVoteCard'
 import { CATEGORIES } from '@/constants/category'
+import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
+import { fetchProfileThunk } from '@/store/thunks/memberThunks'
+import { getAccessToken } from '@/utils/tokenUtils'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 interface MainPageProps {
   /** 서버 조회 결과. undefined 면 서버 조회 실패 → 클라이언트에서 조회 */
@@ -32,6 +38,27 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
   )
   const [latest, setLatest] = useState<Vote[]>(initialLatest ?? [])
   const { isReported } = useReportedContent()
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+
+  // 예전 `/` 인증 분기 화면의 역할: 로그인했지만 프로필(온보딩) 미완료면 온보딩으로.
+  // 화면은 막지 않고 백그라운드에서 확인
+  useEffect(() => {
+    if (!getAccessToken()) return
+    let cancelled = false
+    dispatch(fetchProfileThunk())
+      .then((profile) => {
+        // 응답 전에 홈을 떠났으면 이동하지 않음
+        if (!cancelled && !profile) router.replace('/onboarding')
+      })
+      .catch(() => {
+        // 조회 실패는 무시하고 공개 홈 유지. 토큰 무효(재발급 실패)는 authApi 인터셉터가
+        // 토큰 삭제 후 /entry 로 보냄. 여기서 /entry 로 보내면 "로그인 없이 둘러보기"(→ /)와 왕복함
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [dispatch, router])
 
   // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
   const visibleFeatured =
@@ -52,8 +79,15 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
   }, [initialFeatured, initialLatest])
 
   return (
-    <div className="flex min-h-screen flex-col bg-card pb-24">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col bg-card pb-24',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
+      {/* PC 에서는 상단 GNB 에 로고가 있어 숨김 */}
       <Header
+        className="lg:hidden"
         leading={
           <Image
             src="/assets/logo.svg"

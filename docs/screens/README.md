@@ -17,8 +17,7 @@
 
 | SCR-ID | 경로 | 인증 | 파일 |
 |---|---|---|---|
-| SCR-AUTH-001 | `/` | ✓ | [SCR-AUTH-001_auth-root.md](./SCR-AUTH-001_auth-root.md) |
-| SCR-HOME-001 | `/main` | ✓ | [SCR-HOME-001_home.md](./SCR-HOME-001_home.md) |
+| SCR-HOME-001 | `/` | ✗ | [SCR-HOME-001_home.md](./SCR-HOME-001_home.md) |
 | SCR-CREATE-001 | `/create` | ✓ | [SCR-CREATE-001_create.md](./SCR-CREATE-001_create.md) |
 | SCR-ACCOUNT-001 | `/account-deletion` | ✓ | [SCR-ACCOUNT-001_account-deletion.md](./SCR-ACCOUNT-001_account-deletion.md) |
 | SCR-MY-001 | `/my` | ✓ | [SCR-MY-001_my.md](./SCR-MY-001_my.md) |
@@ -33,6 +32,18 @@
 | SCR-OAUTH-001 | `/oauth/kakao/redirect` | ✗ | [SCR-OAUTH-001_oauth-kakao.md](./SCR-OAUTH-001_oauth-kakao.md) |
 | SCR-ONBOARDING-001 | `/onboarding` | ✗ | [SCR-ONBOARDING-001_onboarding.md](./SCR-ONBOARDING-001_onboarding.md) |
 | SCR-PRIVACY-001 | `/privacy` | ✗ | [SCR-PRIVACY-001_privacy.md](./SCR-PRIVACY-001_privacy.md) |
+
+## 공통 레이아웃 (PC, `lg` ≥ 1024px)
+
+> 2026-10-05 추가. 모바일·앱 WebView(`lg` 미만) 화면은 변경 없음.
+
+모든 화면에 공통으로 적용되며, 개별 SCR 문서에는 PC 전용 레이아웃이 있는 경우만 따로 적는다.
+
+- **상단 GNB** (`components/_shared/nav/desktopHeader.tsx`): 로고(→ `/`) · 홈 · 밸런스 메뉴, 우측 `밸런스 만들기`(→ `/create`) 와 `로그인`(→ `/entry?redirect=현재경로`) 또는 `마이`(→ `/my`). 로그인 버튼은 토큰 확인 후 표시하며 `/entry` · `/oauth` · `/onboarding` 에서는 숨김
+- **하단 네비게이션 바**: 숨김 (GNB 가 대체)
+- **본문**: 가운데 정렬 768px 컬럼 (`DESKTOP_PAGE_COLUMN`, 회색 배경 위 흰 컬럼)
+- **푸터** (`components/_shared/desktopFooter.tsx`): 홈 · 밸런스게임 모음 · 인기 · 만들기, 카테고리별 `/balanse?category=*`, 개인정보 처리방침 링크 (내부 링크용)
+- **바텀시트**(신고 · MBTI 선택): 화면 가운데 모달로 표시
 
 ## 신규 화면 추가 시
 

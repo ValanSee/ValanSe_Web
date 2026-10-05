@@ -12,6 +12,7 @@ import { CreateVoteData } from '@/types/api/votes'
 import { VoteCategory } from '@/types/_shared/vote'
 import { CATEGORIES } from '@/constants/category'
 import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 서버(R2StorageService) 제한과 동일
 const ALLOWED_IMAGE_TYPES = [
@@ -128,7 +129,12 @@ const CreatePage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-card pb-24">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col bg-card pb-24',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
       <Header
         showBackButton
         title="밸런스 게임 만들기"

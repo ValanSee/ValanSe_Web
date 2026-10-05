@@ -1,46 +1,40 @@
-/**
- * @description
- * 인증 여부에 따른 페이지 분기
- */
+import type { Metadata } from 'next'
+import MainPage from '@/components/pages/main/mainPage'
+import {
+  fetchTrendingVotesForServer,
+  fetchVotesForServer,
+} from '@/api/pages/valanse/listServer'
+import { BASE_OPEN_GRAPH } from '@/constants/seo'
 
-'use client'
-
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
-import { fetchProfileThunk } from '@/store/thunks/memberThunks'
-import { getAccessToken } from '@/utils/tokenUtils'
-import { entryHrefWithRedirect } from '@/utils/authRedirect'
-import Loading from '@/components/_shared/loading'
-
-export default function Home() {
-  const dispatch = useAppDispatch()
-  const router = useRouter()
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      // access token이 없으면 메인(탐색)으로 — 로그인은 각 기능/탭에서 유도
-      if (!getAccessToken()) {
-        router.replace('/main')
-        return
-      }
-
-      try {
-        // access token 이 유효하면 profile을 가져오고 main 페이지로
-        const profile = await dispatch(fetchProfileThunk())
-        if (profile) {
-          router.replace('/main')
-        } else {
-          router.replace('/onboarding')
-        }
-      } catch {
-        // `/`에서 토큰은 있는데 프로필 실패 시 루프 방지: 복귀 목적지는 메인
-        router.replace(entryHrefWithRedirect('/main'))
-      }
-    }
-
-    checkAuth()
-  }, [dispatch, router])
-
-  return <Loading />
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { ...BASE_OPEN_GRAPH, url: '/' },
 }
+
+// (auth) 레이아웃의 AuthGuard 가 useSearchParams 를 써서, 정적 생성 시 화면 전체가 CSR 로 빠짐(BAILOUT).
+// 요청 시 렌더링해야 SSR HTML 에 목록이 담김. API 응답은 fetch 캐시(60초)로 재사용
+export const dynamic = 'force-dynamic'
+
+const LATEST_SIZE = 3
+const TRENDING_DAYS = 7
+
+/** 홈. 예전 `/main` 을 루트로 통합 (SEO: 대표 URL 에 콘텐츠를 SSR) */
+async function Home() {
+  // 비로그인 기준 SSR. 실패한 섹션은 undefined 로 넘겨 클라이언트에서 다시 조회
+  const [trending, latest] = await Promise.all([
+    fetchTrendingVotesForServer(TRENDING_DAYS),
+    fetchVotesForServer({
+      category: 'ALL',
+      sort: 'latest',
+      size: LATEST_SIZE,
+    }),
+  ])
+
+  return (
+    <MainPage
+      initialFeatured={trending ? (trending.votes[0] ?? null) : undefined}
+      initialLatest={latest ? latest.votes : undefined}
+    />
+  )
+}
+export default Home
