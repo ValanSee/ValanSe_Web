@@ -124,7 +124,8 @@
 
 | Method | Endpoint | 용도 |
 |---|---|---|
-| GET | `/votes/best` | 오늘의 핫이슈 조회 |
+| GET | `/votes/trending?days=7` | 뜨고 있는 밸런스 (1위 노출, 서버 SSR) |
+| GET | `/votes?category=ALL&sort=latest&size=3` | 올라오고 있는 밸런스 (서버 SSR) |
 
 ## 🎨 디자인 토큰 참조 (예시)
 
