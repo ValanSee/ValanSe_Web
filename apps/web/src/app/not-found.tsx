@@ -3,13 +3,20 @@
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 /**
  * 404 페이지. Figma 오류 페이지(6397:27123) 사양 재활용.
  */
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-card px-6 py-10 text-center">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col items-center justify-center gap-6 bg-card px-6 py-10 text-center',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
       <div className="flex flex-col items-center gap-4">
         <Icon
           icon="material-symbols:error-outline-rounded"

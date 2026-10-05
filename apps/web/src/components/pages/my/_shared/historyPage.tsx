@@ -8,6 +8,8 @@ import BalanseHistoryCard from '@/components/pages/my/_shared/balanseHistoryCard
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchMineVotesCreated, fetchMineVotesVoted } from '@/api/votes'
 import { MyVoteHistoryItem } from '@/types/my/history'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const CATEGORIES = [
   { label: '전체', value: 'ALL' },
@@ -46,7 +48,9 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
   }, [category, sort, mode])
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       <Header
         title={title}
         showBackButton

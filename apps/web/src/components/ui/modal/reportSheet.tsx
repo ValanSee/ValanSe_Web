@@ -125,7 +125,7 @@ export default function ReportSheet({
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
       <SheetContent
         side="bottom"
-        className="mx-auto flex max-h-[85dvh] max-w-xl flex-col gap-4 rounded-t-[20px] bg-card px-5 pb-[calc(env(safe-area-inset-bottom)+20px)] pt-6"
+        className="mx-auto flex max-h-[85dvh] max-w-xl flex-col gap-4 rounded-t-[20px] lg:bottom-1/2 lg:translate-y-1/2 lg:rounded-[20px] lg:border bg-card px-5 pb-[calc(env(safe-area-inset-bottom)+20px)] pt-6"
       >
         <SheetHeader className="shrink-0 text-left">
           <SheetTitle>{TARGET_LABEL[targetType]}을 신고할까요?</SheetTitle>

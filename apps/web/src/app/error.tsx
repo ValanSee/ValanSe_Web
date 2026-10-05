@@ -3,6 +3,8 @@
 import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 /**
  * Global Error Boundary. Figma 노드 6397:27123 참조.
@@ -21,7 +23,12 @@ export default function GlobalError({
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-card px-6 py-10 text-center">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col items-center justify-center gap-6 bg-card px-6 py-10 text-center',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
       <div className="flex flex-col items-center gap-4">
         <Icon
           icon="material-symbols:error-outline-rounded"

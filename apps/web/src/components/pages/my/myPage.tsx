@@ -18,6 +18,8 @@ import {
 } from '@/store/thunks/memberThunks'
 import { logoutThunk } from '@/store/thunks/authThunks'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const parseGender = (g: string) =>
   g === 'MALE' ? '남성' : g === 'FEMALE' ? '여성' : '기타'
@@ -71,7 +73,12 @@ function MyPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-card pb-24">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col bg-card pb-24',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
       <Header title="마이" />
 
       {/* 프로필 */}

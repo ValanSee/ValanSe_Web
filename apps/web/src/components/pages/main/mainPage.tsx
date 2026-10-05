@@ -24,6 +24,8 @@ import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { getAccessToken } from '@/utils/tokenUtils'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 interface MainPageProps {
   /** 서버 조회 결과. undefined 면 서버 조회 실패 → 클라이언트에서 조회 */
@@ -73,8 +75,15 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
   }, [initialFeatured, initialLatest])
 
   return (
-    <div className="flex min-h-screen flex-col bg-card pb-24">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col bg-card pb-24',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
+      {/* PC 에서는 상단 GNB 에 로고가 있어 숨김 */}
       <Header
+        className="lg:hidden"
         leading={
           <Image
             src="/assets/logo.svg"

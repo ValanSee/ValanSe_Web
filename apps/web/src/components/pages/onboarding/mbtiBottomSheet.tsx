@@ -61,8 +61,11 @@ const MBTIBottomSheet = ({ onClose, setMbti }: MBTIBottomSheetProps) => {
   }
 
   return (
-    <ModalOverlay onClose={onClose} className="z-[100] items-end">
-      <div className="flex w-full flex-col gap-8 rounded-t-[20px] bg-card px-5 pb-10 pt-6">
+    <ModalOverlay
+      onClose={onClose}
+      className="z-[100] items-end lg:items-center"
+    >
+      <div className="flex w-full flex-col gap-8 rounded-t-[20px] bg-card px-5 pb-10 pt-6 lg:max-w-xl lg:rounded-[20px]">
         <h2 className="typo-heading-05 text-foreground">MBTI를 알려주세요</h2>
         <div className="grid grid-cols-2 gap-x-4 gap-y-4">
           {[

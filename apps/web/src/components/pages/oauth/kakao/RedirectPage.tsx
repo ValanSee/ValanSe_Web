@@ -11,6 +11,8 @@ import {
   rememberPostAuthRedirect,
   safeRedirectPath,
 } from '@/utils/authRedirect'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 export default function KakaoRedirect() {
   const router = useRouter()
@@ -96,7 +98,12 @@ export default function KakaoRedirect() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-card">
+      <div
+        className={cn(
+          'flex min-h-screen items-center justify-center bg-card',
+          DESKTOP_PAGE_COLUMN,
+        )}
+      >
         <div className="text-center">
           <p className="typo-heading-05 mb-4 text-destructive">{error}</p>
           <p className="typo-body-b-01 text-brand-gray-200">

@@ -32,6 +32,8 @@ import { useReportAction } from '@/hooks/utils/useReportAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
 import { getAccessToken } from '@/utils/tokenUtils'
 import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 interface PollDetailPageProps {
   /** 서버에서 비로그인으로 조회한 상세. 실패 시 null → 기존처럼 클라이언트에서 조회 */
@@ -134,7 +136,12 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
   if (loading) return <Loading />
   if (error)
     return (
-      <div className="flex min-h-screen flex-col bg-card">
+      <div
+        className={cn(
+          'flex min-h-screen flex-col bg-card',
+          DESKTOP_PAGE_COLUMN,
+        )}
+      >
         <Header
           title="밸런스 게임"
           showBackButton
@@ -156,7 +163,9 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
   const isOwnVote = !!profile && profile.nickname === data.creatorNickname
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       <Header
         title="밸런스 게임"
         showBackButton

@@ -12,6 +12,8 @@ import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { fetchMypageDataThunk } from '@/store/thunks/memberThunks'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { getTimeAgo } from '@/utils/getTimeAgo'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const CommentPage = () => {
   const router = useRouter()
@@ -51,7 +53,12 @@ const CommentPage = () => {
     setSelected((prev) => (on ? [...prev, id] : prev.filter((v) => v !== id)))
 
   return (
-    <div className="flex min-h-screen flex-col bg-card pb-24">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col bg-card pb-24',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
       <Header
         title="내가 작성한 댓글"
         showBackButton
