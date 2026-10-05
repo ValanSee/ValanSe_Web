@@ -45,7 +45,7 @@ export default function KakaoRedirect() {
             await new Promise((resolve) => setTimeout(resolve, remainingTime))
 
             if (profile) {
-              router.replace(redirectAfterLogin ?? '/main')
+              router.replace(redirectAfterLogin ?? '/')
             } else if (profile === null) {
               if (redirectAfterLogin) {
                 rememberPostAuthRedirect(redirectAfterLogin)
