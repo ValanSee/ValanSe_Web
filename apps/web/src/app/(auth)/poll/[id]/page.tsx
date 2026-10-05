@@ -1,225 +1,128 @@
-'use client'
-import { Suspense, useCallback, useEffect, useState } from 'react'
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation'
-import { authApi } from '@/api/instance/authApi'
-import PollCard from '@/components/pages/poll/pollCard'
-import PreviewCommentCard from '@/components/pages/poll/Comment/previewCommentCard'
-import CommentDetail from '@/components/pages/poll/Comment/commentDetail'
-import CommentInput from '@/components/pages/poll/Comment/commentInput'
-import {
-  fetchBestComment,
-  fetchComments,
-  BestComment,
-  Comment,
-} from '@/api/comment/commentApi'
-import VoteChart from '@/components/pages/poll/statistics/statisics'
-import Header from '@/components/_shared/header'
-import Loading from '@/components/_shared/loading'
-import MoreMenu from '@/components/_shared/moreMenu'
-import { useAppSelector } from '@/hooks/utils/useAppSelector'
-import { useReportAction } from '@/hooks/utils/useReportAction'
-import { buildCurrentReturnPath } from '@/utils/authRedirect'
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import PollDetailPage from '@/components/pages/poll/pollDetailPage'
+import { fetchPollDetailForServer } from '@/api/pages/poll/pollDetailServer'
+import { getCategoryMeta } from '@/constants/category'
+import { BASE_OPEN_GRAPH, SITE_NAME, SITE_URL } from '@/constants/seo'
+import { JsonLd } from '@/components/_shared/jsonLd'
+import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
 
-interface PollOption {
-  optionId: number
-  content: string
-  imageUrl: string | null
-  voteCount: number
-  label: string
+type Props = {
+  params: Promise<{ id: string }>
 }
 
-interface PollDetail {
-  voteId: number
-  title: string
-  content: string | null
-  category: string
-  creatorNickname: string
-  creatorTitle: string | null
-  createdAt: string
-  totalVoteCount: number
-  options: PollOption[]
-  hasVoted: boolean
-  votedOptionLabel: string | null
+const DESCRIPTION_MAX = 150
+
+function truncate(text: string, max: number) {
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
 
-export default function PollDetailPage() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <PollDetailContent />
-    </Suspense>
-  )
-}
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  const path = `/poll/${id}`
+  const result = await fetchPollDetailForServer(id)
 
-function PollDetailContent() {
-  const { id } = useParams<{ id: string }>()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const postLoginReturnPath = buildCurrentReturnPath(pathname, searchParams)
-  const [data, setData] = useState<PollDetail | null>(null)
-  const [bestComment, setBestComment] = useState<BestComment | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [showStats, setShowStats] = useState(false)
-  const router = useRouter()
-
-  // 본인 게시글 여부 파악을 위한 profile 조회
-  const profile = useAppSelector((state) => state.member.profile)
-
-  const { openReport, reportUi } = useReportAction({
-    returnPath: postLoginReturnPath,
-  })
-
-  // URL 파라미터에서 출처 확인
-  const source = searchParams.get('source')
-
-  useEffect(() => {
-    if (!id) return
-
-    const fetchAll = async () => {
-      try {
-        setLoading(true)
-
-        const [detailRes, best, allComments] = await Promise.all([
-          authApi.get<PollDetail>(`/votes/${id}`),
-          fetchBestComment(id),
-          fetchComments(id),
-        ])
-
-        setData(detailRes.data)
-        setBestComment(best)
-        setComments(allComments.comments)
-      } catch {
-        setError('투표 정보를 불러오지 못했습니다.')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchAll()
-  }, [id])
-
-  const refetchComments = useCallback(async () => {
-    if (!id) return
-    try {
-      const r = await fetchComments(id)
-      setComments(r.comments)
-    } catch (e) {
-      console.error('댓글 새로고침 실패:', e)
-    }
-  }, [id])
-
-  const handleBackClick = () => {
-    if (source === 'create') {
-      router.push('/main')
-    } else {
-      router.back()
+  if (result.status !== 'ok') {
+    return {
+      alternates: { canonical: path },
+      openGraph: { ...BASE_OPEN_GRAPH, url: path },
     }
   }
 
-  if (loading) return <Loading />
-  if (error)
-    return (
-      <div className="flex min-h-screen flex-col bg-card">
-        <Header
-          title="밸런스 게임"
-          showBackButton
-          bgGray={true}
-          onBackClick={handleBackClick}
-        />
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-4 text-center">
-          <p className="typo-heading-04 text-destructive">⚠️</p>
-          <p className="typo-title-02 text-brand-gray-200">{error}</p>
-          <p className="typo-body-c-01 text-brand-gray-100">
-            다시 시도해주세요
-          </p>
-        </div>
-      </div>
-    )
-  if (!data) return null
+  const { title, content, category, options } = result.data
+  const versus = options.map((o) => o.content).join(' vs ')
+  const categoryLabel = getCategoryMeta(category)?.label
+  const description = truncate(
+    [
+      content?.trim(),
+      versus,
+      '둘 중 하나를 골라 투표하고 결과를 확인해 보세요.',
+    ]
+      .filter(Boolean)
+      .join(' · '),
+    DESCRIPTION_MAX,
+  )
+  const pageTitle = categoryLabel
+    ? `${title} - ${categoryLabel} 밸런스게임`
+    : `${title} - 밸런스게임`
 
-  // 본인 게시글은 서버에서 신고를 거부하므로 메뉴에서도 제외
-  const isOwnVote = !!profile && profile.nickname === data.creatorNickname
+  return {
+    title: pageTitle,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      ...BASE_OPEN_GRAPH,
+      type: 'article',
+      url: path,
+      title: pageTitle,
+      description,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: pageTitle,
+      description,
+      images: ['/og-image.png'],
+    },
+  }
+}
+
+// createdAt 은 시간대 없이 내려오므로 날짜만 사용
+const toDate = (createdAt: string) => createdAt.slice(0, 10)
+
+function buildJsonLd(poll: PollDetail) {
+  const url = `${SITE_URL}/poll/${poll.voteId}`
+  const category = getCategoryMeta(poll.category)
+  const versus = poll.options.map((o) => o.content).join(' vs ')
+
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'DiscussionForumPosting',
+      '@id': url,
+      url,
+      mainEntityOfPage: url,
+      headline: poll.title,
+      text: [poll.content?.trim(), versus].filter(Boolean).join('\n'),
+      datePublished: toDate(poll.createdAt),
+      author: { '@type': 'Person', name: poll.creatorNickname },
+      ...(category && { articleSection: category.label }),
+      inLanguage: 'ko-KR',
+      isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: SITE_NAME, item: SITE_URL },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: category ? `${category.label} 밸런스게임` : '밸런스게임',
+          item: category
+            ? `${SITE_URL}/balanse?category=${category.param}`
+            : `${SITE_URL}/balanse`,
+        },
+        { '@type': 'ListItem', position: 3, name: poll.title, item: url },
+      ],
+    },
+  ]
+}
+
+export default async function Page({ params }: Props) {
+  const { id } = await params
+  const result = await fetchPollDetailForServer(id)
+
+  if (result.status === 'not-found') notFound()
+
+  // API 오류·타임아웃이면 null 로 넘겨 기존처럼 클라이언트에서 다시 조회
+  if (result.status !== 'ok') return <PollDetailPage initialData={null} />
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
-      <Header
-        title="밸런스 게임"
-        showBackButton
-        onBackClick={handleBackClick}
-        trailing={
-          isOwnVote ? undefined : (
-            <MoreMenu
-              label="게시글 메뉴"
-              items={[
-                {
-                  label: '신고',
-                  icon: 'tabler:flag',
-                  onSelect: () => openReport('VOTE', data.voteId),
-                },
-              ]}
-            />
-          )
-        }
-      />
-      <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
-        {data && (
-          <PollCard
-            voteId={data.voteId}
-            createdBy={data.creatorNickname}
-            creatorTitle={data.creatorTitle}
-            title={data.title}
-            content={data.content}
-            options={data.options.map((opt) => ({
-              optionId: opt.optionId,
-              content: opt.content,
-              imageUrl: opt.imageUrl,
-              vote_count: opt.voteCount,
-            }))}
-            totalParticipants={data.totalVoteCount}
-            hasVoted={data.hasVoted}
-            votedOptionLabel={data.votedOptionLabel ?? undefined}
-            postLoginReturnPath={postLoginReturnPath}
-          />
-        )}
-        {data && data.hasVoted && (
-          <VoteChart
-            voteId={data.voteId}
-            showStats={showStats}
-            setShowStatsAction={setShowStats}
-          />
-        )}
-        {bestComment && bestComment.totalCommentCount > 0 && (
-          <PreviewCommentCard
-            content={bestComment.content}
-            commentsNumber={bestComment.totalCommentCount}
-          />
-        )}
-        <CommentDetail
-          comments={comments}
-          voteId={data.voteId}
-          profile={profile}
-          postLoginReturnPath={postLoginReturnPath}
-        />
-      </div>
-      <div
-        className="fixed inset-x-0 bottom-0 z-30 bg-card"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      >
-        <div className="mx-auto max-w-xl">
-          <CommentInput
-            voteId={data.voteId}
-            onCommentCreated={refetchComments}
-            postLoginReturnPath={postLoginReturnPath}
-          />
-        </div>
-      </div>
-      {reportUi}
-    </div>
+    <>
+      {buildJsonLd(result.data).map((data) => (
+        <JsonLd key={String(data['@type'])} data={data} />
+      ))}
+      <PollDetailPage initialData={result.data} />
+    </>
   )
 }

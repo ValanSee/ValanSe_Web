@@ -5,6 +5,7 @@ import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
 import { NativeBackHandler } from '@/components/_shared/nativeBackHandler'
 import { PageViewTracker } from '@/components/_shared/pageViewTracker'
+import { JsonLd } from '@/components/_shared/jsonLd'
 import {
   BASE_OPEN_GRAPH,
   DEFAULT_DESCRIPTION,
@@ -40,6 +41,18 @@ const pretendard = localFont({
   display: 'swap',
   preload: true,
 })
+
+// 토큰은 localStorage 에만 있어 서버가 로그인 여부를 모름 → 첫 페인트 전에 html 에 표시 (투표 상세 스켈레톤용)
+const HAS_TOKEN_SCRIPT = `try{if(localStorage.getItem('access_token'))document.documentElement.setAttribute('data-has-token','')}catch(e){}`
+
+// 검색 결과 사이트 이름 표시용 (https://developers.google.com/search/docs/appearance/site-names)
+const WEBSITE_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  alternateName: '발란스',
+  url: `${SITE_URL}/`,
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -119,7 +132,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html
+      lang="ko"
+      className={pretendard.variable}
+      // 아래 인라인 스크립트가 hydration 전에 data-has-token 을 붙임
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: HAS_TOKEN_SCRIPT }} />
+        <JsonLd data={WEBSITE_JSON_LD} />
+      </head>
       <body
         className="bg-background font-pretendard"
         suppressHydrationWarning={true}
