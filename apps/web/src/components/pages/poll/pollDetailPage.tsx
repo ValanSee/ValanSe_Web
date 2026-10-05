@@ -24,6 +24,7 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
+import Link from 'next/link'
 import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import MoreMenu from '@/components/_shared/moreMenu'
@@ -33,22 +34,30 @@ import { buildCurrentReturnPath } from '@/utils/authRedirect'
 import { getAccessToken } from '@/utils/tokenUtils'
 import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
 import { cn } from '@/lib/utils'
-import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
+import { DESKTOP_PAGE_COLUMN, DESKTOP_PAGE_WIDE } from '@/constants/layout'
+import { getCategoryMeta } from '@/constants/category'
+import type { Vote } from '@/types/balanse/vote'
+import PollSidebar from './pollSidebar'
 
 interface PollDetailPageProps {
   /** 서버에서 비로그인으로 조회한 상세. 실패 시 null → 기존처럼 클라이언트에서 조회 */
   initialData: PollDetail | null
+  /** PC 사이드바용 목록 (서버 조회). 없으면 사이드바 미노출 */
+  sidebar?: { related: Vote[]; latest: Vote[] } | null
 }
 
-export default function PollDetailPage({ initialData }: PollDetailPageProps) {
+export default function PollDetailPage({
+  initialData,
+  sidebar,
+}: PollDetailPageProps) {
   return (
     <Suspense fallback={<Loading />}>
-      <PollDetailContent initialData={initialData} />
+      <PollDetailContent initialData={initialData} sidebar={sidebar} />
     </Suspense>
   )
 }
 
-function PollDetailContent({ initialData }: PollDetailPageProps) {
+function PollDetailContent({ initialData, sidebar }: PollDetailPageProps) {
   const { id } = useParams<{ id: string }>()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -161,89 +170,138 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
 
   // 본인 게시글은 서버에서 신고를 거부하므로 메뉴에서도 제외
   const isOwnVote = !!profile && profile.nickname === data.creatorNickname
+  const categoryMeta = getCategoryMeta(data.category)
+  const moreMenu = isOwnVote ? undefined : (
+    <MoreMenu
+      label="게시글 메뉴"
+      items={[
+        {
+          label: '신고',
+          icon: 'tabler:flag',
+          onSelect: () => openReport('VOTE', data.voteId),
+        },
+      ]}
+    />
+  )
 
   return (
     <div
-      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_WIDE)}
     >
       <Header
+        className="lg:hidden"
         title="밸런스 게임"
         showBackButton
         onBackClick={handleBackClick}
-        trailing={
-          isOwnVote ? undefined : (
-            <MoreMenu
-              label="게시글 메뉴"
-              items={[
-                {
-                  label: '신고',
-                  icon: 'tabler:flag',
-                  onSelect: () => openReport('VOTE', data.voteId),
-                },
-              ]}
-            />
-          )
-        }
+        trailing={moreMenu}
       />
-      <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)]">
-        {data && (
-          <PollCard
-            // 재조회 후 hasVoted·득표 수로 내부 state 를 다시 초기화
-            key={synced ? 'synced' : 'ssr'}
-            ready={synced}
-            pendingVoteReady={detailSynced}
-            // 투표 후 결과 차트(VoteChart) 노출을 위해 부모 데이터도 갱신
-            onVoteChange={(voted) =>
-              setData((prev) => (prev ? { ...prev, hasVoted: voted } : prev))
-            }
-            voteId={data.voteId}
-            createdBy={data.creatorNickname}
-            creatorTitle={data.creatorTitle}
-            title={data.title}
-            content={data.content}
-            options={data.options.map((opt) => ({
-              optionId: opt.optionId,
-              content: opt.content,
-              imageUrl: opt.imageUrl,
-              vote_count: opt.voteCount,
-            }))}
-            totalParticipants={data.totalVoteCount}
-            hasVoted={data.hasVoted}
-            votedOptionLabel={data.votedOptionLabel ?? undefined}
-            postLoginReturnPath={postLoginReturnPath}
-          />
-        )}
-        {data && data.hasVoted && (
-          <VoteChart
-            voteId={data.voteId}
-            showStats={showStats}
-            setShowStatsAction={setShowStats}
-          />
-        )}
-        {bestComment && bestComment.totalCommentCount > 0 && (
-          <PreviewCommentCard
-            content={bestComment.content}
-            commentsNumber={bestComment.totalCommentCount}
-          />
-        )}
-        <CommentDetail
-          comments={comments}
-          voteId={data.voteId}
-          profile={profile}
-          postLoginReturnPath={postLoginReturnPath}
-        />
+      {/* PC: 뒤로가기 대신 브레드크럼 (JSON-LD BreadcrumbList 와 같은 경로) */}
+      <div className="mb-ds-4 hidden items-center justify-between lg:flex">
+        <nav
+          aria-label="현재 위치"
+          className="typo-label-02 text-brand-gray-100"
+        >
+          <ol className="flex items-center gap-ds-2">
+            <li>
+              <Link href="/" className="hover:text-primary">
+                홈
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li>
+              <Link
+                href={
+                  categoryMeta
+                    ? `/balanse?category=${categoryMeta.param}`
+                    : '/balanse'
+                }
+                className="hover:text-primary"
+              >
+                {categoryMeta
+                  ? `${categoryMeta.label} 밸런스게임`
+                  : '밸런스게임'}
+              </Link>
+            </li>
+          </ol>
+        </nav>
+        {moreMenu}
       </div>
-      <div
-        className="fixed inset-x-0 bottom-0 z-30 bg-card"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      >
-        <div className="mx-auto max-w-xl">
-          <CommentInput
-            voteId={data.voteId}
-            onCommentCreated={refetchComments}
-            postLoginReturnPath={postLoginReturnPath}
-          />
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-ds-8">
+        <div className="flex min-w-0 flex-col lg:gap-ds-4">
+          <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)] lg:max-w-none lg:p-0">
+            {data && (
+              <PollCard
+                // 재조회 후 hasVoted·득표 수로 내부 state 를 다시 초기화
+                key={synced ? 'synced' : 'ssr'}
+                ready={synced}
+                pendingVoteReady={detailSynced}
+                // 투표 후 결과 차트(VoteChart) 노출을 위해 부모 데이터도 갱신
+                onVoteChange={(voted) =>
+                  setData((prev) =>
+                    prev ? { ...prev, hasVoted: voted } : prev,
+                  )
+                }
+                voteId={data.voteId}
+                createdBy={data.creatorNickname}
+                creatorTitle={data.creatorTitle}
+                title={data.title}
+                content={data.content}
+                options={data.options.map((opt) => ({
+                  optionId: opt.optionId,
+                  content: opt.content,
+                  imageUrl: opt.imageUrl,
+                  vote_count: opt.voteCount,
+                }))}
+                totalParticipants={data.totalVoteCount}
+                hasVoted={data.hasVoted}
+                votedOptionLabel={data.votedOptionLabel ?? undefined}
+                postLoginReturnPath={postLoginReturnPath}
+              />
+            )}
+            {data && data.hasVoted && (
+              <VoteChart
+                voteId={data.voteId}
+                showStats={showStats}
+                setShowStatsAction={setShowStats}
+              />
+            )}
+            {bestComment && bestComment.totalCommentCount > 0 && (
+              <PreviewCommentCard
+                content={bestComment.content}
+                commentsNumber={bestComment.totalCommentCount}
+              />
+            )}
+            <CommentDetail
+              comments={comments}
+              voteId={data.voteId}
+              profile={profile}
+              postLoginReturnPath={postLoginReturnPath}
+            />
+          </div>
+          {/* 모바일: 하단 고정 입력창 · PC: 댓글 아래 카드 */}
+          <div
+            className="fixed inset-x-0 bottom-0 z-30 bg-card lg:static lg:z-auto lg:overflow-hidden lg:rounded-2xl lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+          >
+            <div className="mx-auto max-w-xl lg:max-w-none">
+              <CommentInput
+                voteId={data.voteId}
+                onCommentCreated={refetchComments}
+                postLoginReturnPath={postLoginReturnPath}
+              />
+            </div>
+          </div>
         </div>
+        {sidebar && (
+          <div className="lg:sticky lg:top-24">
+            <PollSidebar
+              currentVoteId={data.voteId}
+              category={data.category}
+              related={sidebar.related}
+              latest={sidebar.latest}
+            />
+          </div>
+        )}
       </div>
       {reportUi}
     </div>
