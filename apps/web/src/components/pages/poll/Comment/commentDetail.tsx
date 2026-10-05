@@ -212,9 +212,8 @@ const CommentDetail = ({
           const commentReplies = replies[comment.commentId] || []
           const isRepliesLoading = repliesLoading[comment.commentId] || false
           const isOwn = !!profile && comment.nickname === profile.nickname
-          const canDelete = profile?.role === 'ADMIN' || isOwn
           const menuItems: MoreMenuItem[] = [
-            ...(canDelete
+            ...(isOwn
               ? [
                   {
                     label: '삭제',

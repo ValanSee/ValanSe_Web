@@ -18,12 +18,9 @@ import {
   Comment,
 } from '@/api/comment/commentApi'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
-import { deleteVote } from '@/api/votes'
 import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import MoreMenu from '@/components/_shared/moreMenu'
-import AdminFloatingButton from '@/components/pages/poll/_admin/AdminFloatingButton'
-import DeleteConfirmModal from '@/components/ui/modal/deleteConfirmModal'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useReportAction } from '@/hooks/utils/useReportAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
@@ -70,9 +67,8 @@ function PollDetailContent() {
   const [error, setError] = useState<string | null>(null)
   const [showStats, setShowStats] = useState(false)
   const router = useRouter()
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
-  // 관리자 여부 파악을 위한 profile 조회
+  // 본인 게시글 여부 파악을 위한 profile 조회
   const profile = useAppSelector((state) => state.member.profile)
 
   const { openReport, reportUi } = useReportAction({
@@ -147,21 +143,8 @@ function PollDetailContent() {
     )
   if (!data) return null
 
-  // 비로그인 시 profile 이 없음 — 관리자 UI만 숨기고 나머지는 그대로 렌더
-  const isAdmin = profile?.role === 'ADMIN'
   // 본인 게시글은 서버에서 신고를 거부하므로 메뉴에서도 제외
   const isOwnVote = !!profile && profile.nickname === data.creatorNickname
-
-  const handleDelete = async () => {
-    try {
-      await deleteVote(data.voteId)
-      setDeleteModalOpen(false)
-      router.push('/balanse')
-    } catch (error) {
-      console.error('게시글 삭제 실패:', error)
-      alert('게시글 삭제에 실패했습니다.')
-    }
-  }
 
   return (
     <div className="flex min-h-screen flex-col bg-card">
@@ -236,14 +219,6 @@ function PollDetailContent() {
           />
         </div>
       </div>
-      {isAdmin && (
-        <AdminFloatingButton onDelete={() => setDeleteModalOpen(true)} />
-      )}
-      <DeleteConfirmModal
-        open={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleDelete}
-      />
       {reportUi}
     </div>
   )
