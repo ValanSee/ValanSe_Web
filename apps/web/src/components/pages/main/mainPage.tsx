@@ -20,9 +20,17 @@ import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import HomeVoteCard from './homeVoteCard'
 import { CATEGORIES } from '@/constants/category'
 
-const MainPage = () => {
-  const [featured, setFeatured] = useState<TrendingVoteItem | null>(null)
-  const [latest, setLatest] = useState<Vote[]>([])
+interface MainPageProps {
+  /** 서버 조회 결과. undefined 면 서버 조회 실패 → 클라이언트에서 조회 */
+  initialFeatured?: TrendingVoteItem | null
+  initialLatest?: Vote[]
+}
+
+const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
+  const [featured, setFeatured] = useState<TrendingVoteItem | null>(
+    initialFeatured ?? null,
+  )
+  const [latest, setLatest] = useState<Vote[]>(initialLatest ?? [])
   const { isReported } = useReportedContent()
 
   // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
@@ -31,13 +39,17 @@ const MainPage = () => {
   const visibleLatest = latest.filter((v) => !isReported('VOTE', v.id))
 
   useEffect(() => {
-    fetchTrendingVotes(7)
-      .then((res) => setFeatured(res?.votes[0] ?? null))
-      .catch(() => {})
-    fetchVotes({ category: 'ALL', sort: 'latest', size: 3 })
-      .then((data) => setLatest(data.votes))
-      .catch(() => {})
-  }, [])
+    if (initialFeatured === undefined) {
+      fetchTrendingVotes(7)
+        .then((res) => setFeatured(res?.votes[0] ?? null))
+        .catch(() => {})
+    }
+    if (initialLatest === undefined) {
+      fetchVotes({ category: 'ALL', sort: 'latest', size: 3 })
+        .then((data) => setLatest(data.votes))
+        .catch(() => {})
+    }
+  }, [initialFeatured, initialLatest])
 
   return (
     <div className="flex min-h-screen flex-col bg-card pb-24">

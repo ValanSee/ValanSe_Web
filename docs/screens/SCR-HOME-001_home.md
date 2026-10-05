@@ -9,6 +9,7 @@
 | 경로 | `/main` |
 | 인증 필요 | ✓ |
 | 작성일 | 2026-05-15 |
+| 최종 수정일 | 2026-10-05 |
 | 관련 디자인 | (Figma 링크) |
 
 ## 🎯 화면 목적
@@ -19,6 +20,13 @@
 
 - 앱 최초 실행 시 (로그인 → 홈)
 - 하단 네비게이션 바의 "홈" 탭 클릭
+
+## 🖥️ 렌더링 (SEO)
+
+- "뜨고 있는 밸런스"(`GET /votes/trending?days=7` 1위)와 "올라오고 있는 밸런스"(`GET /votes` 최신 3개)를 서버에서 비로그인으로 조회해 SSR → HTML 에 `/poll/{id}` 링크 포함
+- `(auth)` 레이아웃의 AuthGuard 가 `useSearchParams` 를 써서 정적 생성 시 전체가 CSR 로 빠지므로 `dynamic = 'force-dynamic'` (API 응답은 60초 캐시)
+- 섹션별로 서버 조회 실패 시 해당 섹션만 클라이언트에서 다시 조회
+- canonical `/main`, sitemap 에 `/main` 포함
 
 ## 📐 레이아웃 구성
 
@@ -116,7 +124,8 @@
 
 | Method | Endpoint | 용도 |
 |---|---|---|
-| GET | `/votes/best` | 오늘의 핫이슈 조회 |
+| GET | `/votes/trending?days=7` | 뜨고 있는 밸런스 (1위 노출, 서버 SSR) |
+| GET | `/votes?category=ALL&sort=latest&size=3` | 올라오고 있는 밸런스 (서버 SSR) |
 
 ## 🎨 디자인 토큰 참조 (예시)
 
