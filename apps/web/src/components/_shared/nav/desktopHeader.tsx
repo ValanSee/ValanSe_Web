@@ -81,7 +81,10 @@ export default function DesktopHeader() {
             <Link
               href="/my"
               aria-current={isNavActive(pathname, '/my') ? 'page' : undefined}
-              className={buttonVariants({ size: 'm', variant: 'ghost' })}
+              className={cn(
+                buttonVariants({ size: 'm', variant: 'ghost' }),
+                isNavActive(pathname, '/my') && 'border-primary text-primary',
+              )}
             >
               마이
             </Link>
