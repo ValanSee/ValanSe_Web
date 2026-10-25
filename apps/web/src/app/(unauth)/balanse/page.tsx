@@ -6,11 +6,13 @@ import BalansePage, {
 import { getCategoryMeta } from '@/constants/category'
 import { getCategoryIntro } from '@/constants/categoryIntro'
 import { fetchVotesForServer } from '@/api/pages/valanse/listServer'
+import { balanseListKey, parseBalanseCursor } from '@/utils/balanseList'
 
 type Props = {
   searchParams: Promise<{
     category?: string | string[]
     sort?: string | string[]
+    cursor?: string | string[]
   }>
 }
 
@@ -20,7 +22,7 @@ const SSR_PAGE_SIZE = 10
 export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {
-  const { category } = await searchParams
+  const { category, cursor } = await searchParams
   const meta = typeof category === 'string' ? getCategoryMeta(category) : null
 
   // 카테고리별 목록은 sitemap 에 별도 URL 로 올라가므로 canonical 도 카테고리 단위로 분리
@@ -28,6 +30,16 @@ export async function generateMetadata({
   const title = meta ? `${meta.label} 밸런스게임 모음` : '밸런스게임 모음'
   // 화면 상단 소개 문구와 같은 문장
   const description = getCategoryIntro(meta?.param ?? 'ALL')
+
+  // 다음 페이지(?cursor=)는 크롤러가 상세 링크를 따라가기 위한 경로일 뿐이라 색인하지 않음
+  // 커서는 새 글이 올라올 때마다 바뀌는 불안정한 주소이므로 링크만 따라가게 한다
+  if (parseBalanseCursor(cursor)) {
+    return {
+      title,
+      description,
+      robots: { index: false, follow: true },
+    }
+  }
 
   return {
     title,
@@ -38,11 +50,16 @@ export async function generateMetadata({
 }
 
 async function Balanse({ searchParams }: Props) {
-  const { category: rawCategory, sort: rawSort } = await searchParams
+  const {
+    category: rawCategory,
+    sort: rawSort,
+    cursor: rawCursor,
+  } = await searchParams
   // 클라이언트(balansePage)와 같은 규칙으로 키를 만들어야 초기 데이터를 재사용함
   const category =
     typeof rawCategory === 'string' && rawCategory ? rawCategory : 'ALL'
   const sort = typeof rawSort === 'string' && rawSort ? rawSort : 'latest'
+  const cursor = parseBalanseCursor(rawCursor)
 
   const isKnown =
     (category === 'ALL' || !!getCategoryMeta(category)) &&
@@ -54,8 +71,10 @@ async function Balanse({ searchParams }: Props) {
       category,
       sort: sort as 'latest' | 'popular',
       size: SSR_PAGE_SIZE,
+      cursor,
     })
-    if (data) initialData = { key: `${category}|${sort}`, ...data }
+    if (data)
+      initialData = { key: balanseListKey(category, sort, cursor), ...data }
   }
 
   return <BalansePage initialData={initialData} />

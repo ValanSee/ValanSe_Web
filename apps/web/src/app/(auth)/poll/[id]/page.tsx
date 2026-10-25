@@ -91,6 +91,12 @@ function buildJsonLd(poll: PollDetail) {
       datePublished: toDate(poll.createdAt),
       author: { '@type': 'Person', name: poll.creatorNickname },
       ...(category && { articleSection: category.label }),
+      // 참여(투표) 수. 검색엔진이 토론 활성도 판단에 쓰는 지표
+      interactionStatistic: {
+        '@type': 'InteractionCounter',
+        interactionType: 'https://schema.org/VoteAction',
+        userInteractionCount: poll.totalVoteCount,
+      },
       inLanguage: 'ko-KR',
       isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL },
     },

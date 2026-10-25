@@ -15,6 +15,11 @@ import HotTrendingBar from './hotTrendingBar'
 import { CATEGORIES, getCategoryMeta } from '@/constants/category'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_WIDE } from '@/constants/layout'
+import {
+  balanseListHref,
+  balanseListKey,
+  parseBalanseCursor,
+} from '@/utils/balanseList'
 
 const TABS = [
   { label: '전체', value: 'ALL' as const },
@@ -26,7 +31,7 @@ const SORTS = [
   { label: '인기순', value: 'popular' as const },
 ]
 
-/** 서버에서 비로그인으로 조회한 첫 페이지. key 는 `${category}|${sort}` */
+/** 서버에서 비로그인으로 조회한 첫 페이지. key 는 balanseListKey(category, sort, cursor) */
 export type BalanseInitialData = VoteListResponse & { key: string }
 
 interface BalancePageProps {
@@ -50,6 +55,9 @@ function BalancePageContent({ initialData }: BalancePageProps) {
 
   const category = searchParams.get('category') || 'ALL'
   const sort = (searchParams.get('sort') as 'latest' | 'popular') || 'latest'
+  // 크롤러용 다음 페이지(?cursor=)로 들어온 경우 그 지점부터 목록을 이어 보여준다
+  const cursor = parseBalanseCursor(searchParams.get('cursor'))
+  const listKey = balanseListKey(category, sort, cursor)
 
   const { isReported } = useReportedContent()
   // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
@@ -105,7 +113,7 @@ function BalancePageContent({ initialData }: BalancePageProps) {
 
   useEffect(() => {
     // 카테고리·정렬 변경 시 서버 컴포넌트가 새 첫 페이지를 내려주므로 일치하면 재조회 생략
-    if (initialData?.key === `${category}|${sort}`) {
+    if (initialData?.key === listKey) {
       setVotes(initialData.votes)
       setHasNextPage(initialData.has_next_page)
       setNextCursor(initialData.next_cursor)
@@ -117,7 +125,7 @@ function BalancePageContent({ initialData }: BalancePageProps) {
       try {
         setLoading(true)
         setError(null)
-        const data = await fetchVotes({ category, sort, size: 5 })
+        const data = await fetchVotes({ category, sort, cursor, size: 5 })
         setVotes(data.votes)
         setHasNextPage(data.has_next_page)
         setNextCursor(data.next_cursor)
@@ -128,7 +136,7 @@ function BalancePageContent({ initialData }: BalancePageProps) {
       }
     }
     load()
-  }, [category, sort, initialData])
+  }, [category, sort, cursor, listKey, initialData])
 
   return (
     <div
@@ -188,6 +196,15 @@ function BalancePageContent({ initialData }: BalancePageProps) {
             <HotTrendingBar />
           </div>
 
+          {cursor && (
+            <Link
+              href={balanseListHref({ category, sort })}
+              className="typo-label-02 flex items-center gap-1 px-4 pt-4 text-brand-gray-200 lg:px-0 lg:pt-0"
+            >
+              ← 처음부터 보기
+            </Link>
+          )}
+
           <div className="flex flex-col gap-3 px-4 pt-4 lg:grid lg:grid-cols-2 lg:gap-ds-4 lg:px-0 lg:pt-0">
             {error && (
               <p className="typo-body-b-01 py-8 text-center text-destructive lg:col-span-2">
@@ -210,10 +227,25 @@ function BalancePageContent({ initialData }: BalancePageProps) {
             ))}
             {hasNextPage && (
               <div ref={loadingRef} className="py-4 text-center lg:col-span-2">
-                {isLoadingMore && (
+                {isLoadingMore ? (
                   <p className="typo-body-c-02 text-brand-gray-100">
                     불러오는 중…
                   </p>
+                ) : (
+                  // 무한 스크롤을 못 하는 크롤러가 다음 목록(상세 링크)으로 이어가도록 실제 링크로 둔다
+                  nextCursor && (
+                    <Link
+                      href={balanseListHref({
+                        category,
+                        sort,
+                        cursor: nextCursor,
+                      })}
+                      rel="next"
+                      className="typo-body-c-02 text-brand-gray-100 underline-offset-2 hover:underline"
+                    >
+                      다음 밸런스게임 보기
+                    </Link>
+                  )
                 )}
               </div>
             )}

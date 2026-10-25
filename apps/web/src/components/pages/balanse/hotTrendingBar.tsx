@@ -44,7 +44,11 @@ export default function HotTrendingBar() {
         aria-expanded={open}
         className="flex w-full items-center gap-2 py-3 text-left"
       >
-        <Chip size="s" status="primary" className="shrink-0 bg-brand-violet-200">
+        <Chip
+          size="s"
+          status="primary"
+          className="shrink-0 bg-brand-violet-200"
+        >
           HOT
         </Chip>
         <span className="typo-title-04 min-w-0 flex-1 truncate text-foreground">
