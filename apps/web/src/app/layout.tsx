@@ -52,7 +52,7 @@ const WEBSITE_JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: SITE_NAME,
-  alternateName: '발란스',
+  alternateName: '밸런스',
   url: `${SITE_URL}/`,
 }
 
