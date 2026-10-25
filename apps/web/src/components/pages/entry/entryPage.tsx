@@ -6,21 +6,22 @@ import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import Header from '@/components/_shared/header'
 import KakaoLoginButton from './_components/kakaoLoginButton'
-import { cn } from '@/lib/utils'
-import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 function EntryPage() {
   const router = useRouter()
 
   return (
-    <div
-      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
-    >
+    // PC: 회색 배경 가운데 로그인 카드
+    <div className="flex min-h-screen flex-col bg-card lg:min-h-0 lg:flex-1 lg:items-center lg:justify-center lg:bg-transparent lg:py-ds-10">
       {/* 로그인 필요 기능에서 진입 시 막다른 길이 되지 않도록 뒤로가기 제공.
           보호 페이지(/my 등)로 back 하면 가드가 다시 entry 로 보내 루프가 나므로
-          공개 홈으로 확실히 탈출시킨다. */}
-      <Header showBackButton onBackClick={() => router.replace('/')} />
-      <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center">
+          공개 홈으로 확실히 탈출시킨다. PC 에선 GNB 로 이동할 수 있어 숨김 */}
+      <Header
+        className="lg:hidden"
+        showBackButton
+        onBackClick={() => router.replace('/')}
+      />
+      <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center lg:w-[420px] lg:flex-none lg:justify-center lg:gap-ds-10 lg:rounded-2xl lg:bg-card lg:p-ds-10 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
         {/* 로고 & 슬로건 */}
         <div className="flex flex-1 flex-col items-center justify-center gap-6">
           <Image

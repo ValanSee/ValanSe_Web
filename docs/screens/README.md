@@ -41,7 +41,7 @@
 
 - **상단 GNB** (`components/_shared/nav/desktopHeader.tsx`): 로고(→ `/`) · 홈 · 밸런스 메뉴, 우측 `밸런스 만들기`(→ `/create`) 와 `로그인`(→ `/entry?redirect=현재경로`) 또는 `마이`(→ `/my`). 로그인 버튼은 토큰 확인 후 표시하며 `/entry` · `/oauth` · `/onboarding` 에서는 숨김
 - **하단 네비게이션 바**: 숨김 (GNB 가 대체)
-- **본문**: 가운데 정렬 768px 컬럼 (`DESKTOP_PAGE_COLUMN`, 회색 배경 위 흰 컬럼)
+- **본문**: 기본은 가운데 정렬 768px 컬럼 (`DESKTOP_PAGE_COLUMN`, 회색 배경 위 흰 컬럼). 홈·밸런스·투표 상세는 1200px 전용 레이아웃 (`DESKTOP_PAGE_WIDE`, 각 SCR 문서의 "PC 레이아웃" 참조)
 - **푸터** (`components/_shared/desktopFooter.tsx`): 홈 · 밸런스게임 모음 · 인기 · 만들기, 카테고리별 `/balanse?category=*`, 개인정보 처리방침 링크 (내부 링크용)
 - **바텀시트**(신고 · MBTI 선택): 화면 가운데 모달로 표시
 

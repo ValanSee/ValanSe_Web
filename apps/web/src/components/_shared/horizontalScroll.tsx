@@ -5,6 +5,8 @@ interface Props {
   className?: string
   /** 우측 페이드 shadow 표시 여부 (기본 true) */
   shadow?: boolean
+  /** 페이드 shadow 에 추가할 클래스 (예: PC 그리드에선 lg:hidden) */
+  shadowClassName?: string
 }
 
 /**
@@ -15,6 +17,7 @@ export default function HorizontalScroll({
   children,
   className,
   shadow = true,
+  shadowClassName,
 }: Props) {
   return (
     // min-w-0: flex 부모(flex-col 등) 안에서 min-width:auto로 인해 컨테이너가
@@ -26,11 +29,17 @@ export default function HorizontalScroll({
       {shadow && (
         <>
           <div
-            className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-card to-transparent"
+            className={cn(
+              'pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-card to-transparent',
+              shadowClassName,
+            )}
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-card to-transparent"
+            className={cn(
+              'pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-card to-transparent',
+              shadowClassName,
+            )}
             aria-hidden
           />
         </>

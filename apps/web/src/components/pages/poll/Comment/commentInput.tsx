@@ -55,8 +55,8 @@ export default function CommentInput({
   }
 
   return (
-    <div className="border-t border-brand-gray-75 bg-card px-4 py-3">
-      <div className="mx-auto flex max-w-xl items-center gap-2">
+    <div className="border-t border-brand-gray-75 bg-card px-4 py-3 lg:border-t-0">
+      <div className="mx-auto flex max-w-xl items-center gap-2 lg:max-w-none">
         <input
           type="text"
           value={content}
