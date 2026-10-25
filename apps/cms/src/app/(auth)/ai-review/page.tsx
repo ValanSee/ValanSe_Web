@@ -19,7 +19,11 @@ const SCAN_PAGE_SIZE = 50
 const SCAN_MAX_PAGES = 4
 /** AI 댓글 탭에서 댓글을 확인할 최신 투표 수 */
 const COMMENT_SCAN_VOTES = 30
-const COMMENT_SCAN_CONCURRENCY = 5
+/**
+ * 서버가 짧은 시간에 몰린 요청을 막으면 CORS 헤더 없이 응답해 Network Error 가 난다.
+ * 동시 요청을 낮게 유지한다.
+ */
+const COMMENT_SCAN_CONCURRENCY = 2
 
 type Tab = 'votes' | 'comments'
 type BotComment = VoteComment & { voteTitle: string }
@@ -37,6 +41,7 @@ export default function AiReviewPage() {
   const [botComments, setBotComments] = useState<BotComment[] | null>(null)
   const [commentsLoading, setCommentsLoading] = useState(false)
   const [commentsError, setCommentsError] = useState<string | null>(null)
+  const [commentsFailed, setCommentsFailed] = useState(0)
 
   const [seedBusy, setSeedBusy] = useState(false)
   const [seedMessage, setSeedMessage] = useState<string | null>(null)
@@ -75,19 +80,29 @@ export default function AiReviewPage() {
   const scanComments = useCallback(async () => {
     setCommentsLoading(true)
     setCommentsError(null)
+    setCommentsFailed(0)
     try {
       const { votes: recent } = await fetchVotes({ size: COMMENT_SCAN_VOTES })
+      // 댓글이 없는 투표는 조회할 필요가 없다
+      const targets = recent.filter((v) => v.total_comment_count > 0)
       const result: BotComment[] = []
-      for (let i = 0; i < recent.length; i += COMMENT_SCAN_CONCURRENCY) {
-        const chunk = recent.slice(i, i + COMMENT_SCAN_CONCURRENCY)
-        const pages = await Promise.all(chunk.map((v) => fetchComments(v.id)))
+      let failed = 0
+      for (let i = 0; i < targets.length; i += COMMENT_SCAN_CONCURRENCY) {
+        const chunk = targets.slice(i, i + COMMENT_SCAN_CONCURRENCY)
+        // 일부 투표가 실패해도 나머지 결과는 보여준다
+        const pages = await Promise.allSettled(chunk.map((v) => fetchComments(v.id)))
         pages.forEach((page, j) => {
-          page.comments
+          if (page.status === 'rejected') {
+            failed += 1
+            return
+          }
+          page.value.comments
             .filter((cm) => cm.isBot && !cm.deletedAt)
             .forEach((cm) => result.push({ ...cm, voteTitle: chunk[j].title }))
         })
       }
       setBotComments(result)
+      setCommentsFailed(failed)
     } catch (err) {
       setCommentsError(errorMessageOf(err, '댓글을 불러오지 못했습니다.'))
     } finally {
@@ -232,6 +247,11 @@ export default function AiReviewPage() {
     <section className="space-y-2">
       {commentsError && (
         <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{commentsError}</p>
+      )}
+      {commentsFailed > 0 && !commentsLoading && (
+        <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          투표 {commentsFailed}개의 댓글을 불러오지 못했습니다. 잠시 후 새로고침하세요.
+        </p>
       )}
       <p className="text-xs text-gray-500">
         최신 투표 {COMMENT_SCAN_VOTES}개에 달린 댓글 중 AI 댓글

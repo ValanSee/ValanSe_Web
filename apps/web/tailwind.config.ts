@@ -6,6 +6,8 @@ export default {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // 레이아웃 클래스 상수 (DESKTOP_PAGE_COLUMN 등)
+    './src/constants/**/*.{js,ts}',
   ],
   theme: {
     extend: {
