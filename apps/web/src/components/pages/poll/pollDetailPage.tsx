@@ -23,6 +23,7 @@ import {
   BestComment,
   Comment,
 } from '@/api/comment/commentApi'
+import RelatedPolls from '@/components/pages/poll/relatedPolls'
 import VoteChart from '@/components/pages/poll/statistics/statisics'
 import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
@@ -32,21 +33,30 @@ import { useReportAction } from '@/hooks/utils/useReportAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
 import { getAccessToken } from '@/utils/tokenUtils'
 import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
+import type { Vote } from '@/types/balanse/vote'
 
 interface PollDetailPageProps {
   /** 서버에서 비로그인으로 조회한 상세. 실패 시 null → 기존처럼 클라이언트에서 조회 */
   initialData: PollDetail | null
+  /** 서버에서 조회한 같은 카테고리 게임 (현재 게임 제외) */
+  relatedVotes: Vote[]
 }
 
-export default function PollDetailPage({ initialData }: PollDetailPageProps) {
+export default function PollDetailPage({
+  initialData,
+  relatedVotes,
+}: PollDetailPageProps) {
   return (
     <Suspense fallback={<Loading />}>
-      <PollDetailContent initialData={initialData} />
+      <PollDetailContent
+        initialData={initialData}
+        relatedVotes={relatedVotes}
+      />
     </Suspense>
   )
 }
 
-function PollDetailContent({ initialData }: PollDetailPageProps) {
+function PollDetailContent({ initialData, relatedVotes }: PollDetailPageProps) {
   const { id } = useParams<{ id: string }>()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -223,6 +233,7 @@ function PollDetailContent({ initialData }: PollDetailPageProps) {
           profile={profile}
           postLoginReturnPath={postLoginReturnPath}
         />
+        <RelatedPolls category={data.category} votes={relatedVotes} />
       </div>
       <div
         className="fixed inset-x-0 bottom-0 z-30 bg-card"

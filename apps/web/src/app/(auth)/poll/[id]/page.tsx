@@ -6,12 +6,15 @@ import { getCategoryMeta } from '@/constants/category'
 import { BASE_OPEN_GRAPH, SITE_NAME, SITE_URL } from '@/constants/seo'
 import { JsonLd } from '@/components/_shared/jsonLd'
 import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
+import { fetchVotesForServer } from '@/api/pages/valanse/listServer'
+import type { Vote } from '@/types/balanse/vote'
 
 type Props = {
   params: Promise<{ id: string }>
 }
 
 const DESCRIPTION_MAX = 150
+const RELATED_COUNT = 6
 
 function truncate(text: string, max: number) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
@@ -108,6 +111,18 @@ function buildJsonLd(poll: PollDetail) {
   ]
 }
 
+// 같은 카테고리 최신 게임 (현재 게임 제외). 실패하면 섹션 없이 렌더
+async function fetchRelatedVotes(poll: PollDetail): Promise<Vote[]> {
+  const list = await fetchVotesForServer({
+    category: poll.category,
+    sort: 'latest',
+    size: RELATED_COUNT + 1,
+  })
+  return (list?.votes ?? [])
+    .filter((v) => v.id !== poll.voteId)
+    .slice(0, RELATED_COUNT)
+}
+
 export default async function Page({ params }: Props) {
   const { id } = await params
   const result = await fetchPollDetailForServer(id)
@@ -115,14 +130,17 @@ export default async function Page({ params }: Props) {
   if (result.status === 'not-found') notFound()
 
   // API 오류·타임아웃이면 null 로 넘겨 기존처럼 클라이언트에서 다시 조회
-  if (result.status !== 'ok') return <PollDetailPage initialData={null} />
+  if (result.status !== 'ok')
+    return <PollDetailPage initialData={null} relatedVotes={[]} />
+
+  const relatedVotes = await fetchRelatedVotes(result.data)
 
   return (
     <>
       {buildJsonLd(result.data).map((data) => (
         <JsonLd key={String(data['@type'])} data={data} />
       ))}
-      <PollDetailPage initialData={result.data} />
+      <PollDetailPage initialData={result.data} relatedVotes={relatedVotes} />
     </>
   )
 }
