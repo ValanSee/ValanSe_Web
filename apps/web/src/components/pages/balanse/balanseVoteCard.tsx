@@ -16,7 +16,7 @@ interface Props {
 export default function BalanseVoteCard({ data }: Props) {
   const detailHref = `/poll/${data.id}?source=balance`
   const [selectedId, setSelectedId] = useState<number | null>(null)
-  const { submit, isVoting, loginModal } = useVoteAction({
+  const { submit, isVoting } = useVoteAction({
     voteId: data.id,
     detailHref,
     onVoted: (_res, optionId) => {
@@ -71,7 +71,6 @@ export default function BalanseVoteCard({ data }: Props) {
           </span>
         </Link>
       </article>
-      {loginModal}
     </>
   )
 }
