@@ -136,7 +136,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
         DESKTOP_PAGE_WIDE,
       )}
     >
-      <Header className="lg:hidden" title="밸런스 게임" />
+      {/* 모바일 헤더는 화면 제목만, 페이지 h1 은 아래 카테고리 제목 하나로 */}
+      <Header className="lg:hidden" titleAs="p" title="밸런스 게임" />
 
       <div className="lg:hidden">
         <TabBar>
@@ -173,7 +174,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
         </aside>
 
         <div className="flex min-w-0 flex-col lg:gap-ds-4">
-          <h1 className="typo-heading-04 hidden text-foreground lg:block">
+          {/* 모바일에선 시각적으로 숨기되 크롤러·스크린리더용으로 유지 */}
+          <h1 className="typo-heading-04 sr-only text-foreground lg:not-sr-only">
             {categoryLabel ? `${categoryLabel} 밸런스게임` : '밸런스게임 모음'}
           </h1>
 
