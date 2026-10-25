@@ -152,10 +152,10 @@ export default function RootLayout({
           <ModalRootInitializer />
           <NativeBackHandler />
           <PageViewTracker />
-          {/* PC(lg 이상)에서만 GNB · 푸터 노출. 모바일·WebView 화면은 그대로 */}
-          <div className="flex min-h-screen flex-col">
+          {/* PC(lg 이상)에서만 GNB · 푸터 노출. 래퍼도 lg 에서만 flex 라 모바일·WebView 는 기존 블록 흐름 그대로 */}
+          <div className="lg:flex lg:min-h-screen lg:flex-col">
             <DesktopHeader />
-            <div className="flex flex-1 flex-col">{children}</div>
+            <div className="lg:flex lg:flex-1 lg:flex-col">{children}</div>
             <DesktopFooter />
           </div>
         </Providers>
