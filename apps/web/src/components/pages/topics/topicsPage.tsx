@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Icon } from '@iconify/react'
 import Header from '@/components/_shared/header'
+import { TopicCard, TopicVoteCard } from './topicCard'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
@@ -63,36 +63,21 @@ export default function TopicsPage({ popular, sections }: Props) {
           </p>
         </section>
 
-        {popular.length > 0 && (
-          <TopicCard
-            title="지금 인기 있는 밸런스게임 주제"
-            moreHref="/balanse?sort=popular"
-          >
-            <ol className="-mx-2 flex flex-col">
-              {popular.map((vote, index) => (
-                <li key={vote.id}>
-                  <TopicLink vote={vote} rank={index + 1} />
-                </li>
-              ))}
-            </ol>
-          </TopicCard>
-        )}
+        <TopicVoteCard
+          title="지금 인기 있는 밸런스게임 주제"
+          moreHref="/balanse?sort=popular"
+          votes={popular}
+          ranked
+        />
 
         {sections.map(({ category, votes }) => (
-          <TopicCard
+          <TopicVoteCard
             key={category.param}
             title={`${category.label} 밸런스게임 주제`}
             icon={category.icon}
             moreHref={`/balanse?category=${category.param}&sort=popular`}
-          >
-            <ul className="-mx-2 flex flex-col">
-              {votes.map((vote) => (
-                <li key={vote.id}>
-                  <TopicLink vote={vote} />
-                </li>
-              ))}
-            </ul>
-          </TopicCard>
+            votes={votes}
+          />
         ))}
 
         <TopicCard title="밸런스게임 이렇게 즐겨요">
@@ -115,66 +100,5 @@ export default function TopicsPage({ popular, sections }: Props) {
 
       <BottomNavBar />
     </div>
-  )
-}
-
-function TopicCard({
-  title,
-  icon,
-  moreHref,
-  children,
-}: {
-  title: string
-  icon?: string
-  moreHref?: string
-  children: React.ReactNode
-}) {
-  return (
-    <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-[0_0_4px_rgba(0,0,0,0.06)]">
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="typo-title-02 flex items-center gap-2 text-foreground">
-          {icon && <Icon icon={icon} width={22} aria-hidden />}
-          {title}
-        </h2>
-        {moreHref && (
-          <Link
-            href={moreHref}
-            className="typo-label-03 flex shrink-0 items-center text-brand-gray-100 hover:text-foreground"
-          >
-            더보기
-            <Icon icon="mingcute:right-line" width={16} aria-hidden />
-          </Link>
-        )}
-      </div>
-      {children}
-    </section>
-  )
-}
-
-function TopicLink({ vote, rank }: { vote: Vote; rank?: number }) {
-  return (
-    <Link
-      href={`/poll/${vote.id}`}
-      className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-brand-gray-50"
-    >
-      {rank !== undefined && (
-        <span className="typo-label-01 w-5 shrink-0 text-center text-primary">
-          {rank}
-        </span>
-      )}
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="typo-body-b-01 truncate text-foreground">
-          {vote.title}
-        </span>
-        {vote.options.length > 0 && (
-          <span className="typo-body-c-01 truncate text-brand-gray-100">
-            {vote.options.map((o) => o.content).join(' vs ')}
-          </span>
-        )}
-      </div>
-      <span className="typo-label-03 shrink-0 text-brand-gray-100">
-        {vote.total_vote_count.toLocaleString()}명
-      </span>
-    </Link>
   )
 }
