@@ -129,7 +129,10 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
           <h2 className="typo-heading-06 px-4 text-foreground lg:px-0">
             이런 주제는 어때요?
           </h2>
-          <HorizontalScroll className="flex gap-4 px-4 lg:grid lg:grid-cols-3 lg:gap-ds-4 lg:px-0">
+          <HorizontalScroll
+            shadowClassName="lg:hidden"
+            className="flex gap-4 px-4 lg:grid lg:grid-cols-3 lg:gap-ds-4 lg:px-0"
+          >
             {CATEGORIES.map((c) => (
               <Link
                 key={c.param}

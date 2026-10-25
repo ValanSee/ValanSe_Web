@@ -35,8 +35,12 @@ export default function PollSidebar({
   const relatedVotes = visible(related)
   const latestVotes = visible(latest)
 
+  // 둘 다 비면 PC 에서 빈 칼럼이 남지 않도록 아예 렌더하지 않음
+  if (relatedVotes.length === 0 && latestVotes.length === 0) return null
+
   return (
-    <aside className="hidden flex-col gap-ds-4 lg:flex">
+    // 작은 노트북 높이에서도 하단 항목이 보이도록 화면 높이로 제한
+    <aside className="hidden w-[340px] shrink-0 flex-col gap-ds-4 lg:sticky lg:top-24 lg:flex lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
       {relatedVotes.length > 0 && (
         <SidebarSection
           title={

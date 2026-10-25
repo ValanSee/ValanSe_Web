@@ -38,13 +38,7 @@ export default function DesktopHeader() {
     <header className="sticky top-0 z-40 hidden border-b border-border bg-card lg:block">
       <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center gap-ds-10 px-ds-6">
         <Link href="/" className="flex items-center gap-ds-2" aria-label="홈">
-          <Image
-            src="/assets/logo.svg"
-            alt="ValanSe"
-            width={28}
-            height={26}
-            priority
-          />
+          <Image src="/assets/logo.svg" alt="ValanSe" width={28} height={26} />
           <span className="typo-heading-05 text-foreground">ValanSe</span>
         </Link>
 

@@ -36,14 +36,12 @@ import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN, DESKTOP_PAGE_WIDE } from '@/constants/layout'
 import { getCategoryMeta } from '@/constants/category'
-import type { Vote } from '@/types/balanse/vote'
-import PollSidebar from './pollSidebar'
 
 interface PollDetailPageProps {
   /** 서버에서 비로그인으로 조회한 상세. 실패 시 null → 기존처럼 클라이언트에서 조회 */
   initialData: PollDetail | null
-  /** PC 사이드바용 목록 (서버 조회). 없으면 사이드바 미노출 */
-  sidebar?: { related: Vote[]; latest: Vote[] } | null
+  /** PC 사이드바 (서버 컴포넌트를 Suspense 로 감싼 슬롯). 없으면 미노출 */
+  sidebar?: React.ReactNode
 }
 
 export default function PollDetailPage({
@@ -190,6 +188,8 @@ function PollDetailContent({ initialData, sidebar }: PollDetailPageProps) {
     >
       <Header
         className="lg:hidden"
+        // 투표 제목(PollCard)이 h1
+        titleAs="p"
         title="밸런스 게임"
         showBackButton
         onBackClick={handleBackClick}
@@ -226,8 +226,8 @@ function PollDetailContent({ initialData, sidebar }: PollDetailPageProps) {
         </nav>
         {moreMenu}
       </div>
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-ds-8">
-        <div className="flex min-w-0 flex-col lg:gap-ds-4">
+      <div className="lg:flex lg:items-start lg:gap-ds-8">
+        <div className="flex min-w-0 flex-col lg:flex-1 lg:gap-ds-4">
           <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)] lg:max-w-none lg:p-0">
             {data && (
               <PollCard
@@ -292,16 +292,7 @@ function PollDetailContent({ initialData, sidebar }: PollDetailPageProps) {
             </div>
           </div>
         </div>
-        {sidebar && (
-          <div className="lg:sticky lg:top-24">
-            <PollSidebar
-              currentVoteId={data.voteId}
-              category={data.category}
-              related={sidebar.related}
-              latest={sidebar.latest}
-            />
-          </div>
-        )}
+        {sidebar}
       </div>
       {reportUi}
     </div>

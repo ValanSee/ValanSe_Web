@@ -1,8 +1,9 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import PollDetailPage from '@/components/pages/poll/pollDetailPage'
 import { fetchPollDetailForServer } from '@/api/pages/poll/pollDetailServer'
-import { fetchVotesForServer } from '@/api/pages/valanse/listServer'
+import PollSidebarServer from '@/components/pages/poll/pollSidebarServer'
 import { getCategoryMeta } from '@/constants/category'
 import { BASE_OPEN_GRAPH, SITE_NAME, SITE_URL } from '@/constants/seo'
 import { JsonLd } from '@/components/_shared/jsonLd'
@@ -67,8 +68,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-const SIDEBAR_SIZE = 5
-
 // createdAt 은 시간대 없이 내려오므로 날짜만 사용
 const toDate = (createdAt: string) => createdAt.slice(0, 10)
 
@@ -120,16 +119,6 @@ export default async function Page({ params }: Props) {
   // API 오류·타임아웃이면 null 로 넘겨 기존처럼 클라이언트에서 다시 조회
   if (result.status !== 'ok') return <PollDetailPage initialData={null} />
 
-  // PC 사이드바: 같은 카테고리 인기 · 전체 최신 (현재 글 제외분을 고려해 1개 더)
-  const [related, latest] = await Promise.all([
-    fetchVotesForServer({
-      category: result.data.category,
-      sort: 'popular',
-      size: SIDEBAR_SIZE + 1,
-    }),
-    fetchVotesForServer({ sort: 'latest', size: SIDEBAR_SIZE + 1 }),
-  ])
-
   return (
     <>
       {buildJsonLd(result.data).map((data) => (
@@ -137,7 +126,15 @@ export default async function Page({ params }: Props) {
       ))}
       <PollDetailPage
         initialData={result.data}
-        sidebar={{ related: related?.votes ?? [], latest: latest?.votes ?? [] }}
+        sidebar={
+          // PC 사이드바는 따로 스트리밍 (목록 조회가 느려도 본문은 먼저 응답)
+          <Suspense fallback={null}>
+            <PollSidebarServer
+              voteId={result.data.voteId}
+              category={result.data.category}
+            />
+          </Suspense>
+        }
       />
     </>
   )

@@ -55,8 +55,9 @@ function BalancePageContent({ initialData }: BalancePageProps) {
   const visibleVotes = votes.filter((v) => !isReported('VOTE', v.id))
 
   // PC 사이드바는 크롤러가 따라가도록 버튼 대신 링크로 이동
+  // utm 등 다른 쿼리는 빼고 category · sort 만 유지
   const hrefWith = (key: 'category' | 'sort', value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams({ category, sort })
     params.set(key, value)
     return `/balanse?${params.toString()}`
   }
