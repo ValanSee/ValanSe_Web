@@ -15,6 +15,7 @@ type Props = {
 }
 
 const DESCRIPTION_MAX = 150
+const { images: _baseImages, ...OPEN_GRAPH_WITHOUT_IMAGES } = BASE_OPEN_GRAPH
 
 function truncate(text: string, max: number) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
@@ -54,7 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: path },
     openGraph: {
-      ...BASE_OPEN_GRAPH,
+      // images 를 지정하면 opengraph-image.tsx(게임별 이미지)가 무시되므로 공통 이미지는 제외
+      ...OPEN_GRAPH_WITHOUT_IMAGES,
       type: 'article',
       url: path,
       title: pageTitle,
@@ -64,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: pageTitle,
       description,
-      images: ['/og-image.png'],
+      // 이미지는 opengraph-image.tsx (게임별 생성) → twitter 도 og:image 를 그대로 사용
     },
   }
 }
