@@ -42,20 +42,31 @@ interface PollDetailPageProps {
   initialData: PollDetail | null
   /** PC 사이드바 (서버 컴포넌트를 Suspense 로 감싼 슬롯). 없으면 미노출 */
   sidebar?: React.ReactNode
+  /** 모바일 하단 같은 카테고리 목록 (서버 컴포넌트를 Suspense 로 감싼 슬롯). PC 는 사이드바가 대신함 */
+  related?: React.ReactNode
 }
 
 export default function PollDetailPage({
   initialData,
   sidebar,
+  related,
 }: PollDetailPageProps) {
   return (
     <Suspense fallback={<Loading />}>
-      <PollDetailContent initialData={initialData} sidebar={sidebar} />
+      <PollDetailContent
+        initialData={initialData}
+        sidebar={sidebar}
+        related={related}
+      />
     </Suspense>
   )
 }
 
-function PollDetailContent({ initialData, sidebar }: PollDetailPageProps) {
+function PollDetailContent({
+  initialData,
+  sidebar,
+  related,
+}: PollDetailPageProps) {
   const { id } = useParams<{ id: string }>()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -277,6 +288,7 @@ function PollDetailContent({ initialData, sidebar }: PollDetailPageProps) {
               profile={profile}
               postLoginReturnPath={postLoginReturnPath}
             />
+            {related}
           </div>
           {/* 모바일: 하단 고정 입력창 · PC: 댓글 아래 카드 */}
           <div
