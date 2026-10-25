@@ -23,7 +23,7 @@ export default function VoteOptionPill({
       disabled={disabled}
       aria-pressed={isSelected}
       className={cn(
-        'typo-label-02 flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors',
+        'typo-label-02 flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-[colors,transform] active:scale-[0.98] disabled:active:scale-100',
         isSelected
           ? 'bg-primary text-primary-foreground'
           : 'bg-brand-gray-50 text-primary',

@@ -199,8 +199,14 @@ function BalancePageContent({ initialData }: BalancePageProps) {
                 해당 카테고리의 밸런스게임이 아직 없어요
               </p>
             )}
-            {visibleVotes.map((vote) => (
-              <BalanseVoteCard key={vote.id} data={vote} />
+            {visibleVotes.map((vote, index) => (
+              <div
+                key={vote.id}
+                className="duration-300 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
+                style={{ animationDelay: `${Math.min(index, 6) * 50}ms` }}
+              >
+                <BalanseVoteCard data={vote} />
+              </div>
             ))}
             {hasNextPage && (
               <div ref={loadingRef} className="py-4 text-center lg:col-span-2">
