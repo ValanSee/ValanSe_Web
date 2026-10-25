@@ -74,6 +74,7 @@ ValanSe Web 저장소의 **화면 명세서(usecase)와 코드를 동기화**하
 | `src/app/(unauth)/oauth/kakao/redirect/page.tsx` | `SCR-OAUTH-001` |
 | `src/app/(unauth)/onboarding/page.tsx` | `SCR-ONBOARDING-001` |
 | `src/app/(unauth)/privacy/page.tsx` | `SCR-PRIVACY-001` |
+| `src/app/(unauth)/topics/page.tsx` / `src/components/pages/topics/*` | `SCR-TOPICS-001` |
 
 > 전체 매핑은 [`docs/screens/README.md`](../../../docs/screens/README.md) 참조.
 
