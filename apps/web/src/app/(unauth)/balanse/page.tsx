@@ -4,6 +4,7 @@ import BalansePage, {
   type BalanseInitialData,
 } from '../../../components/pages/balanse/balansePage'
 import { getCategoryMeta } from '@/constants/category'
+import { getCategoryIntro } from '@/constants/categoryIntro'
 import { fetchVotesForServer } from '@/api/pages/valanse/listServer'
 
 type Props = {
@@ -25,9 +26,8 @@ export async function generateMetadata({
   // 카테고리별 목록은 sitemap 에 별도 URL 로 올라가므로 canonical 도 카테고리 단위로 분리
   const path = meta ? `/balanse?category=${meta.param}` : '/balanse'
   const title = meta ? `${meta.label} 밸런스게임 모음` : '밸런스게임 모음'
-  const description = meta
-    ? `${meta.label} 밸런스게임 질문 모음. 둘 중 하나를 골라 투표하고 다른 사람들의 선택을 확인해 보세요.`
-    : '카테고리별 인기 밸런스게임 질문 모음. 둘 중 하나를 골라 투표하고 다른 사람들의 선택을 확인해 보세요.'
+  // 화면 상단 소개 문구와 같은 문장
+  const description = getCategoryIntro(meta?.param ?? 'ALL')
 
   return {
     title,

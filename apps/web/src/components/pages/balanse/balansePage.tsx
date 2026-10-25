@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
+import { getCategoryIntro } from '@/constants/categoryIntro'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote, VoteListResponse } from '@/types/balanse/vote'
@@ -178,6 +179,10 @@ function BalancePageContent({ initialData }: BalancePageProps) {
           <h1 className="typo-heading-04 sr-only text-foreground lg:not-sr-only">
             {categoryLabel ? `${categoryLabel} 밸런스게임` : '밸런스게임 모음'}
           </h1>
+          {/* 카테고리 소개 (meta description 과 같은 문장, 검색어 노출용) */}
+          <p className="typo-body-c-01 px-4 py-3 text-brand-gray-100 lg:p-0">
+            {getCategoryIntro(category)}
+          </p>
 
           <div className="lg:overflow-hidden lg:rounded-2xl empty:hidden lg:shadow-[0_0_4px_rgba(0,0,0,0.06)] lg:[&>div]:border-b-0">
             <HotTrendingBar />
