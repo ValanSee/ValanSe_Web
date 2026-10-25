@@ -14,7 +14,8 @@ interface Props {
 }
 
 export default function BalanseVoteCard({ data }: Props) {
-  const detailHref = `/poll/${data.id}?source=balance`
+  // 쿼리를 붙이지 않아 상세 URL 을 하나로 유지 (검색엔진 중복 URL 방지)
+  const detailHref = `/poll/${data.id}`
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const { submit, isVoting, loginModal } = useVoteAction({
     voteId: data.id,

@@ -7,15 +7,18 @@ export async function fetchVotesForServer({
   category = 'ALL',
   sort = 'latest',
   size,
+  cursor,
 }: {
   category?: string
   sort?: 'latest' | 'popular'
   size: number
+  cursor?: string
 }): Promise<VoteListResponse | null> {
   const result = await serverGetJson<VoteListResponse>('/votes', {
     category,
     sort,
     size,
+    cursor,
   })
   return result.status === 'ok' ? result.data : null
 }
