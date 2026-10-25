@@ -48,8 +48,8 @@ const pretendard = localFont({
 const HAS_TOKEN_SCRIPT = `try{if(localStorage.getItem('access_token'))document.documentElement.setAttribute('data-has-token','')}catch(e){}`
 
 // 앱(Android WebView)에서만 확대를 막는다. 웹은 접근성을 위해 확대 허용
-// 앱은 injectedJavaScriptBeforeContentLoaded 로 __ANDROID_BRIDGE_READY__ 를 먼저 심으므로 이를 기준으로 판별
-const APP_NO_ZOOM_SCRIPT = `(function(){try{if(!window.__ANDROID_BRIDGE_READY__&&!window.ReactNativeWebView)return;var c='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';var apply=function(){var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement('meta');m.name='viewport';document.head.appendChild(m)}m.setAttribute('content',c)};apply();document.addEventListener('DOMContentLoaded',apply)}catch(e){}})()`
+// 앱은 __ANDROID_BRIDGE_READY__ 를 심으므로 이를 기준으로 판별. Android 의 사전 주입은 늦을 수 있어 DOMContentLoaded · load 에서도 다시 확인
+const APP_NO_ZOOM_SCRIPT = `(function(){try{var c='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';var apply=function(){if(!window.__ANDROID_BRIDGE_READY__&&!window.ReactNativeWebView)return;var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement('meta');m.name='viewport';document.head.appendChild(m)}m.setAttribute('content',c)};apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListener('load',apply)}catch(e){}})()`
 
 // 검색 결과 사이트 이름 표시용 (https://developers.google.com/search/docs/appearance/site-names)
 const WEBSITE_JSON_LD = {
