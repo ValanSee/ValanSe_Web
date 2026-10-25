@@ -32,7 +32,7 @@
 2. `loginThunk` → 토큰 저장
 3. `fetchProfileThunk` → 프로필 조회
 4. 분기:
-   - 프로필 있음 → `/`
+   - 프로필 있음 → 저장된 복귀 경로(`redirectAfterLogin`), 없으면 `/`
    - 프로필 없음 (신규) → `/onboarding`
    - 실패 → `/entry`
 

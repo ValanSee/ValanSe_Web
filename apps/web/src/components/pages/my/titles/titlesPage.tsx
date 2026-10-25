@@ -19,6 +19,8 @@ import TitleTabs, { TitleTabKey } from './titleTabs'
 import TitleCard from './titleCard'
 import TitleEquipModal from './titleEquipModal'
 import TitlePurchaseModal from './titlePurchaseModal'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 type ModalState = { mode: 'equip' | 'purchase'; title: Title } | null
 
@@ -97,7 +99,9 @@ const TitlesPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       <Header
         title="칭호"
         showBackButton

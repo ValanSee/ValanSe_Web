@@ -19,6 +19,7 @@ import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const genderOptions: { label: string; value: Gender }[] = [
   { label: '남성', value: 'MALE' },
@@ -135,7 +136,9 @@ const EditPage = () => {
   if (!myPageData) return <Loading />
 
   return (
-    <div className="flex min-h-screen flex-col bg-card">
+    <div
+      className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
+    >
       <Header title="프로필 수정" showBackButton />
       <div className="flex flex-col gap-8 px-5 pb-8 pt-6">
         <div className="flex flex-col items-center gap-3">

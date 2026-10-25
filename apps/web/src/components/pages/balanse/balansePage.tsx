@@ -11,6 +11,8 @@ import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import BalanseVoteCard from './balanseVoteCard'
 import HotTrendingBar from './hotTrendingBar'
 import { CATEGORIES } from '@/constants/category'
+import { cn } from '@/lib/utils'
+import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 
 const TABS = [
   { label: '전체', value: 'ALL' as const },
@@ -113,7 +115,12 @@ function BalancePageContent({ initialData }: BalancePageProps) {
   }, [category, sort, initialData])
 
   return (
-    <div className="flex min-h-screen flex-col bg-card pb-24">
+    <div
+      className={cn(
+        'flex min-h-screen flex-col bg-card pb-24',
+        DESKTOP_PAGE_COLUMN,
+      )}
+    >
       <Header title="밸런스 게임" />
 
       <TabBar>
