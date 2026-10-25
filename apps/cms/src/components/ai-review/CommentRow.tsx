@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Bot, ThumbsUp, Trash2 } from 'lucide-react'
 import { errorMessageOf } from '@/lib/api'
 import { deleteComment } from '@/lib/comments'
+import { formatDateTime } from '@/lib/date'
 import type { VoteComment } from '@/types/vote'
 
 type Props = {
@@ -42,7 +43,7 @@ export function CommentRow({ comment, voteTitle, onDeleted }: Props) {
       )}
       <span>{comment.nickname}</span>
       {comment.voteOptionLabel && <span>· {comment.voteOptionLabel} 선택</span>}
-      <span>· {comment.commentCreatedAt}</span>
+      <span>· {formatDateTime(comment.commentCreatedAt)}</span>
       <span className="inline-flex items-center gap-1">
         · <ThumbsUp className="h-3 w-3" />
         {comment.likeCount}
