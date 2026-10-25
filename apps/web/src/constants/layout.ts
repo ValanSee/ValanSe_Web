@@ -6,3 +6,10 @@
  */
 export const DESKTOP_PAGE_COLUMN =
   'lg:mx-auto lg:w-full lg:max-w-3xl lg:min-h-0 lg:flex-1 lg:pb-ds-10'
+
+/**
+ * PC 전용 레이아웃(그리드·사이드바)이 있는 페이지 루트.
+ * GNB 와 같은 1200px 폭, 회색 배경 위에 흰 카드를 올리는 구성이라 배경은 투명.
+ */
+export const DESKTOP_PAGE_WIDE =
+  'lg:mx-auto lg:w-full lg:max-w-[1200px] lg:min-h-0 lg:flex-1 lg:bg-transparent lg:px-ds-6 lg:pt-ds-8 lg:pb-ds-10'

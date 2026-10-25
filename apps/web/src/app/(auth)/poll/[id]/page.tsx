@@ -1,7 +1,9 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import PollDetailPage from '@/components/pages/poll/pollDetailPage'
 import { fetchPollDetailForServer } from '@/api/pages/poll/pollDetailServer'
+import PollSidebarServer from '@/components/pages/poll/pollSidebarServer'
 import { getCategoryMeta } from '@/constants/category'
 import { BASE_OPEN_GRAPH, SITE_NAME, SITE_URL } from '@/constants/seo'
 import { JsonLd } from '@/components/_shared/jsonLd'
@@ -122,7 +124,18 @@ export default async function Page({ params }: Props) {
       {buildJsonLd(result.data).map((data) => (
         <JsonLd key={String(data['@type'])} data={data} />
       ))}
-      <PollDetailPage initialData={result.data} />
+      <PollDetailPage
+        initialData={result.data}
+        sidebar={
+          // PC 사이드바는 따로 스트리밍 (목록 조회가 느려도 본문은 먼저 응답)
+          <Suspense fallback={null}>
+            <PollSidebarServer
+              voteId={result.data.voteId}
+              category={result.data.category}
+            />
+          </Suspense>
+        }
+      />
     </>
   )
 }

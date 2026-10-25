@@ -181,7 +181,7 @@ function PollCard({
             {createdBy}
           </span>
         </div>
-        <h2 className="typo-heading-04 text-foreground">{title}</h2>
+        <h1 className="typo-heading-04 text-foreground">{title}</h1>
         {content && (
           <p className="typo-body-a-01 whitespace-pre-wrap text-brand-gray-200">
             {content}

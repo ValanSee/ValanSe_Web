@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
@@ -10,13 +11,18 @@ import type { Vote, VoteListResponse } from '@/types/balanse/vote'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import BalanseVoteCard from './balanseVoteCard'
 import HotTrendingBar from './hotTrendingBar'
-import { CATEGORIES } from '@/constants/category'
+import { CATEGORIES, getCategoryMeta } from '@/constants/category'
 import { cn } from '@/lib/utils'
-import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
+import { DESKTOP_PAGE_WIDE } from '@/constants/layout'
 
 const TABS = [
   { label: '전체', value: 'ALL' as const },
   ...CATEGORIES.map((c) => ({ label: c.label, value: c.param })),
+]
+
+const SORTS = [
+  { label: '최신순', value: 'latest' as const },
+  { label: '인기순', value: 'popular' as const },
 ]
 
 /** 서버에서 비로그인으로 조회한 첫 페이지. key 는 `${category}|${sort}` */
@@ -47,6 +53,15 @@ function BalancePageContent({ initialData }: BalancePageProps) {
   const { isReported } = useReportedContent()
   // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
   const visibleVotes = votes.filter((v) => !isReported('VOTE', v.id))
+
+  // PC 사이드바는 크롤러가 따라가도록 버튼 대신 링크로 이동
+  // utm 등 다른 쿼리는 빼고 category · sort 만 유지
+  const hrefWith = (key: 'category' | 'sort', value: string) => {
+    const params = new URLSearchParams({ category, sort })
+    params.set(key, value)
+    return `/balanse?${params.toString()}`
+  }
+  const categoryLabel = getCategoryMeta(category)?.label
 
   const updateCategory = (newCategory: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -118,49 +133,118 @@ function BalancePageContent({ initialData }: BalancePageProps) {
     <div
       className={cn(
         'flex min-h-screen flex-col bg-card pb-24',
-        DESKTOP_PAGE_COLUMN,
+        DESKTOP_PAGE_WIDE,
       )}
     >
-      <Header title="밸런스 게임" />
+      <Header className="lg:hidden" title="밸런스 게임" />
 
-      <TabBar>
-        {TABS.map((tab) => (
-          <TabItem
-            key={tab.value}
-            label={tab.label}
-            selected={tab.value === category}
-            onClick={() => updateCategory(tab.value)}
+      <div className="lg:hidden">
+        <TabBar>
+          {TABS.map((tab) => (
+            <TabItem
+              key={tab.value}
+              label={tab.label}
+              selected={tab.value === category}
+              onClick={() => updateCategory(tab.value)}
+            />
+          ))}
+        </TabBar>
+      </div>
+
+      <div className="lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start lg:gap-ds-8">
+        {/* PC: 카테고리 · 정렬 사이드바 */}
+        <aside className="hidden flex-col gap-ds-4 lg:sticky lg:top-24 lg:flex">
+          <SideNav
+            title="카테고리"
+            items={TABS.map((tab) => ({
+              label: tab.label,
+              href: hrefWith('category', tab.value),
+              active: tab.value === category,
+            }))}
           />
-        ))}
-      </TabBar>
+          <SideNav
+            title="정렬"
+            items={SORTS.map((s) => ({
+              label: s.label,
+              href: hrefWith('sort', s.value),
+              active: s.value === sort,
+            }))}
+          />
+        </aside>
 
-      <HotTrendingBar />
+        <div className="flex min-w-0 flex-col lg:gap-ds-4">
+          <h1 className="typo-heading-04 hidden text-foreground lg:block">
+            {categoryLabel ? `${categoryLabel} 밸런스게임` : '밸런스게임 모음'}
+          </h1>
 
-      <div className="flex flex-col gap-3 px-4 pt-4">
-        {error && (
-          <p className="typo-body-b-01 py-8 text-center text-destructive">
-            {error}
-          </p>
-        )}
-        {!error && !loading && visibleVotes.length === 0 && (
-          <p className="typo-body-b-01 py-8 text-center text-brand-gray-100">
-            해당 카테고리의 밸런스게임이 아직 없어요
-          </p>
-        )}
-        {visibleVotes.map((vote) => (
-          <BalanseVoteCard key={vote.id} data={vote} />
-        ))}
-        {hasNextPage && (
-          <div ref={loadingRef} className="py-4 text-center">
-            {isLoadingMore && (
-              <p className="typo-body-c-02 text-brand-gray-100">불러오는 중…</p>
+          <div className="lg:overflow-hidden lg:rounded-2xl empty:hidden lg:shadow-[0_0_4px_rgba(0,0,0,0.06)] lg:[&>div]:border-b-0">
+            <HotTrendingBar />
+          </div>
+
+          <div className="flex flex-col gap-3 px-4 pt-4 lg:grid lg:grid-cols-2 lg:gap-ds-4 lg:px-0 lg:pt-0">
+            {error && (
+              <p className="typo-body-b-01 py-8 text-center text-destructive lg:col-span-2">
+                {error}
+              </p>
+            )}
+            {!error && !loading && visibleVotes.length === 0 && (
+              <p className="typo-body-b-01 py-8 text-center text-brand-gray-100 lg:col-span-2">
+                해당 카테고리의 밸런스게임이 아직 없어요
+              </p>
+            )}
+            {visibleVotes.map((vote) => (
+              <BalanseVoteCard key={vote.id} data={vote} />
+            ))}
+            {hasNextPage && (
+              <div ref={loadingRef} className="py-4 text-center lg:col-span-2">
+                {isLoadingMore && (
+                  <p className="typo-body-c-02 text-brand-gray-100">
+                    불러오는 중…
+                  </p>
+                )}
+              </div>
             )}
           </div>
-        )}
+        </div>
       </div>
 
       <BottomNavBar />
     </div>
+  )
+}
+
+function SideNav({
+  title,
+  items,
+}: {
+  title: string
+  items: { label: string; href: string; active: boolean }[]
+}) {
+  return (
+    <nav
+      aria-label={title}
+      className="flex flex-col gap-ds-2 rounded-2xl bg-card p-ds-4 shadow-[0_0_4px_rgba(0,0,0,0.06)]"
+    >
+      <h2 className="typo-label-03 px-ds-2 text-brand-gray-100">{title}</h2>
+      <ul className="flex flex-col">
+        {items.map(({ label, href, active }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              aria-current={active ? 'page' : undefined}
+              className={cn(
+                'typo-title-03 block rounded-lg px-ds-2 py-ds-2 transition-colors',
+                active
+                  ? 'bg-brand-violet-50 text-primary'
+                  : 'text-foreground hover:bg-brand-gray-50',
+              )}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   )
 }
 

@@ -15,6 +15,8 @@ interface HeaderProps {
   /** 배경 회색 여부 (bg-background), 기본은 bg-card */
   bgGray?: boolean
   className?: string
+  /** 제목 태그. 본문에 더 구체적인 h1 이 있는 화면은 'p' 로 낮춘다 (기본 h1) */
+  titleAs?: 'h1' | 'p'
 }
 
 export default function Header({
@@ -25,6 +27,7 @@ export default function Header({
   trailing,
   bgGray,
   className,
+  titleAs: TitleTag = 'h1',
 }: HeaderProps) {
   const router = useRouter()
   const handleBack = () => {
@@ -52,9 +55,9 @@ export default function Header({
             )}
       </div>
       {title && (
-        <h1 className="typo-heading-05 flex-1 text-center text-foreground">
+        <TitleTag className="typo-heading-05 flex-1 text-center text-foreground">
           {title}
-        </h1>
+        </TitleTag>
       )}
       <div className="flex min-w-[24px] items-center justify-end">
         {trailing}

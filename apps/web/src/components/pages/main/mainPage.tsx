@@ -24,7 +24,7 @@ import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
 import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { getAccessToken } from '@/utils/tokenUtils'
 import { cn } from '@/lib/utils'
-import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
+import { DESKTOP_PAGE_WIDE } from '@/constants/layout'
 
 interface MainPageProps {
   /** 서버 조회 결과. undefined 면 서버 조회 실패 → 클라이언트에서 조회 */
@@ -81,8 +81,8 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
   return (
     <div
       className={cn(
-        'flex min-h-screen flex-col bg-card pb-24',
-        DESKTOP_PAGE_COLUMN,
+        'flex min-h-screen flex-col bg-card pb-24 lg:gap-ds-6',
+        DESKTOP_PAGE_WIDE,
       )}
     >
       {/* PC 에서는 상단 GNB 에 로고가 있어 숨김 */}
@@ -99,47 +99,63 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
         }
       />
 
-      {/* 뜨고 있는 밸런스 */}
-      <section className="flex flex-col gap-3 px-4 pt-4">
-        <SectionHeader
-          title="뜨고 있는 밸런스"
-          moreHref="/balanse?sort=popular"
-        />
-        {visibleFeatured ? (
-          <HomeVoteCard data={visibleFeatured} />
-        ) : (
-          <EmptyState text="아직 인기 밸런스가 없어요" />
-        )}
-      </section>
+      {/* 모바일은 로고 헤더뿐이라 화면에 숨기고, PC 에선 소개 문구로 노출 */}
+      <div className="sr-only lg:not-sr-only lg:flex lg:flex-col lg:gap-ds-1">
+        <h1 className="typo-heading-03 text-foreground">
+          밸런스게임, 둘 중 하나를 골라보세요
+        </h1>
+        <p className="typo-body-b-01 text-brand-gray-200">
+          지금 뜨고 있는 질문에 투표하고 다른 사람들의 선택을 확인해 보세요.
+        </p>
+      </div>
 
-      {/* 이런 주제는 어때요? */}
-      <section className="mt-6 flex flex-col gap-3 border-b-8 border-brand-gray-50 bg-card py-5">
-        <h2 className="typo-heading-06 px-4 text-foreground">
-          이런 주제는 어때요?
-        </h2>
-        <HorizontalScroll className="flex gap-4 px-4">
-          {CATEGORIES.map((c) => (
-            <Link
-              key={c.param}
-              href={`/balanse?category=${c.param}`}
-              className="flex shrink-0 flex-col items-center gap-2"
-            >
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gray-50">
-                <Icon icon={c.icon} width={32} aria-hidden />
-              </span>
-              <span className="typo-title-03 text-foreground">{c.label}</span>
-            </Link>
-          ))}
-        </HorizontalScroll>
-      </section>
+      {/* PC: 뜨고 있는 밸런스 | 카테고리 2단 */}
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-ds-6">
+        {/* 뜨고 있는 밸런스 */}
+        <section className="flex flex-col gap-3 px-4 pt-4 lg:rounded-2xl lg:bg-card lg:p-ds-6 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
+          <SectionHeader
+            title="뜨고 있는 밸런스"
+            moreHref="/balanse?sort=popular"
+          />
+          {visibleFeatured ? (
+            <HomeVoteCard data={visibleFeatured} />
+          ) : (
+            <EmptyState text="아직 인기 밸런스가 없어요" />
+          )}
+        </section>
+
+        {/* 이런 주제는 어때요? */}
+        <section className="mt-6 flex flex-col gap-3 border-b-8 border-brand-gray-50 bg-card py-5 lg:mt-0 lg:rounded-2xl lg:border-b-0 lg:p-ds-6 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
+          <h2 className="typo-heading-06 px-4 text-foreground lg:px-0">
+            이런 주제는 어때요?
+          </h2>
+          <HorizontalScroll
+            shadowClassName="lg:hidden"
+            className="flex gap-4 px-4 lg:grid lg:grid-cols-3 lg:gap-ds-4 lg:px-0"
+          >
+            {CATEGORIES.map((c) => (
+              <Link
+                key={c.param}
+                href={`/balanse?category=${c.param}`}
+                className="flex shrink-0 flex-col items-center gap-2"
+              >
+                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-gray-50">
+                  <Icon icon={c.icon} width={32} aria-hidden />
+                </span>
+                <span className="typo-title-03 text-foreground">{c.label}</span>
+              </Link>
+            ))}
+          </HorizontalScroll>
+        </section>
+      </div>
 
       {/* 올라오고 있는 밸런스 */}
-      <section className="mt-4 flex flex-col gap-3 px-4">
+      <section className="mt-4 flex flex-col gap-3 px-4 lg:mt-0 lg:px-0">
         <SectionHeader title="올라오고 있는 밸런스" moreHref="/balanse" />
         {visibleLatest.length === 0 ? (
           <EmptyState text="아직 올라온 밸런스가 없어요" />
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 lg:grid lg:grid-cols-3 lg:gap-ds-4">
             {visibleLatest.map((v) => (
               <BalanseVoteCard key={v.id} data={v} />
             ))}
