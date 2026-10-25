@@ -126,9 +126,9 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
 
         {/* 이런 주제는 어때요? */}
         <section className="mt-6 flex flex-col gap-3 border-b-8 border-brand-gray-50 bg-card py-5 lg:mt-0 lg:rounded-2xl lg:border-b-0 lg:p-ds-6 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
-          <h2 className="typo-heading-06 px-4 text-foreground lg:px-0">
-            이런 주제는 어때요?
-          </h2>
+          <div className="px-4 lg:px-0">
+            <SectionHeader title="이런 주제는 어때요?" moreHref="/topics" />
+          </div>
           <HorizontalScroll
             shadowClassName="lg:hidden"
             className="flex gap-4 px-4 lg:grid lg:grid-cols-3 lg:gap-ds-4 lg:px-0"

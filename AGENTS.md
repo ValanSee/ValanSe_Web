@@ -87,7 +87,7 @@ pnpm dev
 | 도메인     | 대표 SCR-ID 예시                                                                                |
 | ---------- | ----------------------------------------------------------------------------------------------- |
 | 인증 흐름  | `SCR-ENTRY-001`, `SCR-OAUTH-001`, `SCR-ONBOARDING-001`                          |
-| 메인/탐색  | `SCR-HOME-001`, `SCR-BALANSE-001`                                                               |
+| 메인/탐색  | `SCR-HOME-001`, `SCR-BALANSE-001`, `SCR-TOPICS-001`                                             |
 | 투표       | `SCR-POLL-001`, `SCR-CREATE-001`                                                                |
 | 마이페이지 | `SCR-MY-001`, `SCR-MY-EDIT-001`, `SCR-MY-CREATED-001`, `SCR-MY-VOTED-001`, `SCR-MY-COMMENT-001` |
 | 기타       | `SCR-ACCOUNT-001`, `SCR-PRIVACY-001`                                                            |
