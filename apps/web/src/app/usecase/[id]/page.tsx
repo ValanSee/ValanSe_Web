@@ -27,7 +27,7 @@ export default async function UsecaseDetailPage({ params }: PageProps) {
   const content = await fs.readFile(filePath, 'utf-8')
 
   return (
-    <main>
+    <div>
       <p style={{ marginBottom: 16 }}>
         <Link
           href="/usecase"
@@ -53,6 +53,6 @@ export default async function UsecaseDetailPage({ params }: PageProps) {
         .usecase-md blockquote { border-left: 3px solid #d1d5db; padding-left: 12px; color: #6b7280; margin: 12px 0; }
         .usecase-md a { color: #2563eb; }
       `}</style>
-    </main>
+    </div>
   )
 }

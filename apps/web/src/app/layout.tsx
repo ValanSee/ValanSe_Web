@@ -47,6 +47,10 @@ const pretendard = localFont({
 // 토큰은 localStorage 에만 있어 서버가 로그인 여부를 모름 → 첫 페인트 전에 html 에 표시 (투표 상세 스켈레톤용)
 const HAS_TOKEN_SCRIPT = `try{if(localStorage.getItem('access_token'))document.documentElement.setAttribute('data-has-token','')}catch(e){}`
 
+// 앱(Android WebView)에서만 확대를 막는다. 웹은 접근성을 위해 확대 허용
+// 앱은 __ANDROID_BRIDGE_READY__ 를 심으므로 이를 기준으로 판별. Android 의 사전 주입은 늦을 수 있어 DOMContentLoaded · load 에서도 다시 확인
+const APP_NO_ZOOM_SCRIPT = `(function(){try{var c='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';var apply=function(){if(!window.__ANDROID_BRIDGE_READY__&&!window.ReactNativeWebView)return;var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement('meta');m.name='viewport';document.head.appendChild(m)}m.setAttribute('content',c)};apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListener('load',apply)}catch(e){}})()`
+
 // 검색 결과 사이트 이름 표시용 (https://developers.google.com/search/docs/appearance/site-names)
 const WEBSITE_JSON_LD = {
   '@context': 'https://schema.org',
@@ -122,8 +126,7 @@ export const viewport: Viewport = {
   themeColor: '#9E6BE6',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // 확대 제한은 앱에서만 (APP_NO_ZOOM_SCRIPT). 웹은 저시력 사용자를 위해 확대 허용
   // WebView edge-to-edge 환경에서 env(safe-area-inset-*) 값이 채워지도록 cover 지정
   viewportFit: 'cover',
 }
@@ -142,6 +145,7 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: HAS_TOKEN_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: APP_NO_ZOOM_SCRIPT }} />
         <JsonLd data={WEBSITE_JSON_LD} />
       </head>
       <body
@@ -155,7 +159,8 @@ export default function RootLayout({
           {/* PC(lg 이상)에서만 GNB · 푸터 노출. 래퍼도 lg 에서만 flex 라 모바일·WebView 는 기존 블록 흐름 그대로 */}
           <div className="lg:flex lg:min-h-screen lg:flex-col">
             <DesktopHeader />
-            <div className="lg:flex lg:flex-1 lg:flex-col">{children}</div>
+            {/* 페이지 본문 랜드마크. 하위 페이지에서는 <main> 을 다시 쓰지 않는다 */}
+            <main className="lg:flex lg:flex-1 lg:flex-col">{children}</main>
             <DesktopFooter />
           </div>
         </Providers>
