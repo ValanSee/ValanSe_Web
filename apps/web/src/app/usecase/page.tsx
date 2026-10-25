@@ -31,7 +31,7 @@ async function listScreens(): Promise<ScreenEntry[]> {
 export default async function UsecaseIndexPage() {
   const screens = await listScreens()
   return (
-    <main>
+    <div>
       <h1 style={{ marginBottom: 8 }}>화면 명세서 (Usecase)</h1>
       <p style={{ color: '#6b7280', marginTop: 0 }}>
         개발 환경 전용 페이지입니다. 프로덕션에서는 404로 차단됩니다.
@@ -52,6 +52,6 @@ export default async function UsecaseIndexPage() {
           </li>
         ))}
       </ul>
-    </main>
+    </div>
   )
 }

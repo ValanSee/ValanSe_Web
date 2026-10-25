@@ -13,7 +13,7 @@ export const PrivacyPolicyPage = () => {
       className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_COLUMN)}
     >
       <Header title="개인정보 처리방침" showBackButton />
-      <main className="mx-auto w-full max-w-2xl px-4 py-8 leading-relaxed">
+      <div className="mx-auto w-full max-w-2xl px-4 py-8 leading-relaxed">
         <header className="mb-6">
           <h1 className="typo-heading-03 text-foreground">개인정보 처리방침</h1>
           <p className="typo-body-b-01 mt-2 text-brand-gray-200">
@@ -184,7 +184,7 @@ export const PrivacyPolicyPage = () => {
         <footer className="typo-body-c-02 mt-9 text-brand-gray-200">
           © {new Date().getFullYear()} {APP_NAME}
         </footer>
-      </main>
+      </div>
     </div>
   )
 }
