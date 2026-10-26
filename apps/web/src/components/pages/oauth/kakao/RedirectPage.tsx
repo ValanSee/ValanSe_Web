@@ -9,6 +9,7 @@ import Loading from '@/components/_shared/loading'
 import {
   entryHrefWithRedirect,
   rememberPostAuthRedirect,
+  returnToLoginOrigin,
   safeRedirectPath,
 } from '@/utils/authRedirect'
 import { cn } from '@/lib/utils'
@@ -47,7 +48,9 @@ export default function KakaoRedirect() {
             await new Promise((resolve) => setTimeout(resolve, remainingTime))
 
             if (profile) {
-              router.replace(redirectAfterLogin ?? '/')
+              const target = redirectAfterLogin ?? '/'
+              // 원래 화면 기록 위치로 되돌아가 뒤로가기가 카카오 로그인으로 가지 않게 한다
+              if (!returnToLoginOrigin(target)) router.replace(target)
             } else if (profile === null) {
               if (redirectAfterLogin) {
                 rememberPostAuthRedirect(redirectAfterLogin)

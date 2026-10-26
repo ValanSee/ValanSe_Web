@@ -157,3 +157,84 @@ export function consumePendingCommentLike(
     return null
   }
 }
+
+/*
+ * 로그인 후 방문 기록 복원.
+ * 카카오 로그인 페이지는 다른 도메인이라 기록에서 지울 수 없어, 로그인 후 새 기록을 쌓으면
+ * 뒤로가기가 카카오 로그인으로 간다. 그래서 로그인 화면으로 push 하기 직전 기록 길이를 남겨 두고,
+ * 로그인 성공 시 history.go 로 그 위치까지 되돌아가 카카오 기록을 '앞으로 가기' 쪽으로 밀어낸다.
+ */
+const LOGIN_ORIGIN_KEY = 'valanse_login_origin'
+const POST_LOGIN_TARGET_KEY = 'valanse_post_login_target'
+// 브라우저는 history.length 를 50 에서 멈추므로 그 근처에선 계산을 믿을 수 없다
+const HISTORY_LENGTH_LIMIT = 50
+
+/** 현재 페이지에서 로그인 화면으로 push 하기 직전에 호출 */
+export function markLoginOrigin(): void {
+  try {
+    sessionStorage.setItem(LOGIN_ORIGIN_KEY, String(window.history.length))
+  } catch {
+    /* noop */
+  }
+}
+
+function readLoginOrigin(): number | null {
+  try {
+    const len = Number(sessionStorage.getItem(LOGIN_ORIGIN_KEY))
+    return Number.isInteger(len) && len > 0 ? len : null
+  } catch {
+    return null
+  }
+}
+
+function clearLoginOrigin(): void {
+  try {
+    sessionStorage.removeItem(LOGIN_ORIGIN_KEY)
+  } catch {
+    /* noop */
+  }
+}
+
+/**
+ * 로그인 화면 진입 시: 바로 직전에 push 로 들어온 경우에만 기록을 유지하고 아니면 지운다.
+ * 유지되면 true — 뒤로가기로 원래 화면에 돌아갈 수 있다.
+ */
+export function validateLoginOrigin(): boolean {
+  const len = readLoginOrigin()
+  const valid =
+    len !== null &&
+    window.history.length === len + 1 &&
+    window.history.length < HISTORY_LENGTH_LIMIT
+  if (!valid) clearLoginOrigin()
+  return valid
+}
+
+/**
+ * 로그인 성공 후: 로그인 화면으로 오기 전 기록 위치로 되돌아간다.
+ * 되돌아갈 수 없으면 false — 호출부에서 router.replace 로 이동한다.
+ */
+export function returnToLoginOrigin(target: string): boolean {
+  const len = readLoginOrigin()
+  clearLoginOrigin()
+  if (len === null) return false
+  const steps = window.history.length - len
+  if (steps < 1 || window.history.length >= HISTORY_LENGTH_LIMIT) return false
+  try {
+    sessionStorage.setItem(POST_LOGIN_TARGET_KEY, target)
+  } catch {
+    return false
+  }
+  window.history.go(-steps)
+  return true
+}
+
+/** 되돌아온 페이지에서 한 번 꺼내 쓰는 최종 목적지 */
+export function consumePostLoginTarget(): string | null {
+  try {
+    const raw = sessionStorage.getItem(POST_LOGIN_TARGET_KEY)
+    if (raw) sessionStorage.removeItem(POST_LOGIN_TARGET_KEY)
+    return safeRedirectPath(raw)
+  } catch {
+    return null
+  }
+}

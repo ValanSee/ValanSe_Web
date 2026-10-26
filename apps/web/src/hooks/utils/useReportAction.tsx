@@ -1,14 +1,13 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { createReport, type ReportReason, type ReportType } from '@/api/report'
 import ReportSheet from '@/components/ui/modal/reportSheet'
 import { Popup } from '@/components/ui/popup'
 import { getAccessToken } from '@/utils/tokenUtils'
-import { entryHrefWithRedirect } from '@/utils/authRedirect'
 import { markReported } from '@/utils/reportedContent'
+import { useGoToLogin } from './useGoToLogin'
 
 interface Options {
   /** 로그인 후 되돌아올 경로 */
@@ -38,7 +37,7 @@ const errorMessageOf = (e: unknown) =>
  * - 로그인 상태면 ReportSheet 노출 · createReport 호출 후 결과 팝업
  */
 export function useReportAction({ returnPath }: Options) {
-  const router = useRouter()
+  const goToLogin = useGoToLogin()
   const [target, setTarget] = useState<ReportTarget | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -47,13 +46,13 @@ export function useReportAction({ returnPath }: Options) {
   const openReport = useCallback(
     (type: ReportType, targetId: number) => {
       if (!getAccessToken()) {
-        router.replace(entryHrefWithRedirect(returnPath))
+        goToLogin(returnPath)
         return
       }
       setTarget({ type, id: targetId })
       setSheetOpen(true)
     },
-    [router, returnPath],
+    [goToLogin, returnPath],
   )
 
   const handleSubmit = async ({

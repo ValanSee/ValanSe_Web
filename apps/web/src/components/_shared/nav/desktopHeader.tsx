@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { buttonVariants } from '@/components/ui/button'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { getAccessToken } from '@/utils/tokenUtils'
-import { entryHrefWithRedirect } from '@/utils/authRedirect'
+import { entryHrefWithRedirect, markLoginOrigin } from '@/utils/authRedirect'
 import { cn } from '@/lib/utils'
 import { NAV_ITEMS, isNavActive } from './navItems'
 
@@ -85,6 +85,8 @@ export default function DesktopHeader() {
           ) : (
             <Link
               href={entryHrefWithRedirect(pathname)}
+              // 로그인 후 이 화면 기록 위치로 되돌아오기 위해 push 직전 기록 길이를 남긴다
+              onClick={markLoginOrigin}
               className={buttonVariants({ size: 'm', variant: 'ghost' })}
             >
               로그인
