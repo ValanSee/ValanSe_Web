@@ -9,7 +9,7 @@
 | 경로 | `/` (2026-10-05 `/main` 에서 이동, 리다이렉트 없음) |
 | 인증 필요 | ✗ (조회는 비로그인 가능, 투표 시 로그인 유도) |
 | 작성일 | 2026-05-15 |
-| 최종 수정일 | 2026-10-25 |
+| 최종 수정일 | 2026-10-27 |
 | 관련 디자인 | (Figma 링크) |
 
 ## 🎯 화면 목적
@@ -24,7 +24,7 @@
 ## 🖥️ 렌더링 (SEO)
 
 - "뜨고 있는 밸런스"(`GET /votes/trending?days=7` 1위)와 "올라오고 있는 밸런스"(`GET /votes` 최신 3개)를 서버에서 비로그인으로 조회해 SSR → HTML 에 `/poll/{id}` 링크 포함
-- `(auth)` 레이아웃의 AuthGuard 가 `useSearchParams` 를 써서 정적 생성 시 전체가 CSR 로 빠지므로 `dynamic = 'force-dynamic'` (API 응답은 60초 캐시)
+- 라우트는 `app/(public)/page.tsx` (AuthGuard · loading.tsx 없음) → 빌드 시 정적 생성 후 **60초 ISR**(`revalidate = 60`)로 CDN 캐시 응답. 예전 `(auth)` 그룹에서는 AuthGuard 의 `useSearchParams` 때문에 `force-dynamic` 으로 매 요청 서버 렌더링 (`cache-control: no-store`)
 - 섹션별로 서버 조회 실패 시 해당 섹션만 클라이언트에서 다시 조회
 - canonical `/` (sitemap 최상위 URL)
 - 예전 인증 분기 화면(구 SCR-AUTH-001)의 역할을 흡수: 토큰이 있으면 백그라운드로 프로필 조회 → 프로필 없음(온보딩 미완료)이면 `/onboarding`, 조회 실패는 무시하고 공개 홈 유지(토큰 무효는 authApi 인터셉터가 처리 — `/entry` 로 보내면 "로그인 없이 둘러보기"와 왕복). 홈을 떠난 뒤 도착한 응답으로는 이동하지 않음. 화면은 막지 않음
