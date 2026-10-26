@@ -122,6 +122,13 @@
     --primary: 265 71.1% 66.1%; /* V300 */
     --primary-foreground: 0 0% 100%;
 
+    /*
+     * 글자 전용 색 (WCAG AA 4.5:1). 배경 · 테두리의 브랜드 색(V300, G100)은 그대로 두고
+     * tailwind textColor 의 text-primary · text-brand-gray-100 만 이 값으로 바꾼다.
+     */
+    --text-primary: 265 58% 55%; /* #814acf · 흰 배경 5.5:1 · V50 배경 4.9:1 */
+    --text-muted: 0 0% 42%; /* #6b6b6b · 흰 배경 5.3:1 · V50 배경 4.8:1 */
+
     --secondary: 0 0% 96.5%; /* G50 */
     --secondary-foreground: 0 0% 10.2%; /* G500 */
 

@@ -205,6 +205,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
             </Link>
           )}
 
+          {/* 카드 제목(h3)이 h1 바로 아래로 건너뛰지 않도록 목록 구획 제목 (홈에서는 섹션 h2 가 이 역할) */}
+          <h2 className="sr-only">밸런스게임 목록</h2>
           <div className="flex flex-col gap-3 px-4 pt-4 lg:grid lg:grid-cols-2 lg:gap-ds-4 lg:px-0 lg:pt-0">
             {error && (
               <p className="typo-body-b-01 py-8 text-center text-destructive lg:col-span-2">

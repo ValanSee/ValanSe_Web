@@ -233,10 +233,11 @@ const CommentDetail = ({
   return (
     <div className="flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-[0_0_4px_rgba(0,0,0,0.06)]">
       <div className="flex items-center justify-between">
-        <h3 className="typo-title-02 text-foreground">
+        {/* 상세 페이지 h1(투표 제목) 바로 아래 구획이라 h2 */}
+        <h2 className="typo-title-02 text-foreground">
           댓글{' '}
           <span className="text-brand-gray-100">{localComments.length}</span>
-        </h3>
+        </h2>
         <div className="flex gap-1">
           {(['popular', 'latest'] as const).map((s) => (
             <button
