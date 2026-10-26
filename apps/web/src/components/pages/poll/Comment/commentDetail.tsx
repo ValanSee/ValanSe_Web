@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import {
   Comment,
   fetchComments,

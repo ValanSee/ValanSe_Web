@@ -2,7 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { voteOption, VoteResponse } from '@/api/votes'
 import { getAccessToken } from '@/utils/tokenUtils'
 import {

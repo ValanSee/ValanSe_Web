@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { safeRedirectPath } from '@/utils/authRedirect'
 
 function KakaoLoginButton() {

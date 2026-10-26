@@ -1,4 +1,4 @@
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { MyVoteHistoryItem } from '@/types/my/history'
 import { Chip } from '@/components/ui/chip'

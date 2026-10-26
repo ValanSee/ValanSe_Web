@@ -4,3 +4,5 @@ dist
 .next
 pnpm-lock.yaml
 README.md
+# 생성 파일 (pnpm icons:bundle)
+apps/web/src/constants/iconBundle.json

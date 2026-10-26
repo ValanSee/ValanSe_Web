@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 

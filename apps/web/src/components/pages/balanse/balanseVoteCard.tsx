@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import CategoryChip from '@/components/_shared/categoryChip'
 import VsBadge from '@/components/_shared/vsBadge'
 import VoteOptionPill from '@/components/_shared/voteOptionPill'

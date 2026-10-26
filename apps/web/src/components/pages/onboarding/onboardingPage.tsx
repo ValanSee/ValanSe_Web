@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { usePathname, useRouter } from 'next/navigation'
 import MBTIBottomSheet from './mbtiBottomSheet'
 import {
