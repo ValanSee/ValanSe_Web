@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import Header from '@/components/_shared/header'
 import BalanseHistoryCard from '@/components/pages/my/_shared/balanseHistoryCard'
 import { TabBar, TabItem } from '@/components/ui/tabBar'

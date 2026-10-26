@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import {
   REPORT_CONTENT_MAX_LENGTH,
   REPORT_REASONS,

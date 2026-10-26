@@ -1,4 +1,4 @@
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { Chip } from '@/components/ui/chip'
 import { getCategoryMeta } from '@/constants/category'
 

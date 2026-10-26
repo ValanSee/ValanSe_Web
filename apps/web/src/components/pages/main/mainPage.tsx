@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'

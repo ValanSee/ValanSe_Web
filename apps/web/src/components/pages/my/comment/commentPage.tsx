@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import Header from '@/components/_shared/header'
 import Avatar from '@/components/_shared/avatar'
 import { Button } from '@/components/ui/button'

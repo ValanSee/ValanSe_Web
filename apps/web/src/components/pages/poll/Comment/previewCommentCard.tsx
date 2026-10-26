@@ -1,5 +1,5 @@
 'use client'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 
 interface CommentCardProps {
   content: string

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { NAV_ITEMS, isNavActive } from './navItems'
 
 function NavBarContent() {

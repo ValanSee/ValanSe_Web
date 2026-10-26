@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import MBTIBottomSheet from '@/components/pages/onboarding/mbtiBottomSheet'
 import { Profile, MBTI, mbtiIe, mbtiTf, Age, Gender } from '@/types/member'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'

@@ -21,7 +21,7 @@ import {
   GenderStatisticsResponse,
 } from '@/api/comment/statisticsApi'
 import type { ChartData } from 'chart.js'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 
 ChartJS.register(
   ArcElement,

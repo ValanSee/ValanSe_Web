@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'

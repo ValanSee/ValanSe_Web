@@ -1,6 +1,6 @@
 'use client'
 
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'

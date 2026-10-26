@@ -1,6 +1,6 @@
 'use client'
 
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/ui/icon'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import BottomNavBar from '@/components/_shared/nav/bottomNavBar'

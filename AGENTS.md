@@ -239,6 +239,7 @@ refactor/match-list
 - **공통 컴포넌트 우선**: `src/components/common/`에 같은 역할의 컴포넌트가 있으면 재사용.
 - **페이지 코로케이션**: 처음엔 무조건 페이지 폴더 안에 둡니다. 두 페이지 이상에서 쓰이게 되면 그때 `common/`으로 승격.
 - **shadcn**: `src/components/ui/`는 빌딩 블록. 페이지에서는 `common/` 래퍼를 통해 import.
+- **아이콘**: `@iconify/react` 대신 `@/components/ui/icon` 의 `Icon` 을 쓴다 (미리 묶은 아이콘 데이터로 서버 렌더·외부 요청 없음). 새 아이콘을 추가하면 `pnpm --filter valanse-web icons:bundle` 로 `src/constants/iconBundle.json` 을 다시 생성해 함께 커밋.
 
 ### JSX Style
 
