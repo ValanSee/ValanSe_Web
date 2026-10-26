@@ -33,6 +33,9 @@
 3. `fetchProfileThunk` → 프로필 조회
 4. 분기:
    - 프로필 있음 → 저장된 복귀 경로(`redirectAfterLogin`), 없으면 `/`
+     - 페이지 안 동작에서 로그인하러 온 경우 새 기록을 쌓지 않고 `history.go(-n)` 으로 원래 화면 기록 위치까지 되돌아간다 (`returnToLoginOrigin`). 카카오 로그인 페이지 기록이 '앞으로 가기' 쪽으로 밀려나 뒤로가기가 카카오로 가지 않음
+     - 되돌아온 화면이 목적지와 다르면(목록에서 투표 → 상세) `PostLoginRestore` 가 목적지로 push, bfcache 로 로그아웃 화면이 복원되면 새로고침
+     - 되돌아갈 기록이 없거나(직접 진입·보호 페이지 가드) 방문 기록이 50 이상이면 기존처럼 `router.replace`
    - 프로필 없음 (신규) → `/onboarding`
    - 실패 → `/entry`
 

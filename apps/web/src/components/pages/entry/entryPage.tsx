@@ -3,12 +3,16 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Header from '@/components/_shared/header'
+import { validateLoginOrigin } from '@/utils/authRedirect'
 import KakaoLoginButton from './_components/kakaoLoginButton'
 
 function EntryPage() {
   const router = useRouter()
+  // 페이지 안 동작에서 push 로 들어왔으면 뒤로가기로 원래 화면에 돌아갈 수 있다
+  const [canGoBack, setCanGoBack] = useState(false)
+  useEffect(() => setCanGoBack(validateLoginOrigin()), [])
 
   // 가입 부담을 줄이는 안내 말풍선. 꼬리가 아래 카카오 버튼을 가리킨다
   const signupBubble = (
@@ -25,12 +29,13 @@ function EntryPage() {
     // PC: 회색 배경 가운데 로그인 카드
     <div className="flex min-h-screen flex-col bg-card lg:min-h-0 lg:flex-1 lg:items-center lg:justify-center lg:bg-transparent lg:py-ds-10">
       {/* 로그인 필요 기능에서 진입 시 막다른 길이 되지 않도록 뒤로가기 제공.
+          페이지 안 동작(좋아요 등)에서 push 로 왔으면 원래 화면으로 back.
           보호 페이지(/my 등)로 back 하면 가드가 다시 entry 로 보내 루프가 나므로
-          공개 홈으로 확실히 탈출시킨다. PC 에선 GNB 로 이동할 수 있어 숨김 */}
+          그 외에는 공개 홈으로 확실히 탈출시킨다. PC 에선 GNB 로 이동할 수 있어 숨김 */}
       <Header
         className="lg:hidden"
         showBackButton
-        onBackClick={() => router.replace('/')}
+        onBackClick={() => (canGoBack ? router.back() : router.replace('/'))}
       />
       <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center lg:w-[420px] lg:flex-none lg:justify-center lg:gap-ds-10 lg:rounded-2xl lg:bg-card lg:p-ds-10 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
         {/* 로고 & 슬로건 */}

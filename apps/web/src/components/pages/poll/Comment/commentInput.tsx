@@ -1,10 +1,10 @@
 'use client'
 import { useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { IconButton } from '@/components/ui/iconButton'
 import { createComment } from '@/api/comment/commentApi'
 import { getAccessToken } from '@/utils/tokenUtils'
-import { entryHrefWithRedirect } from '@/utils/authRedirect'
+import { useGoToLogin } from '@/hooks/utils/useGoToLogin'
 
 interface CommentInputProps {
   voteId: number | string
@@ -21,7 +21,7 @@ export default function CommentInput({
   placeholder = '댓글을 남겨보세요',
   postLoginReturnPath,
 }: CommentInputProps) {
-  const router = useRouter()
+  const goToLogin = useGoToLogin()
   const pathname = usePathname()
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -31,7 +31,7 @@ export default function CommentInput({
   const handleSubmit = async () => {
     if (!canSubmit) return
     if (!getAccessToken()) {
-      router.replace(entryHrefWithRedirect(postLoginReturnPath ?? pathname))
+      goToLogin(postLoginReturnPath ?? pathname)
       return
     }
     try {
