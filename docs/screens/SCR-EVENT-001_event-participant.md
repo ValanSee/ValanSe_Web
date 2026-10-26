@@ -22,9 +22,9 @@ MT·워크숍 같은 모임에서 참가자가 폰으로 QR 을 찍고 들어와
 
 ## 🖥️ 렌더링
 
-- 서버 컴포넌트가 방 존재만 확인(`requireRoom`)하고 없으면 404. 이후는 클라이언트 폴링 (`GET /api/event/rooms/{code}?pid=`, 2초, 탭 숨김 시 정지)
+- 서버 컴포넌트가 방 존재만 확인(`requireRoom`)하고 없으면 404. 이후는 클라이언트 폴링 (`GET /api/event/rooms/{code}?pid=`, 고르는 중 2초 · 대기/공개/종료 4초, 탭 숨김 시 정지)
 - 참가자 식별: `getOrCreateAnonymousId()` (localStorage) + 닉네임(localStorage `valanse_event_nickname`, 12자)
-- 방 상태 저장소는 Next Route Handler + Upstash Redis (`lib/event/store.ts`, Vercel 연동 env `KV_REST_API_URL`·`KV_REST_API_TOKEN`). 환경변수가 없으면 메모리(로컬 전용)
+- 방 상태 저장소는 Next Route Handler + Upstash Redis (`lib/event/store.ts`, Vercel 연동 env `KV_REST_API_URL`·`KV_REST_API_TOKEN`). 방 하나 = Redis 해시 하나(`meta`·`p:{pid}`·`v:{q}:{pid}`)라 폴링 1회 = 커맨드 1개(HGETALL). 환경변수가 없으면 메모리(로컬 전용)
 
 ## 📐 레이아웃 구성
 

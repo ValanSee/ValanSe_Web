@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import EventResultBars from './eventResultBars'
-import { useEventPolling } from '@/hooks/event/useEventPolling'
+import { pollIntervalFor, useEventPolling } from '@/hooks/event/useEventPolling'
 import {
   fetchHostState,
   sendHostAction,
@@ -52,7 +52,9 @@ export default function HostPage({ code }: Props) {
     () => (hostKey ? () => fetchHostState(code, hostKey) : null),
     [code, hostKey],
   )
-  const { data: state, error, setData } = useEventPolling(fetcher)
+  const [interval, setInterval_] = useState(pollIntervalFor(null))
+  const { data: state, error, setData } = useEventPolling(fetcher, interval)
+  useEffect(() => setInterval_(pollIntervalFor(state)), [state])
 
   const act = useCallback(
     async (action: EventHostAction) => {

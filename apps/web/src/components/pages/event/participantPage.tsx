@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import VoteOptionPill from '@/components/_shared/voteOptionPill'
 import EventResultBars from './eventResultBars'
-import { useEventPolling } from '@/hooks/event/useEventPolling'
+import { pollIntervalFor, useEventPolling } from '@/hooks/event/useEventPolling'
 import {
   castEventVote,
   fetchPublicState,
@@ -48,7 +48,10 @@ export default function ParticipantPage({ code }: Props) {
     () => (joined && pid ? () => fetchPublicState(code, pid) : null),
     [joined, pid, code],
   )
-  const { data: state, error, refresh, setData } = useEventPolling(fetcher)
+  // 간격은 직전 상태로 정한다: 고르는 중엔 2초, 대기·공개·종료는 4초
+  const [interval, setInterval_] = useState(pollIntervalFor(null))
+  const { data: state, error, refresh, setData } = useEventPolling(fetcher, interval)
+  useEffect(() => setInterval_(pollIntervalFor(state)), [state])
 
   const join = useCallback(async () => {
     if (!pid) return
