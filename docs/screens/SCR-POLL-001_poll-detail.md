@@ -64,7 +64,8 @@
 **사용자 액션**
 
 - 클릭 → 휴대폰 기본 공유 시트(Web Share API) 열림. 제목 `{투표 제목}`, 문구 `{투표 제목} — A vs B, 너라면 뭐 골라?`, URL `https://valanse.kr/poll/{id}` (쿼리 없는 canonical)
-- 공유 시트를 지원하지 않는 환경(PC 브라우저 일부 · Android 앱 WebView) → 링크 복사 + 토스트 `링크를 복사했어요`, 실패 시 `링크를 복사하지 못했어요`
+- 앱(Android WebView)에서는 Web Share API 가 없어서, 앱이 `window.__NATIVE_SHARE__` 를 주입한 경우 `ReactNativeWebView.postMessage({ type: 'share', title, text, url })` → 앱이 네이티브 공유 시트(`Share.share`)를 연다 (ValanSe_Native `App.tsx`)
+- 그 밖에 공유 시트를 지원하지 않는 환경(PC 브라우저 일부 · 공유 미지원 구버전 앱) → 링크 복사 + 토스트 `링크를 복사했어요`, 실패 시 `링크를 복사하지 못했어요`
 - 공유 시트를 닫으면 아무 동작 없음
 - 공유 미리보기 이미지는 게임별 OG 이미지(`opengraph-image.tsx`)
 

@@ -40,8 +40,15 @@ async function copyLink(url: string) {
   }
 }
 
+/** 앱 ↔ 웹 공유 메시지 형식 (ValanSe_Native App.tsx onMessage 와 동일) */
+export const NATIVE_SHARE_MESSAGE_TYPE = 'share'
+
 /**
- * 공유 버튼. 휴대폰 기본 공유 시트(Web Share API)가 있으면 열고, 없으면(PC · Android WebView) 링크를 복사한다.
+ * 공유 버튼.
+ * 1. 앱(WebView)이 네이티브 공유를 지원하면(`__NATIVE_SHARE__`) 앱에 요청 → 휴대폰 공유 시트
+ *    (Android WebView 에는 Web Share API 가 없어서 앱이 대신 연다. 구버전 앱은 표시가 없어 아래로)
+ * 2. 브라우저가 Web Share API 를 지원하면 공유 시트
+ * 3. 그 외(PC 일부 · 구버전 앱)는 링크 복사
  */
 export default function ShareButton({
   url,
@@ -51,6 +58,13 @@ export default function ShareButton({
   className,
 }: ShareButtonProps) {
   const handleShare = async () => {
+    if (window.__NATIVE_SHARE__ && window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: NATIVE_SHARE_MESSAGE_TYPE, title, text, url }),
+      )
+      return
+    }
+
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ title, text, url })
