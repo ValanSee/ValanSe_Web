@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Icon } from '@iconify/react'
 import {
   Comment,
@@ -20,9 +20,9 @@ import { cn } from '@/lib/utils'
 import { getAccessToken } from '@/utils/tokenUtils'
 import {
   consumePendingCommentLike,
-  entryHrefWithRedirect,
   setPendingCommentLike,
 } from '@/utils/authRedirect'
+import { useGoToLogin } from '@/hooks/utils/useGoToLogin'
 import CommentInput from './commentInput'
 
 interface CommentDetailProps {
@@ -66,7 +66,7 @@ const CommentDetail = ({
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
   const likingRef = useRef<Set<number>>(new Set())
 
-  const router = useRouter()
+  const goToLogin = useGoToLogin()
   const pathname = usePathname()
   const { openReport, reportUi } = useReportAction({
     returnPath: postLoginReturnPath ?? pathname,
@@ -155,7 +155,7 @@ const CommentDetail = ({
     // 로그인 후 이 페이지로 돌아와 자동으로 좋아요를 반영한다
     if (!getAccessToken()) {
       setPendingCommentLike(voteId, id, parentId)
-      router.replace(entryHrefWithRedirect(postLoginReturnPath ?? pathname))
+      goToLogin(postLoginReturnPath ?? pathname)
       return
     }
     const before =

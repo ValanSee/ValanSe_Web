@@ -1,10 +1,10 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { voteOption, type VoteResponse } from '@/api/votes'
 import { getAccessToken } from '@/utils/tokenUtils'
-import { entryHrefWithRedirect, setPendingVote } from '@/utils/authRedirect'
+import { setPendingVote } from '@/utils/authRedirect'
+import { useGoToLogin } from './useGoToLogin'
 
 interface Options {
   voteId: number | string
@@ -18,7 +18,7 @@ interface Options {
  * - 로그인 상태면 voteOption API 호출 · onVoted 콜백 실행
  */
 export function useVoteAction({ voteId, detailHref, onVoted }: Options) {
-  const router = useRouter()
+  const goToLogin = useGoToLogin()
   const [isVoting, setIsVoting] = useState(false)
 
   const submit = useCallback(
@@ -26,7 +26,7 @@ export function useVoteAction({ voteId, detailHref, onVoted }: Options) {
       if (isVoting) return
       if (!getAccessToken()) {
         setPendingVote(voteId, optionId)
-        router.replace(entryHrefWithRedirect(detailHref))
+        goToLogin(detailHref)
         return
       }
       try {
@@ -40,7 +40,7 @@ export function useVoteAction({ voteId, detailHref, onVoted }: Options) {
         setIsVoting(false)
       }
     },
-    [voteId, detailHref, onVoted, isVoting, router],
+    [voteId, detailHref, onVoted, isVoting, goToLogin],
   )
 
   return { submit, isVoting }
