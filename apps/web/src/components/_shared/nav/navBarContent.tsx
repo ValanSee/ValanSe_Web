@@ -18,7 +18,7 @@ function NavBarContent() {
             href={route}
             aria-current={isActive ? 'page' : undefined}
             className={`typo-label-03 flex flex-1 flex-col items-center justify-center gap-1 px-ds-2 text-center transition-colors ${
-              isActive ? 'text-primary' : 'text-brand-gray-75'
+              isActive ? 'text-primary' : 'text-brand-gray-100'
             }`}
           >
             <Icon icon={icon} width={28} height={28} aria-hidden />
