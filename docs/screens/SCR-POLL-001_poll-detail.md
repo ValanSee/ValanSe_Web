@@ -28,13 +28,14 @@
 - 같은 데이터로 페이지별 `title` · `description` · canonical(`/poll/{id}`) · OG 생성
   - title: `{제목} - {카테고리} 밸런스게임 | ValanSe`
   - description: 본문 · `A vs B` · 안내 문구 (150자 이내)
-  - JSON-LD: DiscussionForumPosting(참여 수 `interactionStatistic` VoteAction 포함) · BreadcrumbList
+  - JSON-LD: DiscussionForumPosting(참여 수 `interactionStatistic` VoteAction · 댓글 수 `commentCount` 포함) · BreadcrumbList
   - OG · 트위터 이미지: 게임별 자동 생성 (`opengraph-image.tsx`, 1200×630 — 카테고리 · 제목 · A vs B). 상세 조회 · 폰트 로드 실패 시 공통 `og-image.png`
 - 클라이언트에서 로그인 토큰으로 다시 조회해 `hasVoted` · 댓글 등을 갱신 (로딩 화면 없이 교체)
 - 로그인 사용자(토큰 있음)는 재조회 전까지 **선택지·참여자 수 자리에 스켈레톤** 노출 → 미투표 화면이 먼저 보이지 않음
   - 비로그인·크롤러는 SSR 선택지를 바로 노출
   - 재조회 전 선택지 클릭·로그인 후 대기 투표 자동 제출은 막음
 - 서버 조회가 실패·타임아웃이면 기존처럼 클라이언트에서만 조회
+- 베스트 댓글(`GET /votes/{id}/comments/best`) · 댓글 첫 페이지(`GET /votes/{id}/comments`)도 서버에서 상세와 함께 조회해 SSR → 댓글이 늦게 붙으며 아래 영역이 밀리던 CLS 제거, 댓글 텍스트 색인. 클라이언트는 이 값으로 시작해 로그인 기준으로 다시 조회. 실패한 항목만 클라이언트 조회로 대체
 - 라우트는 `app/(public)/poll/[id]` — 로딩 화면(`loading.tsx`)·AuthGuard 의 Suspense 가 없는 그룹이라, 없는 게임이면 응답이 스트리밍되기 전에 `notFound()` 가 실행돼 실제 HTTP 404 를 반환 (예전 `(auth)` 그룹에서는 200 + noindex 소프트 404). 상세는 로그인 강제 대상이 아니라 AuthGuard 불필요
 - 같은 카테고리 인기 게임 목록도 서버에서 조회해 내부 링크로 SSR (PC 사이드바 · 모바일 하단 목록, Suspense 로 따로 스트리밍) → 크롤러가 다른 상세 페이지로 이동할 수 있음
 

@@ -2,7 +2,10 @@ import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import PollDetailPage from '@/components/pages/poll/pollDetailPage'
-import { fetchPollDetailForServer } from '@/api/pages/poll/pollDetailServer'
+import {
+  fetchPollCommentsForServer,
+  fetchPollDetailForServer,
+} from '@/api/pages/poll/pollDetailServer'
 import PollSidebarServer from '@/components/pages/poll/pollSidebarServer'
 import RelatedPollsServer from '@/components/pages/poll/relatedPollsServer'
 import { getCategoryMeta } from '@/constants/category'
@@ -74,7 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // createdAt 은 시간대 없이 내려오므로 날짜만 사용
 const toDate = (createdAt: string) => createdAt.slice(0, 10)
 
-function buildJsonLd(poll: PollDetail) {
+function buildJsonLd(poll: PollDetail, commentCount: number | null) {
   const url = `${SITE_URL}/poll/${poll.voteId}`
   const category = getCategoryMeta(poll.category)
   const versus = poll.options.map((o) => o.content).join(' vs ')
@@ -92,6 +95,8 @@ function buildJsonLd(poll: PollDetail) {
       author: { '@type': 'Person', name: poll.creatorNickname },
       ...(category && { articleSection: category.label }),
       // 참여(투표) 수. 검색엔진이 토론 활성도 판단에 쓰는 지표
+      // 댓글 수 (2026-03 구글 권장 항목). 조회 실패 시 생략
+      ...(commentCount !== null && { commentCount }),
       interactionStatistic: {
         '@type': 'InteractionCounter',
         interactionType: 'https://schema.org/VoteAction',
@@ -123,7 +128,11 @@ function buildJsonLd(poll: PollDetail) {
 // 응답이 스트리밍되기 전에 notFound() 가 실행돼야 없는 게임이 실제 HTTP 404 로 내려간다 (소프트 404 방지)
 export default async function Page({ params }: Props) {
   const { id } = await params
-  const result = await fetchPollDetailForServer(id)
+  // 댓글도 함께 받아 첫 HTML 에 담는다 (클라이언트 조회 후 아래 영역이 밀리는 CLS 방지 · 댓글 텍스트 색인)
+  const [result, initialComments] = await Promise.all([
+    fetchPollDetailForServer(id),
+    fetchPollCommentsForServer(id),
+  ])
 
   if (result.status === 'not-found') notFound()
 
@@ -132,11 +141,15 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      {buildJsonLd(result.data).map((data) => (
+      {buildJsonLd(
+        result.data,
+        initialComments.best?.totalCommentCount ?? null,
+      ).map((data) => (
         <JsonLd key={String(data['@type'])} data={data} />
       ))}
       <PollDetailPage
         initialData={result.data}
+        initialComments={initialComments}
         sidebar={
           // PC 사이드바는 따로 스트리밍 (목록 조회가 느려도 본문은 먼저 응답)
           <Suspense fallback={null}>
