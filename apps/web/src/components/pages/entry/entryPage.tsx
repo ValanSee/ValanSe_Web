@@ -10,6 +10,17 @@ import KakaoLoginButton from './_components/kakaoLoginButton'
 function EntryPage() {
   const router = useRouter()
 
+  // 가입 부담을 줄이는 안내 말풍선. 꼬리가 아래 카카오 버튼을 가리킨다
+  const signupBubble = (
+    <div className="relative -mb-ds-1 rounded-full bg-brand-black px-ds-4 py-ds-2 shadow-md">
+      <p className="typo-label-03 text-white">⚡ 30초면 회원가입 완료!</p>
+      <span
+        aria-hidden
+        className="absolute -bottom-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-brand-black"
+      />
+    </div>
+  )
+
   return (
     // PC: 회색 배경 가운데 로그인 카드
     <div className="flex min-h-screen flex-col bg-card lg:min-h-0 lg:flex-1 lg:items-center lg:justify-center lg:bg-transparent lg:py-ds-10">
@@ -43,6 +54,7 @@ function EntryPage() {
 
         {/* CTA 영역 */}
         <div className="flex w-full max-w-sm flex-col items-center gap-4">
+          {signupBubble}
           <Suspense
             fallback={
               <div className="typo-label-02 flex h-14 w-full items-center justify-center rounded-xl bg-brand-kakao/60 font-semibold text-brand-gray-200">

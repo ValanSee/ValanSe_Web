@@ -1,6 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState, useEffect, useRef } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { Icon } from '@iconify/react'
 import {
   Comment,
@@ -12,10 +12,17 @@ import {
 } from '@/api/comment/commentApi'
 import MoreMenu, { type MoreMenuItem } from '@/components/_shared/moreMenu'
 import { Popup } from '@/components/ui/popup'
+import { toast } from '@/components/ui/toaster'
 import { useReportAction } from '@/hooks/utils/useReportAction'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import { Profile } from '@/types/member'
 import { cn } from '@/lib/utils'
+import { getAccessToken } from '@/utils/tokenUtils'
+import {
+  consumePendingCommentLike,
+  entryHrefWithRedirect,
+  setPendingCommentLike,
+} from '@/utils/authRedirect'
 import CommentInput from './commentInput'
 
 interface CommentDetailProps {
@@ -55,6 +62,11 @@ const CommentDetail = ({
     commentId: number | null
   }>({ isOpen: false, commentId: null })
 
+  // 이번 방문에서 내가 좋아요를 누른 댓글·대댓글 (서버가 눌림 여부를 내려주지 않아 응답으로 추적)
+  const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
+  const likingRef = useRef<Set<number>>(new Set())
+
+  const router = useRouter()
   const pathname = usePathname()
   const { openReport, reportUi } = useReportAction({
     returnPath: postLoginReturnPath ?? pathname,
@@ -110,37 +122,93 @@ const CommentDetail = ({
     }
   }
 
-  const handleLikeToggle = async (commentId: number) => {
-    if (!voteId) return
-    try {
-      const r = await toggleCommentLike(voteId, commentId)
+  /** parentId 가 있으면 대댓글 */
+  const applyLike = (
+    id: number,
+    parentId: number | null,
+    likeCount: number,
+    liked: boolean,
+  ) => {
+    if (parentId === null) {
       setLocalComments((prev) =>
-        prev.map((c) =>
-          c.commentId === commentId ? { ...c, likeCount: r.likeCount } : c,
-        ),
+        prev.map((c) => (c.commentId === id ? { ...c, likeCount } : c)),
       )
+    } else {
+      setReplies((prev) => ({
+        ...prev,
+        [parentId]:
+          prev[parentId]?.map((reply) =>
+            reply.id === id ? { ...reply, likeCount } : reply,
+          ) || [],
+      }))
+    }
+    setLikedIds((prev) => {
+      const next = new Set(prev)
+      if (liked) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }
+
+  const handleLikeToggle = async (id: number, parentId: number | null) => {
+    if (!voteId || likingRef.current.has(id)) return
+    // 로그인 후 이 페이지로 돌아와 자동으로 좋아요를 반영한다
+    if (!getAccessToken()) {
+      setPendingCommentLike(voteId, id, parentId)
+      router.replace(entryHrefWithRedirect(postLoginReturnPath ?? pathname))
+      return
+    }
+    const before =
+      parentId === null
+        ? localComments.find((c) => c.commentId === id)?.likeCount
+        : replies[parentId]?.find((reply) => reply.id === id)?.likeCount
+    likingRef.current.add(id)
+    try {
+      const { likeCount } = await toggleCommentLike(voteId, id)
+      // 토글 API 라 눌림 여부는 개수 증감으로 판단
+      const liked = before === undefined || likeCount > before
+      applyLike(id, parentId, likeCount, liked)
+      toast(liked ? '좋아요를 눌렀어요' : '좋아요를 취소했어요')
     } catch (e) {
       console.error('좋아요 실패:', e)
-      alert('좋아요 처리에 실패했습니다.')
+      toast.error('좋아요 처리에 실패했어요')
+    } finally {
+      likingRef.current.delete(id)
     }
   }
 
-  const handleReplyLikeToggle = async (commentId: number, replyId: number) => {
-    if (!voteId) return
-    try {
-      const r = await toggleCommentLike(voteId, replyId)
-      setReplies((prev) => ({
-        ...prev,
-        [commentId]:
-          prev[commentId]?.map((reply) =>
-            reply.id === replyId ? { ...reply, likeCount: r.likeCount } : reply,
-          ) || [],
-      }))
-    } catch (e) {
-      console.error('대댓글 좋아요 실패:', e)
-      alert('좋아요 처리에 실패했습니다.')
-    }
-  }
+  // 로그인 직전에 누른 좋아요를 댓글 목록이 준비되면 반영
+  useEffect(() => {
+    if (!voteId || localComments.length === 0 || !getAccessToken()) return
+    const pending = consumePendingCommentLike(voteId)
+    if (!pending) return
+    const { commentId: id, parentId } = pending
+
+    void (async () => {
+      try {
+        let before: number | undefined
+        if (parentId === null) {
+          before = localComments.find((c) => c.commentId === id)?.likeCount
+        } else {
+          const r = await fetchReplies(voteId, parentId)
+          const list = Array.isArray(r) ? r : r.replies || []
+          setReplies((prev) => ({ ...prev, [parentId]: list }))
+          setOpenReplies((prev) => ({ ...prev, [parentId]: true }))
+          before = list.find((reply) => reply.id === id)?.likeCount
+        }
+        let { likeCount } = await toggleCommentLike(voteId, id)
+        // 이미 좋아요한 댓글이었다면 토글로 취소됐으므로 한 번 더 눌러 되돌린다
+        if (before !== undefined && likeCount < before) {
+          ;({ likeCount } = await toggleCommentLike(voteId, id))
+        }
+        applyLike(id, parentId, likeCount, true)
+        toast('좋아요를 눌렀어요')
+      } catch (e) {
+        console.error('로그인 후 좋아요 반영 실패:', e)
+        toast.error('좋아요 처리에 실패했어요')
+      }
+    })()
+  }, [voteId, localComments])
 
   const confirmDelete = async () => {
     const { commentId } = deleteModal
@@ -269,10 +337,21 @@ const CommentDetail = ({
               <div className="flex items-center gap-4 typo-body-c-02 text-brand-gray-100">
                 <button
                   type="button"
-                  onClick={() => handleLikeToggle(comment.commentId)}
-                  className="flex items-center gap-1"
+                  onClick={() => handleLikeToggle(comment.commentId, null)}
+                  aria-pressed={likedIds.has(comment.commentId)}
+                  className={cn(
+                    'flex items-center gap-1',
+                    likedIds.has(comment.commentId) && 'text-primary',
+                  )}
                 >
-                  <Icon icon="tabler:heart" width={16} />
+                  <Icon
+                    icon={
+                      likedIds.has(comment.commentId)
+                        ? 'tabler:heart-filled'
+                        : 'tabler:heart'
+                    }
+                    width={16}
+                  />
                   <span>{comment.likeCount}</span>
                 </button>
                 <button
@@ -348,11 +427,22 @@ const CommentDetail = ({
                           <button
                             type="button"
                             onClick={() =>
-                              handleReplyLikeToggle(comment.commentId, reply.id)
+                              handleLikeToggle(reply.id, comment.commentId)
                             }
-                            className="typo-body-c-02 flex items-center gap-1 text-brand-gray-100"
+                            aria-pressed={likedIds.has(reply.id)}
+                            className={cn(
+                              'typo-body-c-02 flex items-center gap-1 text-brand-gray-100',
+                              likedIds.has(reply.id) && 'text-primary',
+                            )}
                           >
-                            <Icon icon="tabler:heart" width={14} />
+                            <Icon
+                              icon={
+                                likedIds.has(reply.id)
+                                  ? 'tabler:heart-filled'
+                                  : 'tabler:heart'
+                              }
+                              width={14}
+                            />
                             <span>{reply.likeCount}</span>
                           </button>
                         </div>

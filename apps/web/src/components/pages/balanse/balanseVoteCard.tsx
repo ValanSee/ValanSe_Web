@@ -17,7 +17,7 @@ export default function BalanseVoteCard({ data }: Props) {
   // 쿼리를 붙이지 않아 상세 URL 을 하나로 유지 (검색엔진 중복 URL 방지)
   const detailHref = `/poll/${data.id}`
   const [selectedId, setSelectedId] = useState<number | null>(null)
-  const { submit, isVoting, loginModal } = useVoteAction({
+  const { submit, isVoting } = useVoteAction({
     voteId: data.id,
     detailHref,
     onVoted: (_res, optionId) => {
@@ -72,7 +72,6 @@ export default function BalanseVoteCard({ data }: Props) {
           </span>
         </Link>
       </article>
-      {loginModal}
     </>
   )
 }

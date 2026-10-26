@@ -17,7 +17,7 @@ interface Props {
 export default function HomeVoteCard({ data }: Props) {
   const detailHref = `/poll/${data.voteId}`
   const [selectedId, setSelectedId] = useState<number | null>(null)
-  const { submit, isVoting, loginModal } = useVoteAction({
+  const { submit, isVoting } = useVoteAction({
     voteId: data.voteId,
     detailHref,
     onVoted: (_res, optionId) => {
@@ -64,7 +64,6 @@ export default function HomeVoteCard({ data }: Props) {
           </span>
         </div>
       </article>
-      {loginModal}
     </>
   )
 }

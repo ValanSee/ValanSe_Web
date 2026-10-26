@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { createReport, type ReportReason, type ReportType } from '@/api/report'
-import LoginRequiredModal from '@/components/ui/modal/loginRequiredModal'
 import ReportSheet from '@/components/ui/modal/reportSheet'
 import { Popup } from '@/components/ui/popup'
 import { getAccessToken } from '@/utils/tokenUtils'
@@ -35,7 +34,7 @@ const errorMessageOf = (e: unknown) =>
 
 /**
  * 투표·댓글 신고 공용 액션.
- * - 미로그인이면 LoginRequiredModal 노출, 확인 시 로그인 페이지로 이동
+ * - 미로그인이면 바로 로그인 페이지로 이동
  * - 로그인 상태면 ReportSheet 노출 · createReport 호출 후 결과 팝업
  */
 export function useReportAction({ returnPath }: Options) {
@@ -43,17 +42,19 @@ export function useReportAction({ returnPath }: Options) {
   const [target, setTarget] = useState<ReportTarget | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
   const [result, setResult] = useState<ReportResult | null>(null)
 
-  const openReport = useCallback((type: ReportType, targetId: number) => {
-    if (!getAccessToken()) {
-      setShowLoginModal(true)
-      return
-    }
-    setTarget({ type, id: targetId })
-    setSheetOpen(true)
-  }, [])
+  const openReport = useCallback(
+    (type: ReportType, targetId: number) => {
+      if (!getAccessToken()) {
+        router.replace(entryHrefWithRedirect(returnPath))
+        return
+      }
+      setTarget({ type, id: targetId })
+      setSheetOpen(true)
+    },
+    [router, returnPath],
+  )
 
   const handleSubmit = async ({
     reason,
@@ -104,14 +105,6 @@ export function useReportAction({ returnPath }: Options) {
         targetType={target?.type ?? 'COMMENT'}
         submitting={submitting}
         onSubmit={handleSubmit}
-      />
-      <LoginRequiredModal
-        open={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onLogin={() => {
-          setShowLoginModal(false)
-          router.replace(entryHrefWithRedirect(returnPath))
-        }}
       />
       <Popup
         open={!!result}

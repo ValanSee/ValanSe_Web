@@ -102,7 +102,7 @@ function PollCard({
     [],
   )
 
-  const { submit, isVoting, loginModal } = useVoteAction({
+  const { submit, isVoting } = useVoteAction({
     voteId,
     detailHref: postLoginReturnPath,
     onVoted: (response) => {
@@ -327,7 +327,6 @@ function PollCard({
           <PollOptionsSkeleton hasImages={hasImages} />
         </div>
       </article>
-      {loginModal}
     </>
   )
 }

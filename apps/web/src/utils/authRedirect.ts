@@ -1,8 +1,15 @@
 const STORAGE_KEY = 'valanse_post_auth_redirect'
 const PENDING_VOTE_KEY = 'valanse_pending_vote'
 const PENDING_VOTE_CLAIM_KEY = 'valanse_pending_vote_claim'
+const PENDING_COMMENT_LIKE_KEY = 'valanse_pending_comment_like'
 
 export type PendingVotePayload = { voteId: number; optionId: number }
+/** parentId 가 있으면 대댓글 좋아요 */
+export type PendingCommentLikePayload = {
+  voteId: number
+  commentId: number
+  parentId: number | null
+}
 
 /** 쿼리·카카오 state 등에서 온 값이 같은 오리진 내부 경로인지 검사 (오픈 리다이렉트 방지) */
 export function safeRedirectPath(
@@ -115,5 +122,38 @@ export function releasePendingVoteClaim(): void {
     sessionStorage.removeItem(PENDING_VOTE_CLAIM_KEY)
   } catch {
     /* noop */
+  }
+}
+
+/** 로그인 직전에 누른 댓글 좋아요 — 로그인 후 같은 투표 페이지에서 자동 반영 */
+export function setPendingCommentLike(
+  voteId: number | string,
+  commentId: number,
+  parentId: number | null,
+): void {
+  try {
+    sessionStorage.setItem(
+      PENDING_COMMENT_LIKE_KEY,
+      JSON.stringify({ voteId: Number(voteId), commentId, parentId }),
+    )
+  } catch {
+    /* noop */
+  }
+}
+
+/** 해당 투표의 대기 좋아요를 꺼내면서 지운다 (Strict/중복 effect 이중 요청 방지) */
+export function consumePendingCommentLike(
+  voteId: number | string,
+): PendingCommentLikePayload | null {
+  try {
+    const raw = sessionStorage.getItem(PENDING_COMMENT_LIKE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as PendingCommentLikePayload
+    if (parsed.voteId !== Number(voteId)) return null
+    sessionStorage.removeItem(PENDING_COMMENT_LIKE_KEY)
+    if (!Number.isFinite(parsed.commentId)) return null
+    return parsed
+  } catch {
+    return null
   }
 }
