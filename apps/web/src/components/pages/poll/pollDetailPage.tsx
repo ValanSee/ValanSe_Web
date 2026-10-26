@@ -28,6 +28,8 @@ import Link from 'next/link'
 import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import MoreMenu from '@/components/_shared/moreMenu'
+import ShareButton from '@/components/_shared/shareButton'
+import { SITE_URL } from '@/constants/seo'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useReportAction } from '@/hooks/utils/useReportAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
@@ -205,6 +207,19 @@ function PollDetailContent({
     />
   )
 
+  // 공유는 쿼리 없는 canonical 주소로 (공유 미리보기 · 검색 중복 URL 방지)
+  const versus = data.options.map((o) => o.content).join(' vs ')
+  const headerActions = (
+    <div className="flex items-center gap-ds-3">
+      <ShareButton
+        url={`${SITE_URL}/poll/${data.voteId}`}
+        title={data.title}
+        text={`${data.title} — ${versus}, 너라면 뭐 골라?`}
+      />
+      {moreMenu}
+    </div>
+  )
+
   return (
     <div
       className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_WIDE)}
@@ -216,7 +231,7 @@ function PollDetailContent({
         title="밸런스 게임"
         showBackButton
         onBackClick={handleBackClick}
-        trailing={moreMenu}
+        trailing={headerActions}
       />
       {/* PC: 뒤로가기 대신 브레드크럼 (JSON-LD BreadcrumbList 와 같은 경로) */}
       <div className="mb-ds-4 hidden items-center justify-between lg:flex">
@@ -247,7 +262,7 @@ function PollDetailContent({
             </li>
           </ol>
         </nav>
-        {moreMenu}
+        {headerActions}
       </div>
       <div className="lg:flex lg:items-start lg:gap-ds-8">
         <div className="flex min-w-0 flex-col lg:flex-1 lg:gap-ds-4">
