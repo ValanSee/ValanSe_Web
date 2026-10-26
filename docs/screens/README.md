@@ -33,6 +33,9 @@
 | SCR-ONBOARDING-001 | `/onboarding` | ✗ | [SCR-ONBOARDING-001_onboarding.md](./SCR-ONBOARDING-001_onboarding.md) |
 | SCR-PRIVACY-001 | `/privacy` | ✗ | [SCR-PRIVACY-001_privacy.md](./SCR-PRIVACY-001_privacy.md) |
 | SCR-TOPICS-001 | `/topics` | ✗ | [SCR-TOPICS-001_topics.md](./SCR-TOPICS-001_topics.md) |
+| SCR-EVENT-001 | `/event/[code]` | ✗ (닉네임) | [SCR-EVENT-001_event-participant.md](./SCR-EVENT-001_event-participant.md) |
+| SCR-EVENT-002 | `/event/[code]/host` | ✗ (사회자 키) | [SCR-EVENT-002_event-host.md](./SCR-EVENT-002_event-host.md) |
+| SCR-EVENT-003 | `/event/[code]/screen` | ✗ | [SCR-EVENT-003_event-screen.md](./SCR-EVENT-003_event-screen.md) |
 
 ## 공통 레이아웃 (PC, `lg` ≥ 1024px)
 
