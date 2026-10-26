@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { CATEGORIES } from '@/constants/category'
 import { SITE_NAME } from '@/constants/seo'
+import { EVENT_INQUIRY_FORM_URL } from '@/constants/url'
 
-type FooterLink = { label: string; href: string }
+type FooterLink = { label: string; href: string; external?: boolean }
 
 const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
   {
@@ -24,7 +25,10 @@ const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
   },
   {
     title: '안내',
-    links: [{ label: '개인정보 처리방침', href: '/privacy' }],
+    links: [
+      { label: '개인정보 처리방침', href: '/privacy' },
+      { label: '모임·행사용 문의', href: EVENT_INQUIRY_FORM_URL, external: true },
+    ],
   },
 ]
 
@@ -53,14 +57,25 @@ export default function DesktopFooter() {
             >
               <h2 className="typo-title-03 text-foreground">{title}</h2>
               <ul className="flex flex-col gap-ds-2">
-                {links.map(({ label, href }) => (
+                {links.map(({ label, href, external }) => (
                   <li key={href}>
-                    <Link
-                      href={href}
-                      className="typo-body-c-02 text-brand-gray-100 transition-colors hover:text-primary"
-                    >
-                      {label}
-                    </Link>
+                    {external ? (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="typo-body-c-02 text-brand-gray-100 transition-colors hover:text-primary"
+                      >
+                        {label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={href}
+                        className="typo-body-c-02 text-brand-gray-100 transition-colors hover:text-primary"
+                      >
+                        {label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
