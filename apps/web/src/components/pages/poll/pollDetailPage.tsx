@@ -32,7 +32,10 @@ import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useReportAction } from '@/hooks/utils/useReportAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
 import { getAccessToken } from '@/utils/tokenUtils'
-import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
+import type {
+  PollCommentsInitial,
+  PollDetail,
+} from '@/api/pages/poll/pollDetailServer'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN, DESKTOP_PAGE_WIDE } from '@/constants/layout'
 import { getCategoryMeta } from '@/constants/category'
@@ -40,6 +43,8 @@ import { getCategoryMeta } from '@/constants/category'
 interface PollDetailPageProps {
   /** 서버에서 비로그인으로 조회한 상세. 실패 시 null → 기존처럼 클라이언트에서 조회 */
   initialData: PollDetail | null
+  /** 서버에서 조회한 베스트 댓글 · 댓글 첫 페이지. 실패한 항목은 null → 클라이언트 조회 결과로 채움 */
+  initialComments?: PollCommentsInitial
   /** PC 사이드바 (서버 컴포넌트를 Suspense 로 감싼 슬롯). 없으면 미노출 */
   sidebar?: React.ReactNode
   /** 모바일 하단 같은 카테고리 목록 (서버 컴포넌트를 Suspense 로 감싼 슬롯). PC 는 사이드바가 대신함 */
@@ -48,6 +53,7 @@ interface PollDetailPageProps {
 
 export default function PollDetailPage({
   initialData,
+  initialComments,
   sidebar,
   related,
 }: PollDetailPageProps) {
@@ -55,6 +61,7 @@ export default function PollDetailPage({
     <Suspense fallback={<Loading />}>
       <PollDetailContent
         initialData={initialData}
+        initialComments={initialComments}
         sidebar={sidebar}
         related={related}
       />
@@ -64,6 +71,7 @@ export default function PollDetailPage({
 
 function PollDetailContent({
   initialData,
+  initialComments,
   sidebar,
   related,
 }: PollDetailPageProps) {
@@ -72,8 +80,12 @@ function PollDetailContent({
   const searchParams = useSearchParams()
   const postLoginReturnPath = buildCurrentReturnPath(pathname, searchParams)
   const [data, setData] = useState<PollDetail | null>(initialData)
-  const [bestComment, setBestComment] = useState<BestComment | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
+  const [bestComment, setBestComment] = useState<BestComment | null>(
+    initialComments?.best ?? null,
+  )
+  const [comments, setComments] = useState<Comment[]>(
+    initialComments?.comments ?? [],
+  )
   const [loading, setLoading] = useState(!initialData)
   // 로그인 기준 재조회 완료 여부(성공·실패 무관). SSR 데이터만 있을 땐 false
   const [synced, setSynced] = useState(!initialData)
