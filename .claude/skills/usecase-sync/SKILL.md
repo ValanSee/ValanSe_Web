@@ -62,7 +62,7 @@ ValanSe Web 저장소의 **화면 명세서(usecase)와 코드를 동기화**하
 |---|---|
 | `src/app/(auth)/page.tsx` / `src/components/pages/main/*` | `SCR-HOME-001` |
 | `src/app/(auth)/create/page.tsx` | `SCR-CREATE-001` |
-| `src/app/(auth)/poll/[id]/page.tsx` | `SCR-POLL-001` |
+| `src/app/(public)/poll/[id]/page.tsx` | `SCR-POLL-001` |
 | `src/app/(auth)/my/page.tsx` | `SCR-MY-001` |
 | `src/app/(auth)/my/edit/page.tsx` | `SCR-MY-EDIT-001` |
 | `src/app/(auth)/my/created/page.tsx` | `SCR-MY-CREATED-001` |

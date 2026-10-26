@@ -119,6 +119,8 @@ function buildJsonLd(poll: PollDetail) {
   ]
 }
 
+// (public) 그룹에는 loading.tsx · Suspense 레이아웃을 두지 않는다.
+// 응답이 스트리밍되기 전에 notFound() 가 실행돼야 없는 게임이 실제 HTTP 404 로 내려간다 (소프트 404 방지)
 export default async function Page({ params }: Props) {
   const { id } = await params
   const result = await fetchPollDetailForServer(id)
