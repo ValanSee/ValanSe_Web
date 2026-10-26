@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next'
-import localFont from 'next/font/local'
+// Pretendard 가변 폰트 dynamic subset: 유니코드 범위별로 쪼갠 woff2 92개 중 화면에 쓰인 글자 묶음만 받는다
+// (예전 굵기별 전체 글리프 woff2 4개 ≈ 3MB 를 모든 페이지가 미리 받던 문제 해소)
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import './globals.css'
 import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
@@ -15,34 +17,6 @@ import {
   SITE_NAME,
   SITE_URL,
 } from '@/constants/seo'
-
-const pretendard = localFont({
-  src: [
-    {
-      path: '../../public/fonts/Pretendard-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../../public/fonts/Pretendard-Medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../../public/fonts/Pretendard-SemiBold.woff2',
-      weight: '600',
-      style: 'normal',
-    },
-    {
-      path: '../../public/fonts/Pretendard-Bold.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-pretendard',
-  display: 'swap',
-  preload: true,
-})
 
 // 토큰은 localStorage 에만 있어 서버가 로그인 여부를 모름 → 첫 페인트 전에 html 에 표시 (투표 상세 스켈레톤용)
 const HAS_TOKEN_SCRIPT = `try{if(localStorage.getItem('access_token'))document.documentElement.setAttribute('data-has-token','')}catch(e){}`
@@ -139,7 +113,6 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={pretendard.variable}
       // 아래 인라인 스크립트가 hydration 전에 data-has-token 을 붙임
       suppressHydrationWarning
     >

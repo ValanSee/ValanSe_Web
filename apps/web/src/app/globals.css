@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Pretendard 조각을 받기 전 대체 폰트의 줄 높이·폭을 Pretendard 에 맞춰 레이아웃 밀림(CLS)을 막는다.
+ * 값은 기존 next/font 가 자동 생성하던 보정값과 동일.
+ */
+@font-face {
+  font-family: 'Pretendard Fallback';
+  src: local('Arial');
+  ascent-override: 93.76%;
+  descent-override: 23.75%;
+  line-gap-override: 0%;
+  size-adjust: 101.55%;
+}
+
 /* 접근성: 모션 최소화를 선호하는 사용자에게는 애니메이션/전환 비활성화 */
 @media (prefers-reduced-motion: reduce) {
   *,

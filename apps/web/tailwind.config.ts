@@ -127,9 +127,16 @@ export default {
       },
       fontFamily: {
         pretendard: [
-          'var(--font-pretendard)',
           'Pretendard Variable',
           'Pretendard',
+          'Pretendard Fallback',
+          // 폰트 조각을 받기 전 잠깐 보이는 시스템 한글 폰트
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'Apple SD Gothic Neo',
+          'Noto Sans KR',
+          'Malgun Gothic',
           'sans-serif',
         ],
       },
