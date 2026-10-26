@@ -4,119 +4,131 @@ import type { EventParticipant, EventRoom } from './types'
 /** 방 보관 기간. 행사 뒤 결과를 다시 볼 수 있게 7일 */
 export const ROOM_TTL_SECONDS = 60 * 60 * 24 * 7
 
+/** participantId → label, 질문 인덱스별 */
+export type VotesByQuestion = Record<number, Record<string, string>>
+
+export interface RoomSnapshot {
+  room: EventRoom
+  participants: EventParticipant[]
+  votes: VotesByQuestion
+}
+
 /**
  * 방 상태 저장소 인터페이스.
+ * 방 하나를 Redis 해시 **하나**에 담아 폴링 1회가 커맨드 1개(HGETALL)가 되게 한다.
+ * 필드: `meta` = EventRoom JSON, `p:{pid}` = 참가자 JSON, `v:{질문}:{pid}` = 선택 label
  * - 프로덕션: Upstash Redis (Vercel 연동 KV_REST_API_URL · KV_REST_API_TOKEN, 또는 UPSTASH_REDIS_REST_URL · TOKEN)
  * - 로컬: 환경변수가 없으면 프로세스 메모리 (next dev 한 프로세스 안에서만 공유)
  */
 export interface EventStore {
-  getRoom(code: string): Promise<EventRoom | null>
+  /** 방·참가자·표를 한 번에. 없으면 null */
+  getSnapshot(code: string): Promise<RoomSnapshot | null>
   saveRoom(room: EventRoom): Promise<void>
   addParticipant(code: string, p: EventParticipant): Promise<void>
-  getParticipants(code: string): Promise<EventParticipant[]>
   setVote(
     code: string,
     questionIndex: number,
     participantId: string,
     label: string,
   ): Promise<void>
-  /** participantId → label */
-  getVotes(code: string, questionIndex: number): Promise<Record<string, string>>
 }
 
 const roomKey = (code: string) => `event:room:${code}`
-const participantsKey = (code: string) => `event:room:${code}:participants`
-const votesKey = (code: string, q: number) => `event:room:${code}:votes:${q}`
+const META = 'meta'
+const participantField = (pid: string) => `p:${pid}`
+const voteField = (q: number, pid: string) => `v:${q}:${pid}`
+
+/** HGETALL 결과(필드 → 값)를 스냅샷으로 조립. 만료된 방은 null */
+function assemble(
+  fields: Record<string, unknown> | null,
+  now = Date.now(),
+): RoomSnapshot | null {
+  if (!fields || !fields[META]) return null
+  const room = (
+    typeof fields[META] === 'string'
+      ? JSON.parse(fields[META] as string)
+      : fields[META]
+  ) as EventRoom
+  if (room.expiresAt < now) return null
+  const participants: EventParticipant[] = []
+  const votes: VotesByQuestion = {}
+  for (const [field, value] of Object.entries(fields)) {
+    if (field.startsWith('p:')) {
+      participants.push(
+        (typeof value === 'string' ? JSON.parse(value) : value) as EventParticipant,
+      )
+    } else if (field.startsWith('v:')) {
+      const [, q, ...rest] = field.split(':')
+      const pid = rest.join(':')
+      const idx = Number(q)
+      ;(votes[idx] ??= {})[pid] = String(value)
+    }
+  }
+  participants.sort((a, b) => a.joinedAt - b.joinedAt)
+  return { room, participants, votes }
+}
 
 class UpstashStore implements EventStore {
   constructor(private redis: Redis) {}
 
-  async getRoom(code: string) {
-    return (await this.redis.get<EventRoom>(roomKey(code))) ?? null
+  async getSnapshot(code: string) {
+    const fields = await this.redis.hgetall<Record<string, unknown>>(roomKey(code))
+    return assemble(fields)
   }
 
   async saveRoom(room: EventRoom) {
+    const key = roomKey(room.code)
     const ttl = Math.max(60, Math.floor((room.expiresAt - Date.now()) / 1000))
-    await this.redis.set(roomKey(room.code), room, { ex: ttl })
+    // 해시 하나에 TTL 을 걸어 참가자·표 필드까지 함께 만료
+    await this.redis.hset(key, { [META]: room })
+    await this.redis.expire(key, ttl)
   }
 
   async addParticipant(code: string, p: EventParticipant) {
-    await this.redis.hset(participantsKey(code), { [p.id]: p })
-    await this.redis.expire(participantsKey(code), ROOM_TTL_SECONDS)
-  }
-
-  async getParticipants(code: string) {
-    const all = await this.redis.hgetall<Record<string, EventParticipant>>(
-      participantsKey(code),
-    )
-    return all ? Object.values(all) : []
+    await this.redis.hset(roomKey(code), { [participantField(p.id)]: p })
   }
 
   async setVote(code: string, q: number, pid: string, label: string) {
-    await this.redis.hset(votesKey(code, q), { [pid]: label })
-    await this.redis.expire(votesKey(code, q), ROOM_TTL_SECONDS)
+    await this.redis.hset(roomKey(code), { [voteField(q, pid)]: label })
   }
-
-  async getVotes(code: string, q: number) {
-    return (
-      (await this.redis.hgetall<Record<string, string>>(votesKey(code, q))) ??
-      {}
-    )
-  }
-}
-
-interface MemoryData {
-  rooms: Map<string, EventRoom>
-  participants: Map<string, Map<string, EventParticipant>>
-  votes: Map<string, Map<string, string>>
 }
 
 class MemoryStore implements EventStore {
-  private data: MemoryData
+  private rooms: Map<string, Record<string, unknown>>
 
   constructor() {
     // next dev 의 HMR 로 모듈이 다시 로드돼도 상태가 남도록 globalThis 에 둔다
-    const g = globalThis as typeof globalThis & { __eventStore?: MemoryData }
-    g.__eventStore ??= {
-      rooms: new Map(),
-      participants: new Map(),
-      votes: new Map(),
+    const g = globalThis as typeof globalThis & {
+      __eventRooms?: Map<string, Record<string, unknown>>
     }
-    this.data = g.__eventStore
+    g.__eventRooms ??= new Map()
+    this.rooms = g.__eventRooms
   }
 
-  async getRoom(code: string) {
-    const room = this.data.rooms.get(code) ?? null
-    if (room && room.expiresAt < Date.now()) {
-      this.data.rooms.delete(code)
-      return null
-    }
-    return room
+  private fields(code: string) {
+    const existing = this.rooms.get(code)
+    if (existing) return existing
+    const fresh: Record<string, unknown> = {}
+    this.rooms.set(code, fresh)
+    return fresh
+  }
+
+  async getSnapshot(code: string) {
+    const snapshot = assemble(this.rooms.get(code) ?? null)
+    if (!snapshot) this.rooms.delete(code)
+    return snapshot
   }
 
   async saveRoom(room: EventRoom) {
-    this.data.rooms.set(room.code, room)
+    this.fields(room.code)[META] = { ...room }
   }
 
   async addParticipant(code: string, p: EventParticipant) {
-    const map = this.data.participants.get(code) ?? new Map()
-    map.set(p.id, p)
-    this.data.participants.set(code, map)
-  }
-
-  async getParticipants(code: string) {
-    return [...(this.data.participants.get(code)?.values() ?? [])]
+    this.fields(code)[participantField(p.id)] = { ...p }
   }
 
   async setVote(code: string, q: number, pid: string, label: string) {
-    const key = votesKey(code, q)
-    const map = this.data.votes.get(key) ?? new Map()
-    map.set(pid, label)
-    this.data.votes.set(key, map)
-  }
-
-  async getVotes(code: string, q: number) {
-    return Object.fromEntries(this.data.votes.get(votesKey(code, q)) ?? [])
+    this.fields(code)[voteField(q, pid)] = label
   }
 }
 

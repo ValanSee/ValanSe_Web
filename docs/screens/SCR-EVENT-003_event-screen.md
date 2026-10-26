@@ -23,7 +23,7 @@
 
 - `ChromeGate`(`components/_shared/nav/chromeGate.tsx`)가 `/event/{code}/screen` 경로에서 PC GNB·푸터를 숨겨 전체 화면으로 쓴다
 - 참가 QR 은 클라이언트에서 `qrcode` 로 생성 (`https://valanse.kr/event/{code}`)
-- 2초 폴링 (`GET /api/event/rooms/{code}`, pid 없음)
+- 폴링 (`GET /api/event/rooms/{code}`, pid 없음; 질문 진행 중 2초 · 대기/공개/종료 4초)
 
 ## 📐 레이아웃 구성
 

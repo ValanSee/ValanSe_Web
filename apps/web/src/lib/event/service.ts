@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import { getEventStore, ROOM_TTL_SECONDS } from './store'
+import { getEventStore, ROOM_TTL_SECONDS, type RoomSnapshot } from './store'
 import type {
   EventHostAction,
   EventHostState,
@@ -71,7 +71,7 @@ export async function createRoom(
   const store = getEventStore()
   let code = randomCode()
   // 충돌은 사실상 없지만, 있으면 다시 뽑는다
-  for (let i = 0; i < 5 && (await store.getRoom(code)); i++) code = randomCode()
+  for (let i = 0; i < 5 && (await store.getSnapshot(code)); i++) code = randomCode()
   const now = Date.now()
   const room: EventRoom = {
     code,
@@ -88,10 +88,15 @@ export async function createRoom(
   return room
 }
 
+/** 방·참가자·표를 한 번에 (Redis 커맨드 1개). 없으면 404 */
+export async function requireSnapshot(code: string): Promise<RoomSnapshot> {
+  const snapshot = await getEventStore().getSnapshot(normalizeCode(code))
+  if (!snapshot) throw new EventError(404, '방을 찾을 수 없습니다')
+  return snapshot
+}
+
 export async function requireRoom(code: string): Promise<EventRoom> {
-  const room = await getEventStore().getRoom(normalizeCode(code))
-  if (!room) throw new EventError(404, '방을 찾을 수 없습니다')
-  return room
+  return (await requireSnapshot(code)).room
 }
 
 export async function joinRoom(
@@ -131,6 +136,10 @@ export async function castVote(
   await getEventStore().setVote(room.code, questionIndex, participantId, label)
 }
 
+function currentVotes({ room, votes }: RoomSnapshot): Record<string, string> {
+  return room.status === 'live' ? (votes[room.currentIndex] ?? {}) : {}
+}
+
 function tally(
   room: EventRoom,
   votes: Record<string, string>,
@@ -144,18 +153,12 @@ function tally(
   return counts
 }
 
-export async function getPublicState(
-  code: string,
+function toPublicState(
+  snapshot: RoomSnapshot,
   participantId: string | null,
-): Promise<EventPublicState> {
-  const room = await requireRoom(code)
-  const store = getEventStore()
-  const [participants, votes] = await Promise.all([
-    store.getParticipants(room.code),
-    room.status === 'live'
-      ? store.getVotes(room.code, room.currentIndex)
-      : Promise.resolve({} as Record<string, string>),
-  ])
+): EventPublicState {
+  const { room, participants } = snapshot
+  const votes = currentVotes(snapshot)
   const question =
     room.status === 'live' ? room.questions[room.currentIndex] : null
   return {
@@ -175,26 +178,26 @@ export async function getPublicState(
   }
 }
 
+export async function getPublicState(
+  code: string,
+  participantId: string | null,
+): Promise<EventPublicState> {
+  return toPublicState(await requireSnapshot(code), participantId)
+}
+
 export async function getHostState(
   code: string,
   hostKey: string,
 ): Promise<EventHostState> {
-  const room = await requireRoom(code)
+  const snapshot = await requireSnapshot(code)
+  const { room, participants } = snapshot
   if (!hostKey || hostKey !== room.hostKey) {
     throw new EventError(403, '사회자 키가 맞지 않습니다')
   }
-  const store = getEventStore()
-  const [base, participants, votes] = await Promise.all([
-    getPublicState(room.code, null),
-    store.getParticipants(room.code),
-    room.status === 'live'
-      ? store.getVotes(room.code, room.currentIndex)
-      : Promise.resolve({} as Record<string, string>),
-  ])
   return {
-    ...base,
-    counts: tally(room, votes),
-    participants: participants.sort((a, b) => a.joinedAt - b.joinedAt),
+    ...toPublicState(snapshot, null),
+    counts: tally(room, currentVotes(snapshot)),
+    participants,
     questions: room.questions,
   }
 }

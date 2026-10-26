@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import QRCode from 'qrcode'
 import EventResultBars from './eventResultBars'
-import { useEventPolling } from '@/hooks/event/useEventPolling'
+import { pollIntervalFor, useEventPolling } from '@/hooks/event/useEventPolling'
 import { fetchPublicState } from '@/api/event/eventRoomApi'
 import { SITE_URL } from '@/constants/seo'
 import { cn } from '@/lib/utils'
@@ -27,7 +27,9 @@ export default function ScreenPage({ code }: Props) {
   }, [joinUrl])
 
   const fetcher = useMemo(() => () => fetchPublicState(code, null), [code])
-  const { data: state, error } = useEventPolling(fetcher)
+  const [interval, setInterval_] = useState(pollIntervalFor(null))
+  const { data: state, error } = useEventPolling(fetcher, interval)
+  useEffect(() => setInterval_(pollIntervalFor(state)), [state])
 
   const frame = (children: React.ReactNode, dark = false) => (
     <div
