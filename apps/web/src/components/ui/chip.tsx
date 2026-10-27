@@ -14,7 +14,7 @@ const chipVariants = cva(
         l: 'px-3.5 py-2 typo-label-02',
       },
       status: {
-        /** V300 배경 · white 텍스트 · 강조 */
+        /** primary(#814acf) 배경 · white 텍스트 · 강조 */
         primary: 'bg-primary text-primary-foreground hover:bg-brand-violet-400',
         /** V50 배경 · V300 텍스트 · 선택된 필터 */
         secondary: 'bg-brand-violet-50 text-primary hover:bg-brand-violet-75',
