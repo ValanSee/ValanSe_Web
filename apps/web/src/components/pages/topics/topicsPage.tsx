@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 import type { CategoryMeta } from '@/constants/category'
 import type { Vote } from '@/types/balanse/vote'
+import { EVENT_INQUIRY_FORM_URL } from '@/constants/url'
 
 export interface TopicsSection {
   category: CategoryMeta
@@ -29,6 +30,10 @@ const GUIDES = [
   {
     title: '주제를 직접 만들 수도 있나요?',
     body: '네. 떠오르는 질문이 있다면 밸런스게임을 직접 만들어 다른 사람들의 선택을 받아 보세요.',
+  },
+  {
+    title: 'MT·워크숍·모임에서 쓰고 싶어요',
+    body: '모임 분위기에 맞춘 질문 25개를 프로젝터용 PPT와 참여자 투표 링크로 묶어 드려요 (행사 1회 3만 원). 아래 문의하기로 모임 종류와 날짜를 남겨 주세요.',
   },
 ]
 
@@ -95,6 +100,14 @@ export default function TopicsPage({ popular, sections }: Props) {
           >
             밸런스게임 만들기
           </Link>
+          <a
+            href={EVENT_INQUIRY_FORM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="typo-label-02 flex h-11 items-center justify-center rounded-xl border border-border bg-card text-foreground"
+          >
+            모임용 게임 세트 문의하기
+          </a>
         </TopicCard>
       </div>
 

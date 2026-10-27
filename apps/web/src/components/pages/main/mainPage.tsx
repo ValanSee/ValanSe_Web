@@ -25,6 +25,7 @@ import { fetchProfileThunk } from '@/store/thunks/memberThunks'
 import { getAccessToken } from '@/utils/tokenUtils'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_WIDE } from '@/constants/layout'
+import { EVENT_INQUIRY_FORM_URL } from '@/constants/url'
 
 interface MainPageProps {
   /** 서버 조회 결과. undefined 면 서버 조회 실패 → 클라이언트에서 조회 */
@@ -147,6 +148,15 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
               </Link>
             ))}
           </HorizontalScroll>
+          <a
+            href={EVENT_INQUIRY_FORM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="typo-body-c-02 flex items-center gap-1 px-4 text-brand-gray-100 hover:text-foreground lg:px-0"
+          >
+            MT·워크숍용 게임 세트가 필요하세요? 문의하기
+            <Icon icon="mingcute:right-line" width={14} aria-hidden />
+          </a>
         </section>
       </div>
 
