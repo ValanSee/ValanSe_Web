@@ -28,11 +28,18 @@ import Link from 'next/link'
 import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import MoreMenu from '@/components/_shared/moreMenu'
+import ShareButton, { shareLink } from '@/components/_shared/shareButton'
+import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/icon'
+import { SITE_URL } from '@/constants/seo'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useReportAction } from '@/hooks/utils/useReportAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
 import { getAccessToken } from '@/utils/tokenUtils'
-import type { PollDetail } from '@/api/pages/poll/pollDetailServer'
+import type {
+  PollCommentsInitial,
+  PollDetail,
+} from '@/api/pages/poll/pollDetailServer'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN, DESKTOP_PAGE_WIDE } from '@/constants/layout'
 import { getCategoryMeta } from '@/constants/category'
@@ -40,6 +47,8 @@ import { getCategoryMeta } from '@/constants/category'
 interface PollDetailPageProps {
   /** 서버에서 비로그인으로 조회한 상세. 실패 시 null → 기존처럼 클라이언트에서 조회 */
   initialData: PollDetail | null
+  /** 서버에서 조회한 베스트 댓글 · 댓글 첫 페이지. 실패한 항목은 null → 클라이언트 조회 결과로 채움 */
+  initialComments?: PollCommentsInitial
   /** PC 사이드바 (서버 컴포넌트를 Suspense 로 감싼 슬롯). 없으면 미노출 */
   sidebar?: React.ReactNode
   /** 모바일 하단 같은 카테고리 목록 (서버 컴포넌트를 Suspense 로 감싼 슬롯). PC 는 사이드바가 대신함 */
@@ -48,6 +57,7 @@ interface PollDetailPageProps {
 
 export default function PollDetailPage({
   initialData,
+  initialComments,
   sidebar,
   related,
 }: PollDetailPageProps) {
@@ -55,6 +65,7 @@ export default function PollDetailPage({
     <Suspense fallback={<Loading />}>
       <PollDetailContent
         initialData={initialData}
+        initialComments={initialComments}
         sidebar={sidebar}
         related={related}
       />
@@ -64,6 +75,7 @@ export default function PollDetailPage({
 
 function PollDetailContent({
   initialData,
+  initialComments,
   sidebar,
   related,
 }: PollDetailPageProps) {
@@ -72,8 +84,12 @@ function PollDetailContent({
   const searchParams = useSearchParams()
   const postLoginReturnPath = buildCurrentReturnPath(pathname, searchParams)
   const [data, setData] = useState<PollDetail | null>(initialData)
-  const [bestComment, setBestComment] = useState<BestComment | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
+  const [bestComment, setBestComment] = useState<BestComment | null>(
+    initialComments?.best ?? null,
+  )
+  const [comments, setComments] = useState<Comment[]>(
+    initialComments?.comments ?? [],
+  )
   const [loading, setLoading] = useState(!initialData)
   // 로그인 기준 재조회 완료 여부(성공·실패 무관). SSR 데이터만 있을 땐 false
   const [synced, setSynced] = useState(!initialData)
@@ -193,6 +209,20 @@ function PollDetailContent({
     />
   )
 
+  // 공유는 쿼리 없는 canonical 주소로 (공유 미리보기 · 검색 중복 URL 방지)
+  const versus = data.options.map((o) => o.content).join(' vs ')
+  const shareData = {
+    url: `${SITE_URL}/poll/${data.voteId}`,
+    title: data.title,
+    text: `${data.title} — ${versus}, 너라면 뭐 골라?`,
+  }
+  const headerActions = (
+    <div className="flex items-center gap-ds-3">
+      <ShareButton {...shareData} />
+      {moreMenu}
+    </div>
+  )
+
   return (
     <div
       className={cn('flex min-h-screen flex-col bg-card', DESKTOP_PAGE_WIDE)}
@@ -204,7 +234,7 @@ function PollDetailContent({
         title="밸런스 게임"
         showBackButton
         onBackClick={handleBackClick}
-        trailing={moreMenu}
+        trailing={headerActions}
       />
       {/* PC: 뒤로가기 대신 브레드크럼 (JSON-LD BreadcrumbList 와 같은 경로) */}
       <div className="mb-ds-4 hidden items-center justify-between lg:flex">
@@ -235,7 +265,7 @@ function PollDetailContent({
             </li>
           </ol>
         </nav>
-        {moreMenu}
+        {headerActions}
       </div>
       <div className="lg:flex lg:items-start lg:gap-ds-8">
         <div className="flex min-w-0 flex-col lg:flex-1 lg:gap-ds-4">
@@ -275,6 +305,20 @@ function PollDetailContent({
                 showStats={showStats}
                 setShowStatsAction={setShowStats}
               />
+            )}
+            {/* 투표 직후가 공유 의향이 가장 높은 순간 → 결과 아래 공유 유도 */}
+            {data && data.hasVoted && (
+              <Button
+                variant="secondary"
+                fullWidth
+                className="my-4"
+                leadingIcon={
+                  <Icon icon="tabler:share" width={20} aria-hidden />
+                }
+                onClick={() => shareLink(shareData)}
+              >
+                친구는 뭘 골랐을까? 물어보기
+              </Button>
             )}
             {bestComment && bestComment.totalCommentCount > 0 && (
               <PreviewCommentCard

@@ -147,6 +147,8 @@ Figma 사양(Yellow/Violet/Gray/Red/Black 팔레트, Heading/Title/Body/Label �
 3. **임의 hex(`[#XXXXXX]`)는 신규 코드에서 금지**
    - 예외: 알파 조절(`bg-black/20`, `text-white/70`) 및 실제 이미지/그림자 등 팔레트로 표현 불가한 경우 한정.
 
+> **글자 대비 (2026-10-26)**: `text-primary` · `text-brand-gray-100` 은 글자 전용 토큰(`--text-primary` #814acf, `--text-muted` #6b6b6b)으로 렌더되어 흰 배경 4.5:1 이상을 만족합니다. 같은 이름의 `bg-*` · `border-*` 는 기존 브랜드 색(V300 · G100) 그대로입니다. 작은 글자에 `text-brand-violet-300` · `text-brand-gray-75` 처럼 연한 스와치를 직접 쓰지 마세요.
+
 ### 타이포그래피
 
 - 새 컴포넌트에서 `text-[Npx]`, `font-[숫자]`, `leading-[…]`, `tracking-[…]` **임의값 조합 금지**.
