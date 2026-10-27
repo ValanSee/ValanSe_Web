@@ -1,5 +1,6 @@
 import { publicApi } from '../instance/publicApi'
 import { authApi } from '../instance/authApi'
+import { getAccessToken } from '@/utils/tokenUtils'
 
 export interface BestComment {
   totalCommentCount: number
@@ -18,6 +19,8 @@ export interface Comment {
   deleted: boolean
   daysAgo: number
   hoursAgo: number
+  /** 내가 좋아요했는지. 로그인해 조회했을 때만 의미 있음 (서버 미배포 시 없음) */
+  liked?: boolean
 }
 
 export interface Reply {
@@ -30,6 +33,7 @@ export interface Reply {
   deleted: boolean
   daysAgo: number
   hoursAgo: number
+  liked?: boolean
 }
 
 export interface CommentsResponse {
@@ -49,6 +53,8 @@ export interface RepliesResponse {
 export interface LikeResponse {
   commentId: number
   likeCount: number
+  /** 토글 이후 상태 (서버 미배포 시 없음) */
+  liked?: boolean
   message: string
 }
 
@@ -63,10 +69,17 @@ export async function fetchComments(
   voteId: number | string,
   params?: { sort?: string; page?: number; size?: number },
 ): Promise<CommentsResponse> {
-  const res = await publicApi.get<CommentsResponse>(
-    `/votes/${voteId}/comments`,
-    { params },
-  )
+  const path = `/votes/${voteId}/comments`
+  // 로그인 상태면 토큰을 붙여 내 좋아요 여부(liked)까지 받는다
+  if (getAccessToken()) {
+    try {
+      const res = await authApi.get<CommentsResponse>(path, { params })
+      return res.data
+    } catch {
+      // 토큰 무효·재발급 실패여도 댓글은 비로그인 조회로 보여준다
+    }
+  }
+  const res = await publicApi.get<CommentsResponse>(path, { params })
   return res.data
 }
 

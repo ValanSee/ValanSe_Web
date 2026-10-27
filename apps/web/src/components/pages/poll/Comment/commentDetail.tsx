@@ -62,8 +62,6 @@ const CommentDetail = ({
     commentId: number | null
   }>({ isOpen: false, commentId: null })
 
-  // 이번 방문에서 내가 좋아요를 누른 댓글·대댓글 (서버가 눌림 여부를 내려주지 않아 응답으로 추적)
-  const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
   const likingRef = useRef<Set<number>>(new Set())
 
   const goToLogin = useGoToLogin()
@@ -131,23 +129,17 @@ const CommentDetail = ({
   ) => {
     if (parentId === null) {
       setLocalComments((prev) =>
-        prev.map((c) => (c.commentId === id ? { ...c, likeCount } : c)),
+        prev.map((c) => (c.commentId === id ? { ...c, likeCount, liked } : c)),
       )
     } else {
       setReplies((prev) => ({
         ...prev,
         [parentId]:
           prev[parentId]?.map((reply) =>
-            reply.id === id ? { ...reply, likeCount } : reply,
+            reply.id === id ? { ...reply, likeCount, liked } : reply,
           ) || [],
       }))
     }
-    setLikedIds((prev) => {
-      const next = new Set(prev)
-      if (liked) next.add(id)
-      else next.delete(id)
-      return next
-    })
   }
 
   const handleLikeToggle = async (id: number, parentId: number | null) => {
@@ -164,9 +156,10 @@ const CommentDetail = ({
         : replies[parentId]?.find((reply) => reply.id === id)?.likeCount
     likingRef.current.add(id)
     try {
-      const { likeCount } = await toggleCommentLike(voteId, id)
-      // 토글 API 라 눌림 여부는 개수 증감으로 판단
-      const liked = before === undefined || likeCount > before
+      const r = await toggleCommentLike(voteId, id)
+      const { likeCount } = r
+      // 서버가 liked 를 주지 않으면(구버전) 개수 증감으로 판단
+      const liked = r.liked ?? (before === undefined || likeCount > before)
       applyLike(id, parentId, likeCount, liked)
       toast(liked ? '좋아요를 눌렀어요' : '좋아요를 취소했어요')
     } catch (e) {
@@ -186,22 +179,33 @@ const CommentDetail = ({
 
     void (async () => {
       try {
-        let before: number | undefined
+        let target: Comment | Reply | undefined
         if (parentId === null) {
-          before = localComments.find((c) => c.commentId === id)?.likeCount
+          target = localComments.find((c) => c.commentId === id)
         } else {
           const r = await fetchReplies(voteId, parentId)
           const list = Array.isArray(r) ? r : r.replies || []
           setReplies((prev) => ({ ...prev, [parentId]: list }))
           setOpenReplies((prev) => ({ ...prev, [parentId]: true }))
-          before = list.find((reply) => reply.id === id)?.likeCount
+          target = list.find((reply) => reply.id === id)
         }
-        let { likeCount } = await toggleCommentLike(voteId, id)
-        // 이미 좋아요한 댓글이었다면 토글로 취소됐으므로 한 번 더 눌러 되돌린다
-        if (before !== undefined && likeCount < before) {
-          ;({ likeCount } = await toggleCommentLike(voteId, id))
+        // 이미 좋아요한 댓글이면 토글하지 않는다 (누르면 취소됨)
+        if (target?.liked) {
+          applyLike(id, parentId, target.likeCount, true)
+          toast('좋아요를 눌렀어요')
+          return
         }
-        applyLike(id, parentId, likeCount, true)
+        const before = target?.likeCount
+        let r = await toggleCommentLike(voteId, id)
+        // 토글로 취소됐다면 원래 눌려 있던 것이므로 한 번 더 눌러 되돌린다
+        // (서버가 liked 를 주지 않으면 개수 감소로 판단)
+        const cancelled =
+          r.liked === false ||
+          (r.liked === undefined &&
+            before !== undefined &&
+            r.likeCount < before)
+        if (cancelled) r = await toggleCommentLike(voteId, id)
+        applyLike(id, parentId, r.likeCount, true)
         toast('좋아요를 눌렀어요')
       } catch (e) {
         console.error('로그인 후 좋아요 반영 실패:', e)
@@ -338,17 +342,15 @@ const CommentDetail = ({
                 <button
                   type="button"
                   onClick={() => handleLikeToggle(comment.commentId, null)}
-                  aria-pressed={likedIds.has(comment.commentId)}
+                  aria-pressed={!!comment.liked}
                   className={cn(
                     'flex items-center gap-1',
-                    likedIds.has(comment.commentId) && 'text-primary',
+                    !!comment.liked && 'text-primary',
                   )}
                 >
                   <Icon
                     icon={
-                      likedIds.has(comment.commentId)
-                        ? 'tabler:heart-filled'
-                        : 'tabler:heart'
+                      comment.liked ? 'tabler:heart-filled' : 'tabler:heart'
                     }
                     width={16}
                   />
@@ -429,15 +431,15 @@ const CommentDetail = ({
                             onClick={() =>
                               handleLikeToggle(reply.id, comment.commentId)
                             }
-                            aria-pressed={likedIds.has(reply.id)}
+                            aria-pressed={!!reply.liked}
                             className={cn(
                               'typo-body-c-02 flex items-center gap-1 text-brand-gray-100',
-                              likedIds.has(reply.id) && 'text-primary',
+                              !!reply.liked && 'text-primary',
                             )}
                           >
                             <Icon
                               icon={
-                                likedIds.has(reply.id)
+                                reply.liked
                                   ? 'tabler:heart-filled'
                                   : 'tabler:heart'
                               }
