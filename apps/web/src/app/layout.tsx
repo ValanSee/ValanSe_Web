@@ -9,6 +9,7 @@ import { NativeBackHandler } from '@/components/_shared/nativeBackHandler'
 import { PageViewTracker } from '@/components/_shared/pageViewTracker'
 import DesktopHeader from '@/components/_shared/nav/desktopHeader'
 import DesktopFooter from '@/components/_shared/desktopFooter'
+import ChromeGate from '@/components/_shared/nav/chromeGate'
 import { JsonLd } from '@/components/_shared/jsonLd'
 import {
   BASE_OPEN_GRAPH,
@@ -131,10 +132,15 @@ export default function RootLayout({
           <PageViewTracker />
           {/* PC(lg 이상)에서만 GNB · 푸터 노출. 래퍼도 lg 에서만 flex 라 모바일·WebView 는 기존 블록 흐름 그대로 */}
           <div className="lg:flex lg:min-h-screen lg:flex-col">
-            <DesktopHeader />
+            {/* 프로젝터 화면(/event/{code}/screen)처럼 꽉 채우는 경로에선 GNB·푸터를 뺀다 */}
+            <ChromeGate>
+              <DesktopHeader />
+            </ChromeGate>
             {/* 페이지 본문 랜드마크. 하위 페이지에서는 <main> 을 다시 쓰지 않는다 */}
             <main className="lg:flex lg:flex-1 lg:flex-col">{children}</main>
-            <DesktopFooter />
+            <ChromeGate>
+              <DesktopFooter />
+            </ChromeGate>
           </div>
         </Providers>
       </body>
