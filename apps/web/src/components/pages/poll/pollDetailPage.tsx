@@ -28,7 +28,9 @@ import Link from 'next/link'
 import Header from '@/components/_shared/header'
 import Loading from '@/components/_shared/loading'
 import MoreMenu from '@/components/_shared/moreMenu'
-import ShareButton from '@/components/_shared/shareButton'
+import ShareButton, { shareLink } from '@/components/_shared/shareButton'
+import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/icon'
 import { SITE_URL } from '@/constants/seo'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useReportAction } from '@/hooks/utils/useReportAction'
@@ -209,13 +211,14 @@ function PollDetailContent({
 
   // 공유는 쿼리 없는 canonical 주소로 (공유 미리보기 · 검색 중복 URL 방지)
   const versus = data.options.map((o) => o.content).join(' vs ')
+  const shareData = {
+    url: `${SITE_URL}/poll/${data.voteId}`,
+    title: data.title,
+    text: `${data.title} — ${versus}, 너라면 뭐 골라?`,
+  }
   const headerActions = (
     <div className="flex items-center gap-ds-3">
-      <ShareButton
-        url={`${SITE_URL}/poll/${data.voteId}`}
-        title={data.title}
-        text={`${data.title} — ${versus}, 너라면 뭐 골라?`}
-      />
+      <ShareButton {...shareData} />
       {moreMenu}
     </div>
   )
@@ -302,6 +305,20 @@ function PollDetailContent({
                 showStats={showStats}
                 setShowStatsAction={setShowStats}
               />
+            )}
+            {/* 투표 직후가 공유 의향이 가장 높은 순간 → 결과 아래 공유 유도 */}
+            {data && data.hasVoted && (
+              <Button
+                variant="secondary"
+                fullWidth
+                className="my-4"
+                leadingIcon={
+                  <Icon icon="tabler:share" width={20} aria-hidden />
+                }
+                onClick={() => shareLink(shareData)}
+              >
+                친구는 뭘 골랐을까? 물어보기
+              </Button>
             )}
             {bestComment && bestComment.totalCommentCount > 0 && (
               <PreviewCommentCard

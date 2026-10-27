@@ -43,13 +43,45 @@ async function copyLink(url: string) {
 /** 앱 ↔ 웹 공유 메시지 형식 (ValanSe_Native App.tsx onMessage 와 동일) */
 export const NATIVE_SHARE_MESSAGE_TYPE = 'share'
 
+export interface ShareData {
+  /** 공유할 절대 URL (쿼리 없는 canonical 주소) */
+  url: string
+  title: string
+  /** 공유 시트에 함께 들어갈 문구 */
+  text?: string
+}
+
 /**
- * 공유 버튼.
+ * 링크 공유.
  * 1. 앱(WebView)이 네이티브 공유를 지원하면(`__NATIVE_SHARE__`) 앱에 요청 → 휴대폰 공유 시트
  *    (Android WebView 에는 Web Share API 가 없어서 앱이 대신 연다. 구버전 앱은 표시가 없어 아래로)
  * 2. 브라우저가 Web Share API 를 지원하면 공유 시트
  * 3. 그 외(PC 일부 · 구버전 앱)는 링크 복사
  */
+export async function shareLink({ url, title, text }: ShareData) {
+  if (window.__NATIVE_SHARE__ && window.ReactNativeWebView) {
+    window.ReactNativeWebView.postMessage(
+      JSON.stringify({ type: NATIVE_SHARE_MESSAGE_TYPE, title, text, url }),
+    )
+    return
+  }
+
+  if (typeof navigator.share === 'function') {
+    try {
+      await navigator.share({ title, text, url })
+      return
+    } catch (error) {
+      // 사용자가 공유 시트를 닫은 경우는 조용히 종료
+      if (error instanceof DOMException && error.name === 'AbortError') return
+      // 그 밖의 실패는 링크 복사로 대체
+    }
+  }
+
+  if (await copyLink(url)) toast('링크를 복사했어요')
+  else toast.error('링크를 복사하지 못했어요')
+}
+
+/** 헤더용 아이콘 공유 버튼 */
 export default function ShareButton({
   url,
   title,
@@ -57,34 +89,11 @@ export default function ShareButton({
   label = '공유하기',
   className,
 }: ShareButtonProps) {
-  const handleShare = async () => {
-    if (window.__NATIVE_SHARE__ && window.ReactNativeWebView) {
-      window.ReactNativeWebView.postMessage(
-        JSON.stringify({ type: NATIVE_SHARE_MESSAGE_TYPE, title, text, url }),
-      )
-      return
-    }
-
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ title, text, url })
-        return
-      } catch (error) {
-        // 사용자가 공유 시트를 닫은 경우는 조용히 종료
-        if (error instanceof DOMException && error.name === 'AbortError') return
-        // 그 밖의 실패는 링크 복사로 대체
-      }
-    }
-
-    if (await copyLink(url)) toast('링크를 복사했어요')
-    else toast.error('링크를 복사하지 못했어요')
-  }
-
   return (
     <IconButton
       icon="tabler:share"
       label={label}
-      onClick={handleShare}
+      onClick={() => shareLink({ url, title, text })}
       className={className}
     />
   )
