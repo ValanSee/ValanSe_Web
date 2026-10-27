@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.valanse",
+      "sha256_cert_fingerprints": [
+        "42:CE:09:16:D4:ED:EA:94:F9:34:E3:29:3C:E1:DB:2E:C6:6C:E6:97:20:E0:CE:95:03:FF:D2:52:46:CA:34:BA"
+      ]
+    }
+  }
+]
