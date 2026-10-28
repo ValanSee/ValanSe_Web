@@ -71,6 +71,8 @@
 - 그 밖에 공유 시트를 지원하지 않는 환경(PC 브라우저 일부 · 공유 미지원 구버전 앱) → 링크 복사 + 토스트 `링크를 복사했어요`, 실패 시 `링크를 복사하지 못했어요`
 - 공유 시트를 닫으면 아무 동작 없음
 - 공유 미리보기 이미지는 게임별 OG 이미지(`opengraph-image.tsx`)
+- 공유 URL 에 `utm_source=share&utm_medium=native|web_share|copy` 를 붙인다(canonical 은 쿼리 없는 주소 그대로). 공유 성공 시 GA `share` 이벤트(method · item_id · location `header`|`post_vote`)
+- 측정(GA4, `lib/analytics.ts`): 투표 `vote`(source `detail`|`list`|`home`, 로그인 후 자동 제출은 `after_login`), 댓글 `comment`(is_reply). 운영 도메인에서만 전송, 앱 WebView 는 platform=app
 
 ### 1. PollCard
 

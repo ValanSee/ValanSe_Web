@@ -5,7 +5,7 @@ import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 const APP_NAME = 'Valanse'
 const CONTACT_EMAIL = 'valansekr@gmail.com'
 const SERVICE_URL = 'https://valanse.kr'
-const EFFECTIVE_DATE = '2026-01-23'
+const EFFECTIVE_DATE = '2026-10-28'
 
 export const PrivacyPolicyPage = () => {
   return (
@@ -51,6 +51,12 @@ export const PrivacyPolicyPage = () => {
               <strong>기기/환경 정보</strong> (예: OS, 브라우저 종류, 앱 버전 등
               서비스 제공을 위한 최소 정보)
             </li>
+            <li>
+              <strong>이용 통계 정보</strong> (Google 애널리틱스: 방문 페이지,
+              유입 경로, 기기 · 브라우저 정보, 쿠키 식별자, 투표 · 공유 등 이용
+              행동) — 이름 · 연락처 등 개인을 직접 알아볼 수 있는 정보는 보내지
+              않습니다
+            </li>
           </ul>
           <p className="typo-body-c-02 mt-2 text-brand-gray-200">
             ※ 서비스는 원칙적으로 주민등록번호, 금융정보 등 민감정보를 수집하지
@@ -66,6 +72,7 @@ export const PrivacyPolicyPage = () => {
             <li>카카오 로그인 기반 회원 식별 및 계정 관리</li>
             <li>서비스 제공 및 기능 운영, 고객 문의 대응</li>
             <li>서비스 안정성 확보(오류 확인/분석) 및 보안/부정 이용 방지</li>
+            <li>서비스 이용 통계 분석 및 서비스 개선</li>
           </ul>
         </section>
 
@@ -117,6 +124,10 @@ export const PrivacyPolicyPage = () => {
               <strong>AWS(아마존웹서비스)</strong>: 서버 인프라 운영(예: EC2
               환경에서 백엔드(Spring) 운영)
             </li>
+            <li>
+              <strong>Google LLC</strong>: Google 애널리틱스를 통한 이용 통계
+              분석 (미국 등 국외 서버에 저장)
+            </li>
           </ul>
           <p className="typo-body-c-02 mt-2 text-brand-gray-200">
             ※ 위탁이 발생하는 경우, 관련 법령에 따라 위탁 계약을 통해 개인정보
@@ -140,7 +151,34 @@ export const PrivacyPolicyPage = () => {
 
         <section className="mb-7">
           <h2 className="typo-heading-06 mb-2 text-foreground">
-            7. 이용자의 권리
+            7. 자동 수집 장치(쿠키)의 설치 · 운영 및 거부
+          </h2>
+          <p className="typo-body-b-01 text-foreground">
+            서비스는 이용 통계 분석을 위해 Google 애널리틱스 쿠키를 사용합니다.
+            쿠키는 웹사이트가 이용자의 브라우저에 저장하는 작은 텍스트
+            파일입니다.
+          </p>
+          <ul className="typo-body-b-01 mt-2 list-disc pl-5 text-foreground">
+            <li>
+              브라우저 설정에서 쿠키 저장을 거부하거나 삭제할 수 있습니다.
+              거부해도 서비스 이용에는 영향이 없습니다.
+            </li>
+            <li>
+              Google 애널리틱스 차단 브라우저 부가기능(
+              <a
+                href="https://tools.google.com/dlpage/gaoptout"
+                className="text-primary underline"
+              >
+                tools.google.com/dlpage/gaoptout
+              </a>
+              )으로 수집을 거부할 수 있습니다.
+            </li>
+          </ul>
+        </section>
+
+        <section className="mb-7">
+          <h2 className="typo-heading-06 mb-2 text-foreground">
+            8. 이용자의 권리
           </h2>
           <p className="typo-body-b-01 text-foreground">
             이용자는 개인정보에 대해 열람, 정정, 삭제, 처리 정지 등을 요청할 수
@@ -150,7 +188,7 @@ export const PrivacyPolicyPage = () => {
 
         <section className="mb-7">
           <h2 className="typo-heading-06 mb-2 text-foreground">
-            8. 개인정보 보호 문의처
+            9. 개인정보 보호 문의처
           </h2>
           <ul className="typo-body-b-01 list-disc pl-5 text-foreground">
             <li>
@@ -173,7 +211,7 @@ export const PrivacyPolicyPage = () => {
 
         <section className="mb-7">
           <h2 className="typo-heading-06 mb-2 text-foreground">
-            9. 변경 사항 공지
+            10. 변경 사항 공지
           </h2>
           <p className="typo-body-b-01 text-foreground">
             본 개인정보 처리방침은 법령, 정책 또는 서비스 변경에 따라 수정될 수

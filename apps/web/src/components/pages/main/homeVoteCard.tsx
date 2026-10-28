@@ -23,6 +23,7 @@ export default function HomeVoteCard({ data }: Props) {
     onVoted: (_res, optionId) => {
       setSelectedId((prev) => (prev === optionId ? null : optionId))
     },
+    analytics: { source: 'home', category: data.category },
   })
 
   const [optionA, optionB] = data.options.slice(0, 2)

@@ -14,6 +14,7 @@ import {
 } from '@/utils/authRedirect'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
+import { trackEvent } from '@/lib/analytics'
 
 export default function KakaoRedirect() {
   const router = useRouter()
@@ -37,6 +38,7 @@ export default function KakaoRedirect() {
           // redirectUri는 카카오 authorize 단계에서 사용한 값과 동일해야 함
           const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!
           await dispatch(loginThunk(code, redirectUri))
+          trackEvent('login', { method: 'kakao' })
 
           try {
             // 2. 프로필 조회 시도
@@ -52,6 +54,8 @@ export default function KakaoRedirect() {
               // 원래 화면 기록 위치로 되돌아가 뒤로가기가 카카오 로그인으로 가지 않게 한다
               if (!returnToLoginOrigin(target)) router.replace(target)
             } else if (profile === null) {
+              // 프로필 없음 = 신규 가입 (온보딩으로 이동)
+              trackEvent('sign_up', { method: 'kakao' })
               if (redirectAfterLogin) {
                 rememberPostAuthRedirect(redirectAfterLogin)
               }
