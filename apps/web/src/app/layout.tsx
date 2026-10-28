@@ -26,6 +26,11 @@ const HAS_TOKEN_SCRIPT = `try{if(localStorage.getItem('access_token'))document.d
 // 앱은 __ANDROID_BRIDGE_READY__ 를 심으므로 이를 기준으로 판별. Android 의 사전 주입은 늦을 수 있어 DOMContentLoaded · load 에서도 다시 확인
 const APP_NO_ZOOM_SCRIPT = `(function(){try{var c='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';var apply=function(){if(!window.__ANDROID_BRIDGE_READY__&&!window.ReactNativeWebView)return;var m=document.querySelector('meta[name="viewport"]');if(!m){m=document.createElement('meta');m.name='viewport';document.head.appendChild(m)}m.setAttribute('content',c)};apply();document.addEventListener('DOMContentLoaded',apply);window.addEventListener('load',apply)}catch(e){}})()`
 
+// 카톡 인앱 브라우저는 링크를 시스템에 넘기지 않아 Android App Links 가 동작하지 않는다.
+// Android 카톡에서 앱 처리 경로(AndroidManifest intent-filter 와 동일)로 들어오면 intent:// 로 앱을 열고,
+// 앱이 없으면 browser_fallback_url 로 같은 페이지를 다시 연다. 탭당 한 번만 시도해 fallback 재진입 시 반복 안 함
+const KAKAO_OPEN_APP_SCRIPT = `(function(){try{var ua=navigator.userAgent;if(location.host!=='valanse.kr'||!/Android/i.test(ua)||!/KAKAOTALK/i.test(ua))return;var p=location.pathname;if(!/^\\/(poll\\/|balanse|topics)/.test(p))return;var k='valanse:open-app-tried';if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');location.replace('intent://valanse.kr'+p+location.search+'#Intent;scheme=https;package=com.valanse;S.browser_fallback_url='+encodeURIComponent(location.href)+';end')}catch(e){}})()`
+
 // 검색 결과 사이트 이름 표시용 (https://developers.google.com/search/docs/appearance/site-names)
 const WEBSITE_JSON_LD = {
   '@context': 'https://schema.org',
@@ -120,6 +125,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: HAS_TOKEN_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: APP_NO_ZOOM_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: KAKAO_OPEN_APP_SCRIPT }} />
         <JsonLd data={WEBSITE_JSON_LD} />
       </head>
       <body
