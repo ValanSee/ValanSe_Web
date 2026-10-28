@@ -29,10 +29,10 @@ export default function AboutPage() {
       <div className="flex flex-col gap-4 px-4 pt-2 lg:gap-ds-6 lg:px-0 lg:pt-ds-8">
         <section className="flex flex-col gap-2">
           <h1 className="typo-heading-04 text-foreground">
-            ValanSe(밸런스) 소개
+            ValanSe(발란세) 소개
           </h1>
           <p className="typo-body-b-01 text-brand-gray-200">
-            ValanSe(밸런스)는 둘 중 하나를 골라 투표하고, 다른 사람들이 무엇을
+            ValanSe(발란세)는 둘 중 하나를 골라 투표하고, 다른 사람들이 무엇을
             골랐는지 바로 확인하는 밸런스게임 서비스예요.{' '}
             {CATEGORIES.map((c) => c.label).join('·')} {CATEGORIES.length}개
             카테고리의 질문이 있고, 누구나 직접 게임을 만들어 친구와 공유할 수

@@ -43,7 +43,7 @@ const WEBSITE_JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: SITE_NAME,
-  alternateName: '밸런스',
+  alternateName: '발란세',
   url: `${SITE_URL}/`,
 }
 
@@ -55,6 +55,7 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESCRIPTION,
   keywords: [
+    '발란세',
     '밸런스',
     '밸런스게임',
     '밸런스 게임',
