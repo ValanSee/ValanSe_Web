@@ -148,7 +148,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
       {/* 모바일 헤더는 화면 제목만, 페이지 h1 은 아래 카테고리 제목 하나로 */}
       <Header className="lg:hidden" titleAs="p" title="밸런스 게임" />
 
-      <div className="lg:hidden">
+      {/* 탭바 상단 고정이 이 래퍼 안에서 막히지 않도록 래퍼를 고정 */}
+      <div className="sticky top-14 z-30 lg:hidden">
         <TabBar>
           {TABS.map((tab) => (
             <TabItem

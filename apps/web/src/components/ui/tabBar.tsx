@@ -7,7 +7,9 @@ type TabBarProps = React.HTMLAttributes<HTMLDivElement>
 
 const TabBar = React.forwardRef<HTMLDivElement, TabBarProps>(
   ({ className, children, ...props }, ref) => (
-    <div className="relative border-b border-brand-gray-75 bg-card">
+    // 모바일은 상단 고정 헤더(h-14) 바로 아래에 같이 고정. PC 는 헤더처럼 해제
+    // 부모가 탭바만 감싼 래퍼면 sticky 가 래퍼 안에서만 움직이니 래퍼에도 같은 클래스 필요 (balansePage)
+    <div className="sticky top-14 z-30 border-b border-brand-gray-75 bg-card lg:relative lg:top-auto lg:z-auto">
       <div
         ref={ref}
         role="tablist"
