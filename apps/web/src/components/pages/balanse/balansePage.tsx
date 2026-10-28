@@ -148,18 +148,16 @@ function BalancePageContent({ initialData }: BalancePageProps) {
       {/* 모바일 헤더는 화면 제목만, 페이지 h1 은 아래 카테고리 제목 하나로 */}
       <Header className="lg:hidden" titleAs="p" title="밸런스 게임" />
 
-      <div className="lg:hidden">
-        <TabBar>
-          {TABS.map((tab) => (
-            <TabItem
-              key={tab.value}
-              label={tab.label}
-              selected={tab.value === category}
-              onClick={() => updateCategory(tab.value)}
-            />
-          ))}
-        </TabBar>
-      </div>
+      <TabBar className="lg:hidden">
+        {TABS.map((tab) => (
+          <TabItem
+            key={tab.value}
+            label={tab.label}
+            selected={tab.value === category}
+            onClick={() => updateCategory(tab.value)}
+          />
+        ))}
+      </TabBar>
 
       <div className="lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start lg:gap-ds-8">
         {/* PC: 카테고리 · 정렬 사이드바 */}
