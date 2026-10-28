@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { setToken, extractToken } from '@/lib/auth'
+import { EXPIRED_QUERY } from '@/lib/authConst'
 import axios from 'axios'
 
 export default function LoginPage() {
@@ -12,6 +13,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [expired, setExpired] = useState(false)
+
+  // 만료로 튕겨 온 경우 안내 (middleware · api 인터셉터가 ?expired=1 을 붙임)
+  useEffect(() => {
+    setExpired(new URLSearchParams(window.location.search).has(EXPIRED_QUERY))
+  }, [])
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -31,7 +38,12 @@ export default function LoginPage() {
         const data = err.response?.data as
           | { message?: string; error?: string }
           | undefined
-        setError(data?.message ?? data?.error ?? err.message ?? '로그인에 실패했습니다.')
+        setError(
+          data?.message ??
+            data?.error ??
+            err.message ??
+            '로그인에 실패했습니다.',
+        )
       } else if (err instanceof Error) {
         setError(err.message)
       } else {
@@ -49,12 +61,19 @@ export default function LoginPage() {
         className="w-full max-w-sm space-y-5 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8"
       >
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-gray-900">CMS 관리자 로그인</h1>
-          <p className="text-xs text-gray-500">ValanSe 관리자 계정으로 로그인하세요.</p>
+          <h1 className="text-xl font-semibold text-gray-900">
+            CMS 관리자 로그인
+          </h1>
+          <p className="text-xs text-gray-500">
+            ValanSe 관리자 계정으로 로그인하세요.
+          </p>
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
             아이디
           </label>
           <input
@@ -70,7 +89,10 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
             비밀번호
           </label>
           <input
@@ -85,8 +107,15 @@ export default function LoginPage() {
           />
         </div>
 
+        {expired && !error && (
+          <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            로그인이 만료되었습니다. 다시 로그인해 주세요.
+          </p>
+        )}
         {error && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </p>
         )}
 
         <button
