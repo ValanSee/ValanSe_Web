@@ -40,8 +40,16 @@ export const PrivacyPolicyPage = () => {
               ID)
             </li>
             <li>
-              <strong>프로필 정보</strong> (예: 닉네임, 프로필 이미지) —
-              카카오에서 제공되는 범위 내
+              <strong>카카오 계정 정보</strong> (닉네임, 프로필 이미지, 이메일)
+              — 이용자가 카카오 로그인 시 동의한 범위 내
+            </li>
+            <li>
+              <strong>회원 프로필 정보</strong> (성별, 연령대, MBTI) — 가입 시
+              이용자가 직접 입력하며, 투표 결과 통계에 이용
+            </li>
+            <li>
+              <strong>이용자가 작성 · 업로드한 콘텐츠</strong> (투표, 댓글,
+              프로필 · 선택지 이미지)
             </li>
             <li>
               <strong>서비스 이용 기록</strong> (예: 접속 로그, 이용 내역, 오류
@@ -123,6 +131,10 @@ export const PrivacyPolicyPage = () => {
             <li>
               <strong>AWS(아마존웹서비스)</strong>: 서버 인프라 운영(예: EC2
               환경에서 백엔드(Spring) 운영)
+            </li>
+            <li>
+              <strong>Cloudflare, Inc.</strong>: 이용자가 업로드한 이미지 저장
+              (Cloudflare R2)
             </li>
             <li>
               <strong>Google LLC</strong>: Google 애널리틱스를 통한 이용 통계
