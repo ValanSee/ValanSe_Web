@@ -49,6 +49,15 @@
 - **푸터** (`components/_shared/desktopFooter.tsx`): 홈 · 밸런스게임 모음 · 인기 · 주제 추천(`/topics`) · 만들기, 카테고리별 `/balanse?category=*`, 개인정보 처리방침 · 모임·행사용 문의(구글폼, 새 탭) 링크 (내부 링크용)
 - **바텀시트**(신고 · MBTI 선택): 화면 가운데 모달로 표시
 
+## 공통: 앱 업데이트 권장 모달 (앱 WebView)
+
+> 2026-10-28 추가. 웹 브라우저에서는 뜨지 않음.
+
+- `components/_shared/appUpdateChecker.tsx` 가 모든 화면에서 앱 버전(`window.__APP_VERSION__`, 앱 v23 부터 주입 · 없으면 구버전으로 간주)을 `constants/appVersion.ts` 의 `MIN_SUPPORTED_APP_VERSION` 과 비교
+- 낮으면 팝업: "새 버전이 나왔어요" / "지금 버전에서는 일부 기능이 동작하지 않을 수 있어요." · `나중에` · `업데이트`
+- `업데이트` → Play 스토어(`market://details?id=com.valanse`), `나중에` → 닫고 이번 실행(sessionStorage) 동안 다시 안 뜸
+- `MIN_SUPPORTED_APP_VERSION = 0` 이면 꺼짐
+
 ## 신규 화면 추가 시
 
 1. `_TEMPLATE.md`를 복사해서 `SCR-<도메인>-<번호>_<slug>.md`로 저장

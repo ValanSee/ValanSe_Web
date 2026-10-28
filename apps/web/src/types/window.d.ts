@@ -11,5 +11,9 @@ declare global {
     }
     /** 앱이 네이티브 공유 시트(Share.share)를 지원하면 true (앱 BRIDGE_SCRIPT 가 주입) */
     __NATIVE_SHARE__?: boolean
+    /** 앱 BRIDGE_SCRIPT 가 모든 버전에서 심는 플래그 (우리 앱 WebView 판별용) */
+    __ANDROID_BRIDGE_READY__?: boolean
+    /** 앱 versionCode (앱 v23 부터 BRIDGE_SCRIPT 가 주입) */
+    __APP_VERSION__?: number
   }
 }

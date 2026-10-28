@@ -6,6 +6,7 @@ import './globals.css'
 import Providers from './providers'
 import { ModalRootInitializer } from './modalRootInitializer'
 import { NativeBackHandler } from '@/components/_shared/nativeBackHandler'
+import { AppUpdateChecker } from '@/components/_shared/appUpdateChecker'
 import { PageViewTracker } from '@/components/_shared/pageViewTracker'
 import DesktopHeader from '@/components/_shared/nav/desktopHeader'
 import DesktopFooter from '@/components/_shared/desktopFooter'
@@ -135,6 +136,7 @@ export default function RootLayout({
         <Providers>
           <ModalRootInitializer />
           <NativeBackHandler />
+          <AppUpdateChecker />
           <PageViewTracker />
           {/* PC(lg 이상)에서만 GNB · 푸터 노출. 래퍼도 lg 에서만 flex 라 모바일·WebView 는 기존 블록 흐름 그대로 */}
           <div className="lg:flex lg:min-h-screen lg:flex-col">
