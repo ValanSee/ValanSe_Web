@@ -23,7 +23,13 @@ export default function HorizontalScroll({
     // min-w-0: flex 부모(flex-col 등) 안에서 min-width:auto로 인해 컨테이너가
     // 콘텐츠 min-content 만큼 늘어나 overflow-x-auto가 무력화되는 문제 방지
     <div className="relative min-w-0">
-      <div className={cn('scrollbar-hide overflow-x-auto', className)}>
+      {/* overflow-x 만 주면 y 도 auto 가 돼, 진입 애니메이션(slide-in) 등으로 살짝 넘칠 때 세로 스크롤이 생김 → y 는 막는다 */}
+      <div
+        className={cn(
+          'scrollbar-hide overflow-x-auto overflow-y-hidden',
+          className,
+        )}
+      >
         {children}
       </div>
       {shadow && (
