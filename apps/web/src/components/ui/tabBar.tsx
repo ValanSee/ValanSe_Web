@@ -3,20 +3,48 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
-type TabBarProps = React.HTMLAttributes<HTMLDivElement>
+interface TabBarProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** 안쪽 탭 목록(role=tablist)에 붙일 클래스 */
+  tablistClassName?: string
+}
 
+// 탭을 바꿀 때 탭바가 헤더 아래에 붙어 있는(스크롤된) 상태면, 새 목록을 맨 위부터 보여준다
+const scrollTopOnTabChange = (e: React.MouseEvent<HTMLDivElement>) => {
+  const tab = (e.target as HTMLElement).closest('[role="tab"]')
+  if (!tab || tab.getAttribute('aria-selected') === 'true') return
+  const bar = e.currentTarget.parentElement
+  if (!bar || getComputedStyle(bar).position !== 'sticky') return
+  const stuck =
+    bar.getBoundingClientRect().top <= parseFloat(getComputedStyle(bar).top)
+  if (stuck) window.scrollTo({ top: 0 })
+}
+
+/**
+ * 가로 탭바. 모바일은 상단 고정 헤더(h-14) 바로 아래에 같이 고정되고 PC 는 해제.
+ * className 은 바깥(고정되는) 요소에, tablistClassName 은 안쪽 탭 목록에 붙는다.
+ */
 const TabBar = React.forwardRef<HTMLDivElement, TabBarProps>(
-  ({ className, children, ...props }, ref) => (
-    // 모바일은 상단 고정 헤더(h-14) 바로 아래에 같이 고정. PC 는 헤더처럼 해제
-    // 부모가 탭바만 감싼 래퍼면 sticky 가 래퍼 안에서만 움직이니 래퍼에도 같은 클래스 필요 (balansePage)
-    <div className="sticky top-14 z-30 border-b border-brand-gray-75 bg-card lg:relative lg:top-auto lg:z-auto">
+  (
+    { className, tablistClassName, children, onClickCapture, ...props },
+    ref,
+  ) => (
+    <div
+      className={cn(
+        'sticky top-14 z-30 border-b border-brand-gray-75 bg-card lg:relative lg:top-auto lg:z-auto',
+        className,
+      )}
+    >
       <div
         ref={ref}
         role="tablist"
         className={cn(
           'scrollbar-hide flex w-full items-stretch overflow-x-auto',
-          className,
+          tablistClassName,
         )}
+        onClickCapture={(e) => {
+          scrollTopOnTabChange(e)
+          onClickCapture?.(e)
+        }}
         {...props}
       >
         {children}
