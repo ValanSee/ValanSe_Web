@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Script from 'next/script'
 // Pretendard 가변 폰트 dynamic subset: 유니코드 범위별로 쪼갠 woff2 92개 중 화면에 쓰인 글자 묶음만 받는다
 // (예전 굵기별 전체 글리프 woff2 4개 ≈ 3MB 를 모든 페이지가 미리 받던 문제 해소)
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
@@ -19,6 +20,7 @@ import {
   SITE_NAME,
   SITE_URL,
 } from '@/constants/seo'
+import { GA_MEASUREMENT_ID } from '@/lib/analytics'
 
 // 토큰은 localStorage 에만 있어 서버가 로그인 여부를 모름 → 첫 페인트 전에 html 에 표시 (투표 상세 스켈레톤용)
 const HAS_TOKEN_SCRIPT = `try{if(localStorage.getItem('access_token'))document.documentElement.setAttribute('data-has-token','')}catch(e){}`
@@ -31,6 +33,10 @@ const APP_NO_ZOOM_SCRIPT = `(function(){try{var c='width=device-width, initial-s
 // Android 카톡에서 앱 처리 경로(AndroidManifest intent-filter 와 동일)로 들어오면 intent:// 로 앱을 열고,
 // 앱이 없으면 browser_fallback_url 로 같은 페이지를 다시 연다. 탭당 한 번만 시도해 fallback 재진입 시 반복 안 함
 const KAKAO_OPEN_APP_SCRIPT = `(function(){try{var ua=navigator.userAgent;if(location.host!=='valanse.kr'||!/Android/i.test(ua)||!/KAKAOTALK/i.test(ua))return;var p=location.pathname;if(!/^\\/(poll\\/|balanse|topics)/.test(p))return;var k='valanse:open-app-tried';if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');location.replace('intent://valanse.kr'+p+location.search+'#Intent;scheme=https;package=com.valanse;S.browser_fallback_url='+encodeURIComponent(location.href)+';end')}catch(e){}})()`
+
+// GA4: 운영 도메인에서만 로드(프리뷰 · 로컬 제외). 앱 WebView 도 같은 스트림 → platform(app|web) 으로 구분
+// 페이지 이동은 GA 향상된 측정(브라우저 기록 이벤트)이 page_view 로 잡는다. 이벤트 전송은 lib/analytics.ts trackEvent
+const GA_INIT_SCRIPT = `(function(){if(location.host!=='valanse.kr')return;window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};var p=(window.ReactNativeWebView||window.__ANDROID_BRIDGE_READY__)?'app':'web';gtag('js',new Date());gtag('set','user_properties',{platform:p});gtag('config','${GA_MEASUREMENT_ID}',{platform:p});var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';document.head.appendChild(s)})()`
 
 // 검색 결과 사이트 이름 표시용 (https://developers.google.com/search/docs/appearance/site-names)
 const WEBSITE_JSON_LD = {
@@ -151,6 +157,9 @@ export default function RootLayout({
             </ChromeGate>
           </div>
         </Providers>
+        <Script id="ga4" strategy="afterInteractive">
+          {GA_INIT_SCRIPT}
+        </Script>
       </body>
     </html>
   )

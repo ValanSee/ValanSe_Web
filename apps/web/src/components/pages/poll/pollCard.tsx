@@ -16,6 +16,7 @@ import VsBadge from '@/components/_shared/vsBadge'
 import HorizontalScroll from '@/components/_shared/horizontalScroll'
 import { useVoteAction } from '@/hooks/utils/useVoteAction'
 import { cn } from '@/lib/utils'
+import { trackEvent } from '@/lib/analytics'
 import { PollOptionsSkeleton } from './pollOptionsSkeleton'
 
 interface PollCardProps {
@@ -43,6 +44,8 @@ interface PollCardProps {
   pendingVoteReady?: boolean
   /** 투표·취소 결과를 부모에 알림 */
   onVoteChange?: (voted: boolean) => void
+  /** GA vote 이벤트용 카테고리 */
+  category?: string
 }
 
 /**
@@ -66,6 +69,7 @@ function PollCard({
   ready = true,
   pendingVoteReady = true,
   onVoteChange,
+  category,
 }: PollCardProps) {
   const [voted, setVoted] = useState(hasVoted)
   const [selectedId, setSelectedId] = useState<number | null>(() => {
@@ -112,6 +116,7 @@ function PollCard({
       })
       onVoteChangeRef.current?.(response.voted)
     },
+    analytics: { source: 'detail', category },
   })
 
   // 로그인 리디렉트 후 pending vote 자동 제출
@@ -136,6 +141,16 @@ function PollCard({
         clearPendingVote()
         applyVoteResponse(response, null)
         onVoteChangeRef.current?.(response.voted)
+        if (response.voted) {
+          // 로그인 전에 고른 선택지를 로그인 후 자동 제출한 경우
+          trackEvent('vote', {
+            vote_id: Number(voteId),
+            option_id: pending.optionId,
+            source: 'detail',
+            category,
+            after_login: true,
+          })
+        }
       } catch {
         if (!cancelled) alert('투표에 실패했습니다.')
       } finally {
@@ -154,6 +169,7 @@ function PollCard({
     hasVoted,
     localOptions,
     applyVoteResponse,
+    category,
   ])
 
   const disabled = isVoting || pendingClaimRunning

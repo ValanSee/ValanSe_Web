@@ -13,6 +13,7 @@ import { VoteCategory } from '@/types/_shared/vote'
 import { CATEGORIES } from '@/constants/category'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
+import { trackEvent } from '@/lib/analytics'
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 서버(R2StorageService) 제한과 동일
 const ALLOWED_IMAGE_TYPES = [
@@ -120,6 +121,13 @@ const CreatePage = () => {
         ...(content.trim() ? { content: content.trim() } : {}),
       }
       const voteId = await createVote(voteData)
+      if (voteId) {
+        trackEvent('create_vote', {
+          vote_id: Number(voteId),
+          category,
+          has_image: options.some((o) => Boolean(o.imageFile)),
+        })
+      }
       if (voteId) router.push(`/poll/${voteId}?source=create`)
     } catch {
       alert('업로드 실패')

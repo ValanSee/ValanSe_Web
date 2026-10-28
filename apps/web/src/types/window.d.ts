@@ -15,5 +15,8 @@ declare global {
     __ANDROID_BRIDGE_READY__?: boolean
     /** 앱 versionCode (앱 v23 부터 BRIDGE_SCRIPT 가 주입) */
     __APP_VERSION__?: number
+    /** GA4 gtag.js (운영 도메인에서만 존재, lib/analytics.ts) */
+    gtag?: (...args: unknown[]) => void
+    dataLayer?: unknown[]
   }
 }

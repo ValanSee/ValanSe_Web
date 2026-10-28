@@ -218,7 +218,10 @@ function PollDetailContent({
   }
   const headerActions = (
     <div className="flex items-center gap-ds-3">
-      <ShareButton {...shareData} />
+      <ShareButton
+        {...shareData}
+        analytics={{ voteId: data.voteId, location: 'header' }}
+      />
       {moreMenu}
     </div>
   )
@@ -283,6 +286,7 @@ function PollDetailContent({
                   )
                 }
                 voteId={data.voteId}
+                category={data.category}
                 createdBy={data.creatorNickname}
                 creatorTitle={data.creatorTitle}
                 title={data.title}
@@ -315,7 +319,12 @@ function PollDetailContent({
                 leadingIcon={
                   <Icon icon="tabler:share" width={20} aria-hidden />
                 }
-                onClick={() => shareLink(shareData)}
+                onClick={() =>
+                  shareLink({
+                    ...shareData,
+                    analytics: { voteId: data.voteId, location: 'post_vote' },
+                  })
+                }
               >
                 친구는 뭘 골랐을까? 물어보기
               </Button>
