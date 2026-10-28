@@ -86,7 +86,7 @@ function EntryPage() {
           ))}
         </ul>
       </section>
-      <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center lg:w-[420px] lg:flex-none lg:shrink-0 lg:justify-center lg:gap-ds-10 lg:rounded-2xl lg:bg-card lg:p-ds-10 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
+      <div className="flex flex-1 flex-col items-center justify-between px-6 pb-10 pt-6 text-center lg:w-[420px] lg:flex-none lg:shrink-0 lg:justify-center lg:gap-ds-10 lg:rounded-2xl lg:bg-card lg:p-ds-10 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
         {/* 로고 & 슬로건 */}
         <div className="flex flex-1 flex-col items-center justify-center gap-6">
           <Image

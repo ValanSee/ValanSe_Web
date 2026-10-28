@@ -133,7 +133,7 @@ const CommentPage = () => {
 
       {selected.length > 0 && (
         // PC: 화면 전체 폭 대신 본문 컬럼 하단에 붙도록 sticky
-        <div className="fixed bottom-0 left-0 right-0 border-t border-brand-gray-75 bg-card p-4 lg:sticky">
+        <div className="fixed bottom-0 left-0 right-0 border-t border-brand-gray-75 bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:sticky lg:pb-4">
           <Button
             variant="destructive"
             size="l"

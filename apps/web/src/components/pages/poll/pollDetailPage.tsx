@@ -269,7 +269,7 @@ function PollDetailContent({
       </div>
       <div className="lg:flex lg:items-start lg:gap-ds-8">
         <div className="flex min-w-0 flex-col lg:flex-1 lg:gap-ds-4">
-          <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-[calc(env(safe-area-inset-bottom)+96px)] lg:max-w-none lg:p-0">
+          <div className="mx-auto w-full min-w-0 max-w-xl p-4 pb-24 lg:max-w-none lg:p-0">
             {data && (
               <PollCard
                 // 재조회 후 hasVoted·득표 수로 내부 state 를 다시 초기화
