@@ -5,8 +5,28 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 import Header from '@/components/_shared/header'
+import { Icon } from '@/components/ui/icon'
 import { validateLoginOrigin } from '@/utils/authRedirect'
 import KakaoLoginButton from './_components/kakaoLoginButton'
+
+// PC 왼쪽 소개 영역에 보여줄 서비스 장점
+const FEATURES = [
+  {
+    icon: 'heroicons:scale',
+    title: '둘 중 하나, 바로 투표',
+    description: '고르기 어려운 질문에 투표하고 결과를 바로 확인해요',
+  },
+  {
+    icon: 'tabler:users',
+    title: '성별·나이별 통계',
+    description: '다른 사람들은 무엇을 골랐는지 한눈에 비교해요',
+  },
+  {
+    icon: 'tabler:share',
+    title: '직접 만들고 공유',
+    description: '나만의 밸런스 게임을 만들어 친구에게 보내요',
+  },
+]
 
 function EntryPage() {
   const router = useRouter()
@@ -26,8 +46,8 @@ function EntryPage() {
   )
 
   return (
-    // PC: 회색 배경 가운데 로그인 카드
-    <div className="flex min-h-screen flex-col bg-card lg:min-h-0 lg:flex-1 lg:items-center lg:justify-center lg:bg-transparent lg:py-ds-10">
+    // PC: 왼쪽 서비스 소개 + 오른쪽 로그인 카드 2단
+    <div className="flex min-h-screen flex-col bg-card lg:mx-auto lg:min-h-0 lg:w-full lg:max-w-[1080px] lg:flex-1 lg:flex-row lg:items-center lg:justify-between lg:gap-ds-10 lg:bg-transparent lg:px-ds-10 lg:py-20">
       {/* 로그인 필요 기능에서 진입 시 막다른 길이 되지 않도록 뒤로가기 제공.
           페이지 안 동작(좋아요 등)에서 push 로 왔으면 원래 화면으로 back.
           보호 페이지(/my 등)로 back 하면 가드가 다시 entry 로 보내 루프가 나므로
@@ -37,7 +57,36 @@ function EntryPage() {
         showBackButton
         onBackClick={() => (canGoBack ? router.back() : router.replace('/'))}
       />
-      <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center lg:w-[420px] lg:flex-none lg:justify-center lg:gap-ds-10 lg:rounded-2xl lg:bg-card lg:p-ds-10 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
+      {/* PC 전용 서비스 소개. 모바일은 카드 안 슬로건으로 충분해 숨김 */}
+      <section className="hidden max-w-[480px] flex-col gap-ds-10 lg:flex">
+        <div className="flex flex-col gap-ds-4">
+          <p className="typo-label-02 text-primary">VALANSE</p>
+          <h2 className="typo-heading-01 text-foreground lg:text-4xl lg:leading-tight">
+            밸런스 게임에 진심인
+            <br />
+            사람들을 위한 플랫폼
+          </h2>
+          <p className="typo-body-b-01 text-brand-gray-200">
+            가볍게 고르고, 다른 사람들의 선택과 비교해 보세요
+          </p>
+        </div>
+        <ul className="flex flex-col gap-ds-6">
+          {FEATURES.map(({ icon, title, description }) => (
+            <li key={title} className="flex items-center gap-ds-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-violet-50 text-primary">
+                <Icon icon={icon} width={24} aria-hidden />
+              </span>
+              <div className="flex flex-col gap-ds-1">
+                <p className="typo-title-02 text-foreground">{title}</p>
+                <p className="typo-body-b-02 text-brand-gray-200">
+                  {description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <div className="flex flex-1 flex-col items-center justify-between px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-6 text-center lg:w-[420px] lg:flex-none lg:shrink-0 lg:justify-center lg:gap-ds-10 lg:rounded-2xl lg:bg-card lg:p-ds-10 lg:shadow-[0_0_4px_rgba(0,0,0,0.06)]">
         {/* 로고 & 슬로건 */}
         <div className="flex flex-1 flex-col items-center justify-center gap-6">
           <Image
@@ -49,10 +98,14 @@ function EntryPage() {
           />
           <div className="flex flex-col items-center gap-3">
             <h1 className="typo-heading-01 text-primary">VALANSE</h1>
-            <p className="typo-body-b-01 text-brand-gray-200">
+            {/* PC 는 왼쪽 소개와 겹쳐 로그인 안내로 바꿈 */}
+            <p className="typo-body-b-01 text-brand-gray-200 lg:hidden">
               밸런스 게임에 진심인 사람들을 위한
               <br />
               밸런스 게임 플랫폼
+            </p>
+            <p className="typo-body-b-01 hidden text-brand-gray-200 lg:block">
+              로그인하고 투표에 참여해 보세요
             </p>
           </div>
         </div>
