@@ -25,7 +25,7 @@
 ## 🖥️ 렌더링 (SEO)
 
 - API 호출 없는 정적 페이지 (서버 컴포넌트)
-- title `ValanSe(밸런스) 앱 다운로드 · 밸런스게임 투표 앱`, canonical `/app`
+- title `ValanSe(발란세) 앱 다운로드 · 밸런스게임 투표 앱`, canonical `/app`
 - JSON-LD: MobileApplication (ANDROID, `installUrl` Google Play, 무료) · BreadcrumbList (홈 › 앱 다운로드)
 
 ## 📐 레이아웃 구성

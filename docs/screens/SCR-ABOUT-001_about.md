@@ -24,14 +24,14 @@
 ## 🖥️ 렌더링 (SEO)
 
 - API 호출 없는 정적 페이지 (서버 컴포넌트)
-- title `ValanSe(밸런스) 소개 · 자주 묻는 질문`, canonical `/about`
+- title `ValanSe(발란세) 소개 · 자주 묻는 질문`, canonical `/about`
 - JSON-LD: Organization (`sameAs` Google Play `com.valanse`) · FAQPage (화면 FAQ 와 같은 문구) · BreadcrumbList (홈 › 서비스 소개)
   - FAQ 리치 결과는 구글에서 정부 · 의료 사이트만 표시되지만 Bing · AI 검색이 읽는 용도
 
 ## 📐 레이아웃 구성
 
 1. **헤더** (모바일 전용, 뒤로가기 · `서비스 소개`)
-2. **소개** — h1 `ValanSe(밸런스) 소개` + 소개 문구 (카테고리 이름 · 개수는 `CATEGORIES` 에서)
+2. **소개** — h1 `ValanSe(발란세) 소개` + 소개 문구 (카테고리 이름 · 개수는 `CATEGORIES` 에서)
 3. **자주 묻는 질문** — 8문항 (`constants/about.ts` `ABOUT_FAQS`)
 4. **하단 네비게이션 바** (모바일)
 

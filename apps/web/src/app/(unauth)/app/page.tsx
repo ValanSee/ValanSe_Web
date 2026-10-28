@@ -5,9 +5,9 @@ import { BASE_OPEN_GRAPH, SITE_NAME, SITE_URL } from '@/constants/seo'
 import { JsonLd } from '@/components/_shared/jsonLd'
 
 const PATH = '/app'
-const TITLE = 'ValanSe(밸런스) 앱 다운로드 · 밸런스게임 투표 앱'
+const TITLE = 'ValanSe(발란세) 앱 다운로드 · 밸런스게임 투표 앱'
 const DESCRIPTION =
-  '둘 중 하나를 골라 투표하고 남녀·나이·MBTI별 결과를 비교하는 밸런스게임 앱 ValanSe(밸런스). Google Play에서 받거나 웹에서 바로 시작하세요.'
+  '둘 중 하나를 골라 투표하고 남녀·나이·MBTI별 결과를 비교하는 밸런스게임 앱 ValanSe(발란세). Google Play에서 받거나 웹에서 바로 시작하세요.'
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -26,7 +26,7 @@ const JSON_LD = [
     '@context': 'https://schema.org',
     '@type': 'MobileApplication',
     name: SITE_NAME,
-    alternateName: '밸런스',
+    alternateName: '발란세',
     operatingSystem: 'ANDROID',
     applicationCategory: 'EntertainmentApplication',
     url: `${SITE_URL}${PATH}`,

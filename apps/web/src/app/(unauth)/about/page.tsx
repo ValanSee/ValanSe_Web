@@ -5,9 +5,9 @@ import { BASE_OPEN_GRAPH, SITE_NAME, SITE_URL } from '@/constants/seo'
 import { JsonLd } from '@/components/_shared/jsonLd'
 
 const PATH = '/about'
-const TITLE = 'ValanSe(밸런스) 소개 · 자주 묻는 질문'
+const TITLE = 'ValanSe(발란세) 소개 · 자주 묻는 질문'
 const DESCRIPTION =
-  'ValanSe(밸런스)는 둘 중 하나를 골라 투표하고 다른 사람들의 선택 결과를 확인하는 밸런스게임 서비스예요. 이용 방법과 자주 묻는 질문을 모았어요.'
+  'ValanSe(발란세)는 둘 중 하나를 골라 투표하고 다른 사람들의 선택 결과를 확인하는 밸런스게임 서비스예요. 이용 방법과 자주 묻는 질문을 모았어요.'
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -27,7 +27,7 @@ const JSON_LD = [
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
-    alternateName: '밸런스',
+    alternateName: '발란세',
     url: `${SITE_URL}/`,
     logo: `${SITE_URL}/assets/logo.svg`,
     sameAs: [PLAY_STORE_URL],
