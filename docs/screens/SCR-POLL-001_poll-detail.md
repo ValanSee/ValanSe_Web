@@ -27,7 +27,8 @@
 - 서버에서 `GET /votes/{id}` 를 **비로그인**으로 조회해 PollCard 를 SSR (60초 캐시, 3초 타임아웃)
 - 같은 데이터로 페이지별 `title` · `description` · canonical(`/poll/{id}`) · OG 생성
   - title: `{제목} - {카테고리} 밸런스게임 | ValanSe`
-  - description: 본문 · `A vs B` · 안내 문구 (150자 이내)
+  - description: 본문 · `A vs B` · 결과 요약(`41명 참여 · 마라탕 41% · 피자 29%`, 참여 5명 미만이면 생략) · 안내 문구 (150자 이내)
+  - 결과 요약은 AI 검색 인용용으로 메타·JSON-LD `text` 에만 넣는다. 화면에서는 기존처럼 투표 후에 공개
   - JSON-LD: DiscussionForumPosting(참여 수 `interactionStatistic` VoteAction · 댓글 수 `commentCount` 포함) · BreadcrumbList
   - OG · 트위터 이미지: 게임별 자동 생성 (`opengraph-image.tsx`, 1200×630 — 카테고리 · 제목 · A vs B). 상세 조회 · 폰트 로드 실패 시 공통 `og-image.png`
 - 클라이언트에서 로그인 토큰으로 다시 조회해 `hasVoted` · 댓글 등을 갱신 (로딩 화면 없이 교체)

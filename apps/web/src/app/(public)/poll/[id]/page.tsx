@@ -24,6 +24,22 @@ function truncate(text: string, max: number) {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
 }
 
+// AI 검색·검색 스니펫이 인용할 수 있도록 결과를 문장으로 (예: "41명 참여 · 마라탕 41% · 피자 29%")
+// 화면 UI 는 그대로(투표 후 공개) — 메타·JSON-LD 에만 사용
+// 표본이 너무 작으면 "1명 참여 · 100%" 처럼 의미 없는 수치가 되므로 생략
+const MIN_VOTES_FOR_SUMMARY = 5
+
+function summarizeResults({ totalVoteCount, options }: PollDetail) {
+  if (totalVoteCount < MIN_VOTES_FOR_SUMMARY) return undefined
+  const ranked = [...options]
+    .sort((a, b) => b.voteCount - a.voteCount)
+    .map(
+      (o) =>
+        `${o.content} ${Math.round((o.voteCount / totalVoteCount) * 100)}%`,
+    )
+  return [`${totalVoteCount}명 참여`, ...ranked].join(' · ')
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const path = `/poll/${id}`
@@ -43,6 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     [
       content?.trim(),
       versus,
+      summarizeResults(result.data),
       '둘 중 하나를 골라 투표하고 결과를 확인해 보세요.',
     ]
       .filter(Boolean)
@@ -90,7 +107,9 @@ function buildJsonLd(poll: PollDetail, commentCount: number | null) {
       url,
       mainEntityOfPage: url,
       headline: poll.title,
-      text: [poll.content?.trim(), versus].filter(Boolean).join('\n'),
+      text: [poll.content?.trim(), versus, summarizeResults(poll)]
+        .filter(Boolean)
+        .join('\n'),
       datePublished: toDate(poll.createdAt),
       author: { '@type': 'Person', name: poll.creatorNickname },
       ...(category && { articleSection: category.label }),
