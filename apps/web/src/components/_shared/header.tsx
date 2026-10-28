@@ -36,9 +36,10 @@ export default function Header({
   }
 
   return (
+    // 모바일은 스크롤해도 상단 고정. PC 는 GNB(desktopHeader)가 sticky 라 겹치지 않게 해제
     <header
       className={cn(
-        'flex h-14 w-full items-center justify-between gap-2 px-4',
+        'sticky top-0 z-40 flex h-14 w-full shrink-0 items-center justify-between gap-2 px-4 lg:static lg:z-auto',
         bgGray ? 'bg-background' : 'bg-card',
         className,
       )}
