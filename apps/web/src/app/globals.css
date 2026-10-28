@@ -312,3 +312,18 @@ html[data-has-token] [data-poll-pending] [data-poll-options] {
 html[data-has-token] [data-poll-pending] [data-poll-options-skeleton] {
   display: block;
 }
+
+/*
+ * 모든 페이지 하단 안전영역 여백 (app/template.tsx 가 페이지를 감싸며 부여).
+ * Android 앱은 하단을 edge-to-edge 로 둬 웹뷰가 네비게이션바 뒤까지 그려지므로,
+ * 페이지 루트 안쪽 맨 끝에 inset 만큼 빈 칸을 둔다. 루트 안이라 페이지 배경색을 따르고
+ * min-h-screen 높이 안에 들어가 짧은 화면도 스크롤이 생기지 않는다.
+ * (앞쪽 형제는 JSON-LD <script> 뿐이라 last-child 가 페이지 루트)
+ * fixed 요소(탭바·하단 고정 버튼·바텀시트)는 이 칸이 안 먹으니 각자 env(safe-area-inset-bottom) 처리.
+ */
+.page-safe-bottom > :last-child::after {
+  content: '';
+  display: block;
+  flex-shrink: 0;
+  height: env(safe-area-inset-bottom);
+}
