@@ -26,8 +26,13 @@ const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
   {
     title: '안내',
     links: [
+      { label: '서비스 소개 · FAQ', href: '/about' },
       { label: '개인정보 처리방침', href: '/privacy' },
-      { label: '모임·행사용 문의', href: EVENT_INQUIRY_FORM_URL, external: true },
+      {
+        label: '모임·행사용 문의',
+        href: EVENT_INQUIRY_FORM_URL,
+        external: true,
+      },
     ],
   },
 ]

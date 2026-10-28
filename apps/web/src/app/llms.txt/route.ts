@@ -36,6 +36,7 @@ export async function GET() {
       `- [밸런스게임 홈](${SITE_URL}/): 급상승·최신 밸런스게임과 카테고리`,
       `- [밸런스게임 모음](${SITE_URL}/balanse): 전체 게임 목록 (최신순·인기순)`,
       `- [밸런스게임 주제 추천](${SITE_URL}/topics): 커플·친구·술자리용 인기 질문과 카테고리별 추천`,
+      `- [서비스 소개 · 자주 묻는 질문](${SITE_URL}/about): 이용 방법 · 로그인 · 결과 확인 · 앱 · 모임용 문의`,
       ...CATEGORIES.map(
         (c) =>
           `- [${c.label} 밸런스게임](${SITE_URL}/balanse?category=${c.param}): ${c.label} 카테고리 게임 목록`,
