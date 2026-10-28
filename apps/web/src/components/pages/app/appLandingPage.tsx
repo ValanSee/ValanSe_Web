@@ -1,9 +1,9 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import Header from '@/components/_shared/header'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { PLAY_STORE_URL } from '@/constants/about'
+import PhoneFrame from './phoneFrame'
 
 const FEATURES = [
   {
@@ -101,16 +101,11 @@ export default function AppLandingPage() {
                 {description}
               </p>
             </div>
-            <div className="w-56 shrink-0 overflow-hidden rounded-3xl border-4 border-brand-black shadow-xl lg:w-64">
-              <Image
-                src={image}
-                alt={alt}
-                width={660}
-                height={1434}
-                sizes="(min-width: 1024px) 256px, 224px"
-                className="h-auto w-full"
-              />
-            </div>
+            <PhoneFrame
+              src={image}
+              alt={alt}
+              className="w-56 shrink-0 lg:w-64"
+            />
           </section>
         ))}
       </div>
