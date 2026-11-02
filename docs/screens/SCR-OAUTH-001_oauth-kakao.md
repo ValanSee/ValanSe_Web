@@ -9,6 +9,7 @@
 | 경로 | `/oauth/kakao/redirect` |
 | 인증 필요 | ✗ (인증을 만들어내는 화면) |
 | 작성일 | 2026-05-16 |
+| 최종 수정일 | 2026-11-02 |
 
 ## 🎯 화면 목적
 
@@ -41,11 +42,13 @@
 
 **사용자 액션**: 없음 (자동)
 
+> 처리 흐름(2~4)은 Apple 콜백(`SCR-OAUTH-002`)과 공통 컴포넌트 `components/pages/oauth/_shared/oauthRedirect.tsx` 로 공유한다.
+
 ## ⚠️ 예외 상황
 
 | 상황 | 처리 |
 |---|---|
-| `code` 없음 | `/entry`로 이동 + 토스트 |
+| `code` 없음 | `/entry`(복귀 경로 있으면 `?redirect=`)로 replace |
 | 서버 로그인 실패 | `/entry`로 이동 + 에러 메시지 |
 | 프로필 조회 실패 | (TODO: 정책 확인) |
 
@@ -59,5 +62,6 @@
 ## 📎 관련 문서
 
 - `SCR-ENTRY-001_entry.md`
+- `SCR-OAUTH-002_oauth-apple.md`
 - `SCR-ONBOARDING-001_onboarding.md`
 - `auth-flow.md`

@@ -30,6 +30,7 @@
 | SCR-BALANSE-001 | `/balanse` | ✗ | [SCR-BALANSE-001_balanse.md](./SCR-BALANSE-001_balanse.md) |
 | SCR-ENTRY-001 | `/entry` | ✗ | [SCR-ENTRY-001_entry.md](./SCR-ENTRY-001_entry.md) |
 | SCR-OAUTH-001 | `/oauth/kakao/redirect` | ✗ | [SCR-OAUTH-001_oauth-kakao.md](./SCR-OAUTH-001_oauth-kakao.md) |
+| SCR-OAUTH-002 | `/oauth/apple/redirect` | ✗ | [SCR-OAUTH-002_oauth-apple.md](./SCR-OAUTH-002_oauth-apple.md) |
 | SCR-ONBOARDING-001 | `/onboarding` | ✗ | [SCR-ONBOARDING-001_onboarding.md](./SCR-ONBOARDING-001_onboarding.md) |
 | SCR-PRIVACY-001 | `/privacy` | ✗ | [SCR-PRIVACY-001_privacy.md](./SCR-PRIVACY-001_privacy.md) |
 | SCR-TOPICS-001 | `/topics` | ✗ | [SCR-TOPICS-001_topics.md](./SCR-TOPICS-001_topics.md) |
