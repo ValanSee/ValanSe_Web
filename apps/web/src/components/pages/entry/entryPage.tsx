@@ -7,6 +7,7 @@ import { Suspense, useEffect, useState } from 'react'
 import Header from '@/components/_shared/header'
 import { Icon } from '@/components/ui/icon'
 import { validateLoginOrigin } from '@/utils/authRedirect'
+import AppleLoginButton from './_components/appleLoginButton'
 import KakaoLoginButton from './_components/kakaoLoginButton'
 
 // PC 왼쪽 소개 영역에 보여줄 서비스 장점
@@ -121,6 +122,7 @@ function EntryPage() {
             }
           >
             <KakaoLoginButton />
+            <AppleLoginButton />
           </Suspense>
           <Link href="/" className="typo-label-03 text-brand-gray-200">
             로그인 없이 둘러보기
