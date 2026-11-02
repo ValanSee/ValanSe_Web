@@ -1,10 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Bot, RefreshCw } from 'lucide-react'
+import { Bot, MessageSquarePlus, RefreshCw } from 'lucide-react'
 import { errorMessageOf } from '@/lib/api'
 import { fetchComments } from '@/lib/comments'
-import { runContentSeed } from '@/lib/contentSeed'
+import { runCommentSeed, runContentSeed } from '@/lib/contentSeed'
 import { fetchVotes } from '@/lib/votes'
 import type { Vote, VoteComment } from '@/types/vote'
 import { AiVoteItem } from '@/components/ai-review/AiVoteItem'
@@ -26,6 +26,13 @@ const COMMENT_SCAN_VOTES = 30
 const COMMENT_SCAN_CONCURRENCY = 2
 
 type Tab = 'votes' | 'comments'
+/** all: 새 투표 생성 + AI 투표·댓글, comments: 기존 투표에 AI 투표·댓글만 */
+type SeedKind = 'all' | 'comments'
+
+const SEED_CONFIRM: Record<SeedKind, string> = {
+  all: 'AI 콘텐츠 생성을 지금 실행하시겠습니까?',
+  comments: '새 투표 없이 기존 투표에 AI 투표·댓글만 지금 생성하시겠습니까?',
+}
 type BotComment = VoteComment & { voteTitle: string }
 
 export default function AiReviewPage() {
@@ -43,7 +50,7 @@ export default function AiReviewPage() {
   const [commentsError, setCommentsError] = useState<string | null>(null)
   const [commentsFailed, setCommentsFailed] = useState(0)
 
-  const [seedBusy, setSeedBusy] = useState(false)
+  const [seedBusy, setSeedBusy] = useState<SeedKind | null>(null)
   const [seedMessage, setSeedMessage] = useState<string | null>(null)
 
   const scanVotes = useCallback(
@@ -90,7 +97,9 @@ export default function AiReviewPage() {
       for (let i = 0; i < targets.length; i += COMMENT_SCAN_CONCURRENCY) {
         const chunk = targets.slice(i, i + COMMENT_SCAN_CONCURRENCY)
         // 일부 투표가 실패해도 나머지 결과는 보여준다
-        const pages = await Promise.allSettled(chunk.map((v) => fetchComments(v.id)))
+        const pages = await Promise.allSettled(
+          chunk.map((v) => fetchComments(v.id)),
+        )
         pages.forEach((page, j) => {
           if (page.status === 'rejected') {
             failed += 1
@@ -118,16 +127,19 @@ export default function AiReviewPage() {
   const onTabChange = (next: Tab) => {
     setTab(next)
     // 댓글 스캔은 요청이 많아 탭을 처음 열 때만 한다
-    if (next === 'comments' && botComments === null && !commentsLoading) scanComments()
+    if (next === 'comments' && botComments === null && !commentsLoading)
+      scanComments()
   }
 
-  const onRunSeed = async () => {
+  const onRunSeed = async (kind: SeedKind) => {
     if (seedBusy) return
-    if (!window.confirm('AI 콘텐츠 생성을 지금 실행하시겠습니까?')) return
-    setSeedBusy(true)
+    if (!window.confirm(SEED_CONFIRM[kind])) return
+    setSeedBusy(kind)
     setSeedMessage(null)
     try {
-      const result = await runContentSeed()
+      const result = await (kind === 'all'
+        ? runContentSeed()
+        : runCommentSeed())
       setSeedMessage(
         result === 'started'
           ? '생성을 시작했습니다. 결과는 디스코드 prod-server-alert 채널에서 확인할 수 있습니다. 완료 후 새로고침하세요.'
@@ -136,7 +148,7 @@ export default function AiReviewPage() {
     } catch (err) {
       setSeedMessage(errorMessageOf(err, '실행에 실패했습니다.'))
     } finally {
-      setSeedBusy(false)
+      setSeedBusy(null)
     }
   }
 
@@ -150,7 +162,9 @@ export default function AiReviewPage() {
   }
 
   const onBotCommentDeleted = (commentId: number) => {
-    setBotComments((prev) => prev?.filter((c) => c.commentId !== commentId) ?? null)
+    setBotComments(
+      (prev) => prev?.filter((c) => c.commentId !== commentId) ?? null,
+    )
   }
 
   const busy = tab === 'votes' ? loading : commentsLoading
@@ -160,8 +174,8 @@ export default function AiReviewPage() {
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">AI 콘텐츠 검수</h1>
         <p className="text-sm text-gray-600">
-          AI 프로필이 매주 월요일 04:00에 자동 생성한 투표·댓글입니다. 문제가 있는 콘텐츠는
-          삭제하세요.
+          AI 프로필이 매주 월요일 04:00에 자동 생성한 투표·댓글입니다. 문제가
+          있는 콘텐츠는 삭제하세요.
         </p>
       </div>
       <div className="flex items-center gap-2">
@@ -175,11 +189,24 @@ export default function AiReviewPage() {
         </button>
         <button
           type="button"
-          onClick={onRunSeed}
-          disabled={seedBusy}
+          onClick={() => onRunSeed('comments')}
+          disabled={seedBusy !== null}
+          className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+        >
+          <MessageSquarePlus
+            className={`h-4 w-4 ${seedBusy === 'comments' ? 'animate-pulse' : ''}`}
+          />
+          댓글만 생성
+        </button>
+        <button
+          type="button"
+          onClick={() => onRunSeed('all')}
+          disabled={seedBusy !== null}
           className="inline-flex items-center gap-1.5 rounded-md bg-gray-900 px-3 py-1.5 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
         >
-          <RefreshCw className={`h-4 w-4 ${seedBusy ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`h-4 w-4 ${seedBusy === 'all' ? 'animate-spin' : ''}`}
+          />
           지금 생성
         </button>
       </div>
@@ -187,7 +214,9 @@ export default function AiReviewPage() {
   )
 
   const seedNotice = seedMessage && (
-    <p className="rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-800">{seedMessage}</p>
+    <p className="rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-800">
+      {seedMessage}
+    </p>
   )
 
   const tabs = (
@@ -216,7 +245,11 @@ export default function AiReviewPage() {
 
   const voteSection = (
     <section className="space-y-2">
-      {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && (
+        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </p>
+      )}
       <p className="text-xs text-gray-500">
         최신 투표 {scanned}개 중 AI 투표 {votes.length}개
       </p>
@@ -230,7 +263,9 @@ export default function AiReviewPage() {
           <AiVoteItem key={v.id} vote={v} onDeleted={onVoteDeleted} />
         ))}
       </ul>
-      {loading && <p className="py-4 text-center text-xs text-gray-500">불러오는 중...</p>}
+      {loading && (
+        <p className="py-4 text-center text-xs text-gray-500">불러오는 중...</p>
+      )}
       {hasNext && !loading && (
         <button
           type="button"
@@ -246,11 +281,14 @@ export default function AiReviewPage() {
   const commentSection = (
     <section className="space-y-2">
       {commentsError && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{commentsError}</p>
+        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          {commentsError}
+        </p>
       )}
       {commentsFailed > 0 && !commentsLoading && (
         <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          투표 {commentsFailed}개의 댓글을 불러오지 못했습니다. 잠시 후 새로고침하세요.
+          투표 {commentsFailed}개의 댓글을 불러오지 못했습니다. 잠시 후
+          새로고침하세요.
         </p>
       )}
       <p className="text-xs text-gray-500">
@@ -262,7 +300,9 @@ export default function AiReviewPage() {
       ) : (
         <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white px-4">
           {botComments?.length === 0 && (
-            <li className="py-12 text-center text-sm text-gray-500">AI 댓글이 없습니다.</li>
+            <li className="py-12 text-center text-sm text-gray-500">
+              AI 댓글이 없습니다.
+            </li>
           )}
           {botComments?.map((c) => (
             <CommentRow
