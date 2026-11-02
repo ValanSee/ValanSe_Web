@@ -36,11 +36,16 @@ export type PollDetailResult = ServerFetchResult<PollDetail>
 /**
  * SSR·metadata 용 상세 조회 (비로그인). `GET /votes/{id}` 는 토큰 없이도 200.
  * 같은 요청 안의 generateMetadata 와 page 가 공유하도록 cache 로 감쌈.
+ *
+ * Next fetch 캐시를 쓰지 않는다(revalidate 0). Next 는 200 응답만 캐시에 덮어써서,
+ * 한 번 캐시된 게임이 삭제돼 API 가 404 를 줘도 옛 200 이 계속 남아 삭제된 게임이 웹에 노출됐다.
  */
 export const fetchPollDetailForServer = cache(
   async (id: string): Promise<PollDetailResult> => {
     if (!/^\d+$/.test(id)) return { status: 'not-found' }
-    return serverGetJson<PollDetail>(`/votes/${id}`)
+    return serverGetJson<PollDetail>(`/votes/${id}`, undefined, {
+      revalidate: 0,
+    })
   },
 )
 
