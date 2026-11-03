@@ -7,6 +7,7 @@ import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 import type { CategoryMeta } from '@/constants/category'
 import type { Vote } from '@/types/balanse/vote'
 import { EVENT_INQUIRY_FORM_URL } from '@/constants/url'
+import { MT_PPT_PATH } from '@/constants/mtPpt'
 
 export interface TopicsSection {
   category: CategoryMeta
@@ -95,8 +96,14 @@ export default function TopicsPage({ popular, sections }: Props) {
             ))}
           </dl>
           <Link
+            href={MT_PPT_PATH}
+            className="typo-label-02 mt-1 flex h-11 items-center justify-center rounded-xl bg-brand-violet-50 text-primary"
+          >
+            MT·모임용 밸런스게임 PPT 무료 다운로드
+          </Link>
+          <Link
             href="/create"
-            className="typo-label-02 mt-1 flex h-11 items-center justify-center rounded-xl bg-primary text-primary-foreground"
+            className="typo-label-02 flex h-11 items-center justify-center rounded-xl bg-primary text-primary-foreground"
           >
             밸런스게임 만들기
           </Link>
