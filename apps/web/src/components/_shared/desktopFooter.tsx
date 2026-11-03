@@ -13,6 +13,7 @@ const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
       { label: '밸런스게임 모음', href: '/balanse' },
       { label: '인기 밸런스게임', href: '/balanse?sort=popular' },
       { label: '밸런스게임 주제 추천', href: '/topics' },
+      { label: 'MT 밸런스게임 PPT', href: '/topics/mt-ppt' },
       { label: '밸런스게임 만들기', href: '/create' },
     ],
   },
