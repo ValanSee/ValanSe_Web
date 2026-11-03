@@ -9,7 +9,7 @@
 | 경로 | `/poll/[id]` |
 | 인증 필요 | △ (조회는 가능, 투표/댓글/신고는 로그인 필요) |
 | 작성일 | 2026-05-16 |
-| 최종 수정일 | 2026-10-26 |
+| 최종 수정일 | 2026-10-28 |
 
 ## 🎯 화면 목적
 
@@ -20,34 +20,38 @@
 - 홈 핫이슈 카드
 - 밸런스 목록(`/balanse`)의 아이템
 - 내 이력(`/my/created`, `/my/voted`)
-- 외부 공유 링크 (TODO: 공유 기능 확인)
+- 외부 공유 링크: Android 는 앱 설치 시 앱으로 열림(App Links). 카톡 인앱 브라우저는 `intent://` 로 앱 열기 1회 시도, 앱 없으면 같은 페이지 웹 (`app/layout.tsx` `KAKAO_OPEN_APP_SCRIPT`)
+- 외부 공유 링크 (헤더 공유 버튼으로 공유된 `/poll/{id}`)
 
 ## 🖥️ 렌더링 (SEO)
 
 - 서버에서 `GET /votes/{id}` 를 **비로그인**으로 조회해 PollCard 를 SSR (60초 캐시, 3초 타임아웃)
 - 같은 데이터로 페이지별 `title` · `description` · canonical(`/poll/{id}`) · OG 생성
   - title: `{제목} - {카테고리} 밸런스게임 | ValanSe`
-  - description: 본문 · `A vs B` · 안내 문구 (150자 이내)
-  - JSON-LD: DiscussionForumPosting(참여 수 `interactionStatistic` VoteAction 포함) · BreadcrumbList
+  - description: 본문 · `A vs B` · 결과 요약(`41명 참여 · 마라탕 41% · 피자 29%`, 참여 5명 미만이면 생략) · 안내 문구 (150자 이내)
+  - 결과 요약은 AI 검색 인용용으로 메타·JSON-LD `text` 에만 넣는다. 화면에서는 기존처럼 투표 후에 공개
+  - JSON-LD: DiscussionForumPosting(참여 수 `interactionStatistic` VoteAction · 댓글 수 `commentCount` 포함) · BreadcrumbList
   - OG · 트위터 이미지: 게임별 자동 생성 (`opengraph-image.tsx`, 1200×630 — 카테고리 · 제목 · A vs B). 상세 조회 · 폰트 로드 실패 시 공통 `og-image.png`
 - 클라이언트에서 로그인 토큰으로 다시 조회해 `hasVoted` · 댓글 등을 갱신 (로딩 화면 없이 교체)
 - 로그인 사용자(토큰 있음)는 재조회 전까지 **선택지·참여자 수 자리에 스켈레톤** 노출 → 미투표 화면이 먼저 보이지 않음
   - 비로그인·크롤러는 SSR 선택지를 바로 노출
   - 재조회 전 선택지 클릭·로그인 후 대기 투표 자동 제출은 막음
 - 서버 조회가 실패·타임아웃이면 기존처럼 클라이언트에서만 조회
+- 베스트 댓글(`GET /votes/{id}/comments/best`) · 댓글 첫 페이지(`GET /votes/{id}/comments`)도 서버에서 상세와 함께 조회해 SSR → 댓글이 늦게 붙으며 아래 영역이 밀리던 CLS 제거, 댓글 텍스트 색인. 클라이언트는 이 값으로 시작해 로그인 기준으로 다시 조회. 실패한 항목만 클라이언트 조회로 대체
 - 라우트는 `app/(public)/poll/[id]` — 로딩 화면(`loading.tsx`)·AuthGuard 의 Suspense 가 없는 그룹이라, 없는 게임이면 응답이 스트리밍되기 전에 `notFound()` 가 실행돼 실제 HTTP 404 를 반환 (예전 `(auth)` 그룹에서는 200 + noindex 소프트 404). 상세는 로그인 강제 대상이 아니라 AuthGuard 불필요
 - 같은 카테고리 인기 게임 목록도 서버에서 조회해 내부 링크로 SSR (PC 사이드바 · 모바일 하단 목록, Suspense 로 따로 스트리밍) → 크롤러가 다른 상세 페이지로 이동할 수 있음
 
 ## 📐 레이아웃 구성
 
-1. **헤더** (뒤로 / 게시글 메뉴 — 신고)
+1. **헤더** (뒤로 / 공유 버튼 / 게시글 메뉴 — 신고). PC 는 브레드크럼 오른쪽에 같은 버튼
 2. **PollCard** (제목, 선택지 A/B, 투표 버튼)
 3. **VoteChart** (참여 통계)
-4. **베스트 댓글 미리보기** (PreviewCommentCard)
-5. **전체 댓글 (CommentDetail)** — 펼치기/시트, 댓글별 메뉴(삭제/신고)
-6. **같은 카테고리 인기 밸런스 (RelatedPolls, 모바일 전용 — PC 는 사이드바)**
-7. **ReportSheet** (신고 사유 선택 바텀시트)
-8. **하단 네비게이션 바**
+4. **공유 유도 버튼** `친구는 뭘 골랐을까? 물어보기` — 투표 후에만, 결과 아래 (헤더 공유 버튼과 같은 동작)
+5. **베스트 댓글 미리보기** (PreviewCommentCard)
+6. **전체 댓글 (CommentDetail)** — 펼치기/시트, 댓글별 메뉴(삭제/신고)
+7. **같은 카테고리 인기 밸런스 (RelatedPolls, 모바일 전용 — PC 는 사이드바)**
+8. **ReportSheet** (신고 사유 선택 바텀시트)
+9. **하단 네비게이션 바**
 
 ### PC 레이아웃 (`lg` ≥ 1024px)
 
@@ -57,6 +61,18 @@
 - **사이드바**: `{카테고리} 인기 밸런스`(같은 카테고리 인기순) · `새로 올라온 밸런스`(전체 최신순) 각 최대 5개, 현재 글·내가 신고한 글 제외. 서버에서 조회해 SSR HTML 에 링크 포함. 목록이 비면 해당 섹션 미노출, 둘 다 비면 사이드바 칼럼 자체를 숨김. 사이드바는 Suspense 로 따로 스트리밍해 본문 응답을 지연시키지 않음. 서버 상세 조회가 실패해 클라이언트에서 다시 조회하는 경우엔 사이드바 미노출
 
 ## 🧩 섹션별 상세 명세
+
+### 0. 공유 버튼 (헤더)
+
+**사용자 액션**
+
+- 클릭 → 휴대폰 기본 공유 시트(Web Share API) 열림. 제목 `{투표 제목}`, 문구 `{투표 제목} — A vs B, 너라면 뭐 골라?`, URL `https://valanse.kr/poll/{id}` (쿼리 없는 canonical)
+- 앱(Android WebView)에서는 Web Share API 가 없어서, 앱이 `window.__NATIVE_SHARE__` 를 주입한 경우 `ReactNativeWebView.postMessage({ type: 'share', title, text, url })` → 앱이 네이티브 공유 시트(`Share.share`)를 연다 (ValanSe_Native `App.tsx`)
+- 그 밖에 공유 시트를 지원하지 않는 환경(PC 브라우저 일부 · 공유 미지원 구버전 앱) → 링크 복사 + 토스트 `링크를 복사했어요`, 실패 시 `링크를 복사하지 못했어요`
+- 공유 시트를 닫으면 아무 동작 없음
+- 공유 미리보기 이미지는 게임별 OG 이미지(`opengraph-image.tsx`)
+- 공유 URL 에 `utm_source=share&utm_medium=native|web_share|copy` 를 붙인다(canonical 은 쿼리 없는 주소 그대로). 공유 성공 시 GA `share` 이벤트(method · item_id · location `header`|`post_vote`)
+- 측정(GA4, `lib/analytics.ts`): 투표 `vote`(source `detail`|`list`|`home`, 로그인 후 자동 제출은 `after_login`), 댓글 `comment`(is_reply). 운영 도메인에서만 전송, 앱 WebView 는 platform=app
 
 ### 1. PollCard
 

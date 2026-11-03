@@ -148,18 +148,16 @@ function BalancePageContent({ initialData }: BalancePageProps) {
       {/* 모바일 헤더는 화면 제목만, 페이지 h1 은 아래 카테고리 제목 하나로 */}
       <Header className="lg:hidden" titleAs="p" title="밸런스 게임" />
 
-      <div className="lg:hidden">
-        <TabBar>
-          {TABS.map((tab) => (
-            <TabItem
-              key={tab.value}
-              label={tab.label}
-              selected={tab.value === category}
-              onClick={() => updateCategory(tab.value)}
-            />
-          ))}
-        </TabBar>
-      </div>
+      <TabBar className="lg:hidden">
+        {TABS.map((tab) => (
+          <TabItem
+            key={tab.value}
+            label={tab.label}
+            selected={tab.value === category}
+            onClick={() => updateCategory(tab.value)}
+          />
+        ))}
+      </TabBar>
 
       <div className="lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start lg:gap-ds-8">
         {/* PC: 카테고리 · 정렬 사이드바 */}
@@ -205,6 +203,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
             </Link>
           )}
 
+          {/* 카드 제목(h3)이 h1 바로 아래로 건너뛰지 않도록 목록 구획 제목 (홈에서는 섹션 h2 가 이 역할) */}
+          <h2 className="sr-only">밸런스게임 목록</h2>
           <div className="flex flex-col gap-3 px-4 pt-4 lg:grid lg:grid-cols-2 lg:gap-ds-4 lg:px-0 lg:pt-0">
             {error && (
               <p className="typo-body-b-01 py-8 text-center text-destructive lg:col-span-2">

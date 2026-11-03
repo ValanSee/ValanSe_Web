@@ -11,6 +11,18 @@ export default {
   ],
   theme: {
     extend: {
+      // 작은 글자 대비 확보: 글자색만 진한 토큰으로 (bg-primary · bg-brand-gray-100 등 배경은 영향 없음)
+      textColor: {
+        primary: {
+          DEFAULT: 'hsl(var(--text-primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        brand: {
+          gray: {
+            100: 'hsl(var(--text-muted))',
+          },
+        },
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

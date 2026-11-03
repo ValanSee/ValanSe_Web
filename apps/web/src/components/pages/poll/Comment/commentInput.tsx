@@ -5,6 +5,7 @@ import { IconButton } from '@/components/ui/iconButton'
 import { createComment } from '@/api/comment/commentApi'
 import { getAccessToken } from '@/utils/tokenUtils'
 import { useGoToLogin } from '@/hooks/utils/useGoToLogin'
+import { trackEvent } from '@/lib/analytics'
 
 interface CommentInputProps {
   voteId: number | string
@@ -37,6 +38,10 @@ export default function CommentInput({
     try {
       setIsSubmitting(true)
       await createComment(voteId, content.trim(), parentId)
+      trackEvent('comment', {
+        vote_id: Number(voteId),
+        is_reply: Boolean(parentId),
+      })
       setContent('')
       onCommentCreated?.()
     } catch (e) {

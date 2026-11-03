@@ -13,6 +13,7 @@ const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
       { label: '밸런스게임 모음', href: '/balanse' },
       { label: '인기 밸런스게임', href: '/balanse?sort=popular' },
       { label: '밸런스게임 주제 추천', href: '/topics' },
+      { label: 'MT 밸런스게임 PPT', href: '/topics/mt-ppt' },
       { label: '밸런스게임 만들기', href: '/create' },
     ],
   },
@@ -26,8 +27,14 @@ const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
   {
     title: '안내',
     links: [
+      { label: '서비스 소개 · FAQ', href: '/about' },
+      { label: '앱 다운로드', href: '/app' },
       { label: '개인정보 처리방침', href: '/privacy' },
-      { label: '모임·행사용 문의', href: EVENT_INQUIRY_FORM_URL, external: true },
+      {
+        label: '모임·행사용 문의',
+        href: EVENT_INQUIRY_FORM_URL,
+        external: true,
+      },
     ],
   },
 ]

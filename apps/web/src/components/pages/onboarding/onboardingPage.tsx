@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { TextField } from '@/components/ui/textField'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
+import { trackEvent } from '@/lib/analytics'
 
 const genderOptions: { value: Gender; label: string }[] = [
   { value: 'MALE', label: '남성' },
@@ -128,6 +129,8 @@ const OnboardingPage = () => {
     }
     try {
       await createMemberProfile(profile)
+      // 닉네임 · 성별 · 나이 등 프로필 값은 GA 로 보내지 않는다
+      trackEvent('onboarding_complete')
       router.replace(consumePostAuthRedirect() ?? '/')
     } catch (e) {
       console.error('Failed to create member profile:', e)

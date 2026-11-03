@@ -11,9 +11,9 @@ export const metadata: Metadata = {
   openGraph: { ...BASE_OPEN_GRAPH, url: '/' },
 }
 
-// (auth) 레이아웃의 AuthGuard 가 useSearchParams 를 써서, 정적 생성 시 화면 전체가 CSR 로 빠짐(BAILOUT).
-// 요청 시 렌더링해야 SSR HTML 에 목록이 담김. API 응답은 fetch 캐시(60초)로 재사용
-export const dynamic = 'force-dynamic'
+// (public) 그룹: AuthGuard(useSearchParams) · loading.tsx 가 없어 정적 생성 가능.
+// 60초마다 백그라운드에서 다시 만들어(ISR) CDN 캐시로 응답 → 매 요청 서버 렌더링 제거
+export const revalidate = 60
 
 const LATEST_SIZE = 3
 const TRENDING_DAYS = 7

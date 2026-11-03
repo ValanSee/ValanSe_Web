@@ -23,6 +23,7 @@ export default function BalanseVoteCard({ data }: Props) {
     onVoted: (_res, optionId) => {
       setSelectedId((prev) => (prev === optionId ? null : optionId))
     },
+    analytics: { source: 'list', category: data.category },
   })
 
   return (
