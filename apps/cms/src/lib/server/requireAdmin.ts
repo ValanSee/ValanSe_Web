@@ -27,7 +27,8 @@ export async function requireAdmin(req: NextRequest): Promise<boolean> {
   const until = verified.get(token)
   if (until && until > now) return true
 
-  const base = process.env.NEXT_PUBLIC_BASE_URL
+  // 프로덕션 env 는 끝에 / 가 붙어 있어 // 경로가 되면 백엔드가 403 을 준다
+  const base = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, '')
   if (!base) {
     console.error('[requireAdmin] NEXT_PUBLIC_BASE_URL 이 없습니다')
     return false
