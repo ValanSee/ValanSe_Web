@@ -64,7 +64,9 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
   }
 
   const onCommentDeleted = (commentId: number) => {
-    setComments((prev) => prev?.filter((c) => c.commentId !== commentId) ?? null)
+    setComments(
+      (prev) => prev?.filter((c) => c.commentId !== commentId) ?? null,
+    )
   }
 
   const summary = (
@@ -137,7 +139,11 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
       onClick={onToggle}
       className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900"
     >
-      {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+      {open ? (
+        <ChevronUp className="h-3.5 w-3.5" />
+      ) : (
+        <ChevronDown className="h-3.5 w-3.5" />
+      )}
       댓글 {open ? '접기' : '보기'}
     </button>
   )
@@ -151,7 +157,11 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
       ) : (
         <ul className="divide-y divide-gray-200">
           {comments?.map((c) => (
-            <CommentRow key={c.commentId} comment={c} onDeleted={onCommentDeleted} />
+            <CommentRow
+              key={c.commentId}
+              comment={{ ...c, createdAt: c.commentCreatedAt }}
+              onDeleted={onCommentDeleted}
+            />
           ))}
         </ul>
       )}
