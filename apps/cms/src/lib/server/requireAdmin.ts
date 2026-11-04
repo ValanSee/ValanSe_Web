@@ -28,14 +28,21 @@ export async function requireAdmin(req: NextRequest): Promise<boolean> {
   if (until && until > now) return true
 
   const base = process.env.NEXT_PUBLIC_BASE_URL
-  if (!base) return false
+  if (!base) {
+    console.error('[requireAdmin] NEXT_PUBLIC_BASE_URL 이 없습니다')
+    return false
+  }
   try {
     const res = await fetch(
       `${base}/admin/analytics/mau?yearMonth=${currentYearMonth()}`,
       { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' },
     )
-    if (!res.ok) return false
-  } catch {
+    if (!res.ok) {
+      console.warn('[requireAdmin] 백엔드 관리자 확인 실패', res.status, base)
+      return false
+    }
+  } catch (err) {
+    console.error('[requireAdmin] 백엔드 호출 오류', base, err)
     return false
   }
 

@@ -6,6 +6,8 @@ import { kstDate, parseDays } from '@/lib/server/kstDate'
 import type { InstallsDashboard, InstallsDay } from '@/types/dashboard'
 
 export const dynamic = 'force-dynamic'
+// 백엔드가 국내 서버라 Vercel 서울 리전에서 실행 (기본 리전 미국에서는 관리자 확인 요청이 막힘)
+export const preferredRegion = 'icn1'
 
 // Play 리포트는 하루 한 번 갱신되므로 넉넉히 캐시
 const CACHE_TTL_MS = 60 * 60 * 1000

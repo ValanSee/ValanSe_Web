@@ -12,6 +12,8 @@ import type {
 } from '@/types/dashboard'
 
 export const dynamic = 'force-dynamic'
+// 백엔드가 국내 서버라 Vercel 서울 리전에서 실행 (기본 리전 미국에서는 관리자 확인 요청이 막힘)
+export const preferredRegion = 'icn1'
 
 type Report = protos.google.analytics.data.v1beta.IRunReportResponse
 type Row = protos.google.analytics.data.v1beta.IRow
