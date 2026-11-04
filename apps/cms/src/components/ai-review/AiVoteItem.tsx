@@ -69,6 +69,10 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
     )
   }
 
+  // 목록 API 는 선택지를 A/B 순서로 주지 않고 label 도 없다.
+  // 선택지는 A→B 순서로 저장돼 id 가 작은 쪽이 A 다.
+  const optionsInLabelOrder = [...vote.options].sort((a, b) => a.id - b.id)
+
   const summary = (
     <div className="min-w-0 flex-1">
       <div className="flex items-center gap-2">
@@ -86,7 +90,7 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
         </p>
       )}
       <ol className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
-        {vote.options.map((o, i) => (
+        {optionsInLabelOrder.map((o, i) => (
           <li
             key={o.id}
             className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700"
