@@ -155,7 +155,7 @@ export default function GaSection({
                   <YAxis
                     type="category"
                     dataKey="label"
-                    width={76}
+                    width={112}
                     tick={AXIS_TICK}
                     tickLine={false}
                     axisLine={false}

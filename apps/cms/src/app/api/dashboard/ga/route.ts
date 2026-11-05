@@ -28,6 +28,7 @@ const TRACKED_EVENTS = [
   'sign_up',
   'login',
   'onboarding_complete',
+  'vote_attempt',
   'vote',
   'comment',
   'create_vote',
