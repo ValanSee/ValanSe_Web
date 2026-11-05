@@ -33,6 +33,13 @@ export function useVoteAction({
     async (optionId: number) => {
       if (isVoting) return
       if (!getAccessToken()) {
+        // 투표하려다 로그인 벽에 막힌 수 — 로그인 후 자동 제출되면 vote(after_login) 로 이어진다
+        trackEvent('vote_attempt', {
+          vote_id: Number(voteId),
+          option_id: optionId,
+          source: analytics?.source,
+          category: analytics?.category,
+        })
         setPendingVote(voteId, optionId)
         goToLogin(detailHref)
         return

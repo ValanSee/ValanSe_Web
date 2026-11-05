@@ -24,6 +24,7 @@ export const EVENT_LABEL: Record<string, string> = {
   sign_up: '회원가입',
   login: '로그인',
   onboarding_complete: '온보딩 완료',
+  vote_attempt: '투표 시도(비로그인)',
   vote: '투표',
   comment: '댓글',
   create_vote: '게임 생성',
