@@ -64,8 +64,14 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
   }
 
   const onCommentDeleted = (commentId: number) => {
-    setComments((prev) => prev?.filter((c) => c.commentId !== commentId) ?? null)
+    setComments(
+      (prev) => prev?.filter((c) => c.commentId !== commentId) ?? null,
+    )
   }
+
+  // 목록 API 는 선택지를 A/B 순서로 주지 않고 label 도 없다.
+  // 선택지는 A→B 순서로 저장돼 id 가 작은 쪽이 A 다.
+  const optionsInLabelOrder = [...vote.options].sort((a, b) => a.id - b.id)
 
   const summary = (
     <div className="min-w-0 flex-1">
@@ -84,7 +90,7 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
         </p>
       )}
       <ol className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
-        {vote.options.map((o, i) => (
+        {optionsInLabelOrder.map((o, i) => (
           <li
             key={o.id}
             className="rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700"
@@ -137,7 +143,11 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
       onClick={onToggle}
       className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900"
     >
-      {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+      {open ? (
+        <ChevronUp className="h-3.5 w-3.5" />
+      ) : (
+        <ChevronDown className="h-3.5 w-3.5" />
+      )}
       댓글 {open ? '접기' : '보기'}
     </button>
   )
@@ -151,7 +161,11 @@ export function AiVoteItem({ vote, onDeleted }: Props) {
       ) : (
         <ul className="divide-y divide-gray-200">
           {comments?.map((c) => (
-            <CommentRow key={c.commentId} comment={c} onDeleted={onCommentDeleted} />
+            <CommentRow
+              key={c.commentId}
+              comment={{ ...c, createdAt: c.commentCreatedAt }}
+              onDeleted={onCommentDeleted}
+            />
           ))}
         </ul>
       )}
