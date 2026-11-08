@@ -34,6 +34,8 @@ export default function AiReviewPage() {
 
   const [botComments, setBotComments] = useState<AdminComment[] | null>(null)
   const [commentPage, setCommentPage] = useState(0)
+  /** 마지막으로 불러온 페이지 이후 삭제한 댓글 수 — offset 이 그만큼 앞으로 당겨진다 */
+  const [deletedSinceLoad, setDeletedSinceLoad] = useState(0)
   const [commentsHasNext, setCommentsHasNext] = useState(false)
   const [commentsLoading, setCommentsLoading] = useState(false)
   const [commentsError, setCommentsError] = useState<string | null>(null)
@@ -67,14 +69,24 @@ export default function AiReviewPage() {
     async (next: boolean) => {
       setCommentsLoading(true)
       setCommentsError(null)
-      const page = next ? commentPage + 1 : 0
+      // 서버는 page*size offset 으로 자르므로, 삭제한 만큼 당겨진 첫 미표시 위치가
+      // 들어 있는 페이지부터 받는다. 이미 보이는 댓글은 아래에서 중복 제거된다.
+      const page = next
+        ? Math.max(
+            0,
+            Math.floor(
+              ((commentPage + 1) * COMMENT_PAGE_SIZE - deletedSinceLoad) /
+                COMMENT_PAGE_SIZE,
+            ),
+          )
+        : 0
       try {
         const data = await fetchAdminComments({
           isBot: true,
           page,
           size: COMMENT_PAGE_SIZE,
         })
-        // 삭제·신규 댓글로 페이지 경계가 밀리면 같은 댓글이 다시 올 수 있다
+        // 신규 댓글이나 위 보정으로 같은 댓글이 다시 올 수 있다
         setBotComments((prev) => {
           if (!next || !prev) return data.comments
           const seen = new Set(prev.map((c) => c.commentId))
@@ -84,6 +96,7 @@ export default function AiReviewPage() {
           ]
         })
         setCommentPage(page)
+        setDeletedSinceLoad(0)
         setCommentsHasNext(data.hasNext)
       } catch (err) {
         setCommentsError(errorMessageOf(err, '댓글을 불러오지 못했습니다.'))
@@ -91,7 +104,7 @@ export default function AiReviewPage() {
         setCommentsLoading(false)
       }
     },
-    [commentPage],
+    [commentPage, deletedSinceLoad],
   )
 
   useEffect(() => {
@@ -140,6 +153,7 @@ export default function AiReviewPage() {
     setBotComments(
       (prev) => prev?.filter((c) => c.commentId !== commentId) ?? null,
     )
+    setDeletedSinceLoad((n) => n + 1)
   }
 
   const busy = tab === 'votes' ? loading : commentsLoading
