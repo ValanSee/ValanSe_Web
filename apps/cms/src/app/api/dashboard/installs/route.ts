@@ -3,7 +3,8 @@ import { getStorage } from '@/lib/server/google'
 import { requireAdmin } from '@/lib/server/requireAdmin'
 import { cached } from '@/lib/server/cache'
 import { kstDate, parseDays } from '@/lib/server/kstDate'
-import type { InstallsDashboard, InstallsDay } from '@/types/dashboard'
+import type { InstallsDashboard } from '@/types/dashboard'
+import { OVERVIEW_FILE, decodeCsv, parseOverview, summarize } from '@/lib/playInstalls'
 
 export const dynamic = 'force-dynamic'
 // 백엔드가 국내 서버라 Vercel 서울 리전에서 실행 (기본 리전 미국에서는 관리자 확인 요청이 막힘)
@@ -11,48 +12,6 @@ export const preferredRegion = 'icn1'
 
 // Play 리포트는 하루 한 번 갱신되므로 넉넉히 캐시
 const CACHE_TTL_MS = 60 * 60 * 1000
-
-/** Play Console 설치 통계 CSV 는 UTF-16LE(BOM) 이다 */
-function decodeCsv(buf: Buffer): string {
-  if (buf[0] === 0xff && buf[1] === 0xfe) {
-    return new TextDecoder('utf-16le').decode(buf.subarray(2))
-  }
-  return buf.toString('utf8').replace(/^﻿/, '')
-}
-
-const COLUMNS = {
-  date: 'Date',
-  deviceInstalls: 'Daily Device Installs',
-  deviceUninstalls: 'Daily Device Uninstalls',
-  userInstalls: 'Daily User Installs',
-  userUninstalls: 'Daily User Uninstalls',
-  activeDevices: 'Active Device Installs',
-  totalUserInstalls: 'Total User Installs',
-} as const
-
-function parseOverview(csv: string): InstallsDay[] {
-  const lines = csv.split(/\r?\n/).filter((l) => l.trim())
-  if (lines.length < 2) return []
-  const header = lines[0].split(',').map((h) => h.trim())
-  const idx = (name: string) => header.indexOf(name)
-  const col = Object.fromEntries(
-    Object.entries(COLUMNS).map(([k, name]) => [k, idx(name)]),
-  ) as Record<keyof typeof COLUMNS, number>
-
-  return lines.slice(1).map((line) => {
-    const cells = line.split(',')
-    const n = (i: number) => (i < 0 ? 0 : Number(cells[i]) || 0)
-    return {
-      date: cells[col.date]?.trim() ?? '',
-      deviceInstalls: n(col.deviceInstalls),
-      deviceUninstalls: n(col.deviceUninstalls),
-      userInstalls: n(col.userInstalls),
-      userUninstalls: n(col.userUninstalls),
-      activeDevices: n(col.activeDevices),
-      totalUserInstalls: n(col.totalUserInstalls),
-    }
-  })
-}
 
 async function load(days: number): Promise<InstallsDashboard> {
   const storage = getStorage()
@@ -67,28 +26,20 @@ async function load(days: number): Promise<InstallsDashboard> {
   }
 
   const startDate = kstDate(days)
-  const startMonth = startDate.slice(0, 7).replace('-', '')
   const prefix = `stats/installs/installs_${pkg}_`
 
   try {
+    // 누적 설치를 위해 모든 달을 읽는다 (월 1개 · 수 KB, 결과는 1시간 캐시)
     const [files] = await storage.bucket(bucket).getFiles({ prefix })
-    const targets = files.filter((f) => {
-      const m = f.name.match(/_(\d{6})_overview\.csv$/)
-      return m && m[1] >= startMonth
-    })
+    const targets = files.filter((f) => OVERVIEW_FILE.test(f.name))
     const parsed = await Promise.all(
       targets.map(async (f) => parseOverview(decodeCsv((await f.download())[0]))),
     )
-    const daily = parsed
-      .flat()
-      .filter((d) => d.date >= startDate)
-      .sort((a, b) => a.date.localeCompare(b.date))
     return {
       status: 'ok',
       days,
       generatedAt: new Date().toISOString(),
-      daily,
-      latest: daily.at(-1) ?? null,
+      ...summarize(parsed.flat(), startDate),
     }
   } catch (err) {
     const code = (err as { code?: number }).code
