@@ -20,7 +20,7 @@ const fieldVariants = cva(
 )
 
 const inputCn =
-  'flex-1 bg-transparent outline-none typo-label-02 placeholder:text-brand-gray-100 disabled:cursor-not-allowed disabled:text-brand-gray-75'
+  'min-w-0 flex-1 bg-transparent outline-none typo-label-02 placeholder:text-brand-gray-100 disabled:cursor-not-allowed disabled:text-brand-gray-75'
 
 const supportCn = cva('typo-body-c-02', {
   variants: {
@@ -92,7 +92,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     }
 
     return (
-      <div className={cn('flex w-full flex-col gap-2', className)}>
+      <div className={cn('flex w-full min-w-0 flex-col gap-2', className)}>
         {label && (
           <label htmlFor={id} className="typo-title-02 text-foreground">
             {label}
