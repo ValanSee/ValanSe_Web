@@ -10,7 +10,7 @@ import { AppDispatch } from '../store'
 import { getRefreshToken } from '@/utils/tokenUtils'
 import { saveTokens, clearTokens } from '@/utils/tokenUtils'
 import { reissue } from '@/api/auth'
-import { logout as logoutApi, signout as signoutApi } from '@/api/auth'
+import { logout as logoutApi } from '@/api/auth'
 import { appleLogin, login } from '@/api/auth'
 import { AppleLoginRequest, LoginResponse } from '@/types/api/auth'
 
@@ -66,14 +66,13 @@ export const logoutThunk = () => async (dispatch: AppDispatch) => {
   }
 }
 
-export const signoutThunk = () => async (dispatch: AppDispatch) => {
-  try {
-    await signoutApi()
-  } catch {
-    // 탈퇴 API 실패해도 로컬 상태는 정리
-  } finally {
-    dispatch(logout())
-    dispatch(resetMember())
-    clearTokens()
-  }
+/**
+ * 로컬 로그인 상태(Redux · 토큰)만 정리.
+ * 회원 탈퇴는 완료 안내를 보여준 뒤에 호출한다 — 먼저 토큰을 지우면
+ * (auth) AuthGuard 가 화면을 로딩으로 바꿔 완료 팝업이 사라진다
+ */
+export const clearSession = () => (dispatch: AppDispatch) => {
+  dispatch(logout())
+  dispatch(resetMember())
+  clearTokens()
 }
