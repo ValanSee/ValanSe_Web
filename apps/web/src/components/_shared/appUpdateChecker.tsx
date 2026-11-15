@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import AppUpdateModal from '@/components/ui/modal/appUpdateModal'
 import {
-  APP_STORE_URL,
   MIN_SUPPORTED_APP_VERSION,
+  getAppStoreUrl,
   getAppVersion,
 } from '@/constants/appVersion'
 
@@ -55,7 +55,7 @@ export function AppUpdateChecker() {
   }, [])
 
   const handleUpdate = useCallback(() => {
-    window.location.href = APP_STORE_URL
+    window.location.href = getAppStoreUrl()
   }, [])
 
   return (

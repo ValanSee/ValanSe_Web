@@ -22,6 +22,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        // iOS Universal Links: 확장자 없는 파일이라 JSON 타입을 직접 지정
+        source: '/.well-known/apple-app-site-association',
+        headers: [{ key: 'Content-Type', value: 'application/json' }],
+      },
+    ]
+  },
 }
 
 export default nextConfig
