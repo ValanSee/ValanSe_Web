@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Icon } from '@/components/ui/icon'
@@ -19,6 +20,7 @@ import { Age, Gender, mbtiIe, mbtiTf, Profile } from '@/types/member'
 import Header from '@/components/_shared/header'
 import { Button } from '@/components/ui/button'
 import { TextField } from '@/components/ui/textField'
+import { Popup } from '@/components/ui/popup'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 import { trackEvent } from '@/lib/analytics'
@@ -67,6 +69,11 @@ const OnboardingPage = () => {
   } | null>(null)
   const [checkingNickname, setCheckingNickname] = useState(false)
   const [mbtiBottomSheetOpen, setMbtiBottomSheetOpen] = useState(false)
+  const [submitError, setSubmitError] = useState<{
+    title: string
+    description?: string
+    toEntry: boolean
+  } | null>(null)
 
   const handleCheckNickname = async () => {
     const value = getValues('nickname').trim()
@@ -77,7 +84,7 @@ const OnboardingPage = () => {
 
     setCheckingNickname(true)
     try {
-      const { isAvailable, isClean } = await checkNickname(value)
+      const { isAvailable, isMeaningful, isClean } = await checkNickname(value)
 
       // 응답을 기다리는 사이 입력이 바뀌었으면 stale 응답이므로 무시한다.
       if (getValues('nickname').trim() !== value) return
@@ -87,6 +94,15 @@ const OnboardingPage = () => {
         setNicknameMessage({
           type: 'error',
           text: '이미 사용 중인 닉네임이에요',
+        })
+        return
+      }
+      // 서버는 저장할 때 형식(자음·모음만 등)을 다시 검사하므로 여기서 먼저 막는다
+      if (!isMeaningful) {
+        setValue('nicknameVerified', false, { shouldValidate: true })
+        setNicknameMessage({
+          type: 'error',
+          text: '의미 있는 닉네임을 입력해주세요',
         })
         return
       }
@@ -134,9 +150,28 @@ const OnboardingPage = () => {
       router.replace(consumePostAuthRedirect() ?? '/')
     } catch (e) {
       console.error('Failed to create member profile:', e)
-      alert('회원 정보 생성에 실패했습니다.')
-      router.replace(entryHrefWithRedirect(pathname))
+      // 400(입력값 문제)은 서버 메시지를 보여주고 폼에 남아 고칠 수 있게 한다.
+      // 그 외(인증 만료 등)는 확인 후 로그인 화면으로 보낸다
+      const serverMessage =
+        isAxiosError<{ error?: string }>(e) && e.response?.status === 400
+          ? e.response.data?.error
+          : undefined
+      setSubmitError(
+        serverMessage
+          ? { title: serverMessage, toEntry: false }
+          : {
+              title: '회원 정보 생성에 실패했어요',
+              description: '다시 로그인한 뒤 시도해주세요',
+              toEntry: true,
+            },
+      )
     }
+  }
+
+  const closeSubmitError = () => {
+    const toEntry = submitError?.toEntry
+    setSubmitError(null)
+    if (toEntry) router.replace(entryHrefWithRedirect(pathname))
   }
 
   return (
@@ -316,6 +351,15 @@ const OnboardingPage = () => {
           회원가입 하기
         </Button>
       </form>
+
+      {/* 앱 WebView 에서 시스템 alert 대신 웹 팝업으로 안내 */}
+      <Popup
+        open={!!submitError}
+        onClose={closeSubmitError}
+        variant="error"
+        title={submitError?.title ?? ''}
+        description={submitError?.description}
+      />
     </div>
   )
 }
