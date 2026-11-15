@@ -27,14 +27,15 @@ export interface GaDashboard {
   sources: { sourceMedium: string; sessions: number; activeUsers: number }[]
 }
 
+/** Play 설치 통계 하루치. Daily Device/User 열은 비어 있어 이벤트 열을 쓴다 */
 export interface InstallsDay {
   date: string
-  deviceInstalls: number
-  deviceUninstalls: number
-  userInstalls: number
-  userUninstalls: number
+  /** Install events — 설치 행동 수 (재설치 포함) */
+  installs: number
+  /** Uninstall events */
+  uninstalls: number
+  /** Active Device Installs — 그날 설치돼 있는 기기 수 */
   activeDevices: number
-  totalUserInstalls: number
 }
 
 export type InstallsDashboard =
@@ -44,6 +45,10 @@ export type InstallsDashboard =
       generatedAt: string
       daily: InstallsDay[]
       latest: InstallsDay | null
+      /** 리포트가 있는 첫 달부터의 Install events 합 */
+      cumulativeInstalls: number
+      /** 리포트 첫 날짜 (누적 기준) */
+      since: string | null
     }
   | {
       status: 'unavailable'
