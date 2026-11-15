@@ -5,7 +5,7 @@ import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 const APP_NAME = 'Valanse'
 const CONTACT_EMAIL = 'valansekr@gmail.com'
 const SERVICE_URL = 'https://valanse.kr'
-const EFFECTIVE_DATE = '2026-10-28'
+const EFFECTIVE_DATE = '2026-11-15'
 
 export const PrivacyPolicyPage = () => {
   return (
@@ -31,8 +31,8 @@ export const PrivacyPolicyPage = () => {
             1. 수집하는 개인정보 항목
           </h2>
           <p className="typo-body-b-01 text-foreground">
-            서비스는 카카오 로그인을 통해 회원가입/로그인을 제공하며, 다음
-            정보를 수집할 수 있습니다.
+            서비스는 카카오 로그인과 Apple로 로그인(Sign in with Apple)을 통해
+            회원가입/로그인을 제공하며, 다음 정보를 수집할 수 있습니다.
           </p>
           <ul className="typo-body-b-01 mt-2 list-disc pl-5 text-foreground">
             <li>
@@ -42,6 +42,16 @@ export const PrivacyPolicyPage = () => {
             <li>
               <strong>카카오 계정 정보</strong> (닉네임, 프로필 이미지, 이메일)
               — 이용자가 카카오 로그인 시 동의한 범위 내
+            </li>
+            <li>
+              <strong>Apple 계정 정보</strong> (Apple에서 제공하는 고유 사용자
+              식별자, 이메일, 이름) — 이용자가 Apple로 로그인 시 공유를 허용한
+              범위 내. 이메일 가리기를 선택하면 Apple이 발급한 중계 이메일
+              주소를 받습니다
+            </li>
+            <li>
+              <strong>Apple 로그인 연결 정보</strong> (Apple이 발급한 갱신 토큰)
+              — 회원 탈퇴 시 Apple 계정 연결을 해제하는 데에만 사용
             </li>
             <li>
               <strong>회원 프로필 정보</strong> (성별, 연령대, MBTI) — 가입 시
@@ -77,7 +87,7 @@ export const PrivacyPolicyPage = () => {
             2. 개인정보 수집 및 이용 목적
           </h2>
           <ul className="typo-body-b-01 list-disc pl-5 text-foreground">
-            <li>카카오 로그인 기반 회원 식별 및 계정 관리</li>
+            <li>카카오 · Apple 로그인 기반 회원 식별 및 계정 관리</li>
             <li>서비스 제공 및 기능 운영, 고객 문의 대응</li>
             <li>서비스 안정성 확보(오류 확인/분석) 및 보안/부정 이용 방지</li>
             <li>서비스 이용 통계 분석 및 서비스 개선</li>
@@ -97,6 +107,10 @@ export const PrivacyPolicyPage = () => {
             <li>
               <strong>회원 정보</strong>: 회원 탈퇴 시까지 (탈퇴 후 지체 없이
               파기)
+            </li>
+            <li>
+              <strong>Apple 로그인 연결 정보</strong>: 회원 탈퇴 시 Apple에 연결
+              해제(토큰 폐기)를 요청하고 즉시 삭제
             </li>
             <li>
               <strong>이용 기록/로그</strong>: 서비스 안정성 및 보안 목적 범위
@@ -127,6 +141,10 @@ export const PrivacyPolicyPage = () => {
           <ul className="typo-body-b-01 mt-2 list-disc pl-5 text-foreground">
             <li>
               <strong>카카오(Kakao Corp.)</strong>: 카카오 로그인(OAuth) 제공
+            </li>
+            <li>
+              <strong>Apple Inc.</strong>: Apple로 로그인(Sign in with Apple)
+              제공
             </li>
             <li>
               <strong>AWS(아마존웹서비스)</strong>: 서버 인프라 운영(예: EC2
