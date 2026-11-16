@@ -5,10 +5,21 @@ import { Bot, ThumbsUp, Trash2 } from 'lucide-react'
 import { errorMessageOf } from '@/lib/api'
 import { deleteComment } from '@/lib/comments'
 import { formatDateTime } from '@/lib/date'
-import type { VoteComment } from '@/types/vote'
+
+/** 투표별 댓글(VoteComment)과 관리자 댓글 목록(AdminComment)을 함께 그리기 위한 공통 형태 */
+export type CommentRowData = {
+  commentId: number
+  nickname: string
+  isBot: boolean
+  content: string
+  createdAt: string
+  likeCount?: number
+  voteOptionLabel?: string | null
+  isReply?: boolean
+}
 
 type Props = {
-  comment: VoteComment
+  comment: CommentRowData
   /** 댓글이 달린 투표 제목 — AI 댓글 탭처럼 투표 맥락이 없는 곳에서만 넘긴다 */
   voteTitle?: string
   onDeleted: (commentId: number) => void
@@ -41,13 +52,16 @@ export function CommentRow({ comment, voteTitle, onDeleted }: Props) {
           AI
         </span>
       )}
+      {comment.isReply && <span className="text-gray-400">↳ 답글</span>}
       <span>{comment.nickname}</span>
       {comment.voteOptionLabel && <span>· {comment.voteOptionLabel} 선택</span>}
-      <span>· {formatDateTime(comment.commentCreatedAt)}</span>
-      <span className="inline-flex items-center gap-1">
-        · <ThumbsUp className="h-3 w-3" />
-        {comment.likeCount}
-      </span>
+      <span>· {formatDateTime(comment.createdAt)}</span>
+      {comment.likeCount !== undefined && (
+        <span className="inline-flex items-center gap-1">
+          · <ThumbsUp className="h-3 w-3" />
+          {comment.likeCount}
+        </span>
+      )}
     </div>
   )
 

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAppDispatch } from '@/hooks/utils/useAppDispatch'
-import { signoutThunk } from '@/store/thunks/authThunks'
+import { clearSession } from '@/store/thunks/authThunks'
+import { signout as withdrawApi } from '@/api/auth'
 import { Checkbox } from '@/components/ui/checkbox'
 import Header from '@/components/_shared/header'
 import { Popup } from '@/components/ui/popup'
@@ -22,7 +23,8 @@ const AccountDeletionPage = () => {
   const executeDelete = async () => {
     try {
       setIsDeleting(true)
-      await dispatch(signoutThunk())
+      // 실패하면 throw → 에러 팝업, 로그인 상태 유지(재시도 가능)
+      await withdrawApi()
       setSuccessOpen(true)
     } catch (error) {
       console.error('계정 삭제 실패:', error)
@@ -167,7 +169,9 @@ const AccountDeletionPage = () => {
         open={successOpen}
         onClose={() => {
           setSuccessOpen(false)
+          // 이동을 먼저 시작한 뒤 세션을 정리한다 (정리 순간 AuthGuard 가 로딩 화면으로 바꿈)
           router.replace('/entry')
+          dispatch(clearSession())
         }}
         variant="alert"
         title="계정이 삭제되었어요"

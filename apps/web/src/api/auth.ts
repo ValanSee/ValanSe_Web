@@ -2,7 +2,11 @@
 import { authApi } from './instance/authApi'
 import { publicApi } from './instance/publicApi'
 // types
-import { LoginResponse, ReissueResponse } from '@/types/api/auth'
+import {
+  AppleLoginRequest,
+  LoginResponse,
+  ReissueResponse,
+} from '@/types/api/auth'
 
 export const login = async (code: string, redirectUri: string) => {
   try {
@@ -14,6 +18,14 @@ export const login = async (code: string, redirectUri: string) => {
   } catch (error) {
     throw error
   }
+}
+
+export const appleLogin = async (request: AppleLoginRequest) => {
+  const response = await publicApi.post<LoginResponse>(
+    '/auth/apple/login',
+    request,
+  )
+  return response.data
 }
 
 export const reissue = async (refreshToken: string): Promise<string> => {

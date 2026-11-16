@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["NRJ8TYHKJM.com.valanse"],
+        "components": [
+          { "/": "/poll/*", "comment": "투표 상세 공유 링크 (Android App Links 와 같은 경로)" },
+          { "/": "/balanse*", "comment": "밸런스 목록" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["NRJ8TYHKJM.com.valanse"]
+  }
+}

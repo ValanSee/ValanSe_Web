@@ -10,14 +10,16 @@ import { AppDispatch } from '../store'
 import { getRefreshToken } from '@/utils/tokenUtils'
 import { saveTokens, clearTokens } from '@/utils/tokenUtils'
 import { reissue } from '@/api/auth'
-import { logout as logoutApi, signout as signoutApi } from '@/api/auth'
-import { login } from '@/api/auth'
+import { logout as logoutApi } from '@/api/auth'
+import { appleLogin, login } from '@/api/auth'
+import { AppleLoginRequest, LoginResponse } from '@/types/api/auth'
 
-export const loginThunk =
-  (code: string, redirectUri: string) => async (dispatch: AppDispatch) => {
+/** 소셜 로그인 공통: 서버 로그인 응답의 토큰을 저장하고 로그인 상태로 만든다 */
+const socialLoginThunk =
+  (request: () => Promise<LoginResponse>) => async (dispatch: AppDispatch) => {
     try {
       dispatch(loginStart())
-      const res = await login(code, redirectUri)
+      const res = await request()
       saveTokens(res.accessToken, res.refreshToken) // localstorage 에 토큰 저장
       dispatch(loginSuccess({ userId: res.id }))
     } catch (err: unknown) {
@@ -29,6 +31,12 @@ export const loginThunk =
       throw err
     }
   }
+
+export const loginThunk = (code: string, redirectUri: string) =>
+  socialLoginThunk(() => login(code, redirectUri))
+
+export const appleLoginThunk = (request: AppleLoginRequest) =>
+  socialLoginThunk(() => appleLogin(request))
 
 export const reissueThunk = () => async (dispatch: AppDispatch) => {
   try {
@@ -58,14 +66,13 @@ export const logoutThunk = () => async (dispatch: AppDispatch) => {
   }
 }
 
-export const signoutThunk = () => async (dispatch: AppDispatch) => {
-  try {
-    await signoutApi()
-  } catch {
-    // 탈퇴 API 실패해도 로컬 상태는 정리
-  } finally {
-    dispatch(logout())
-    dispatch(resetMember())
-    clearTokens()
-  }
+/**
+ * 로컬 로그인 상태(Redux · 토큰)만 정리.
+ * 회원 탈퇴는 완료 안내를 보여준 뒤에 호출한다 — 먼저 토큰을 지우면
+ * (auth) AuthGuard 가 화면을 로딩으로 바꿔 완료 팝업이 사라진다
+ */
+export const clearSession = () => (dispatch: AppDispatch) => {
+  dispatch(logout())
+  dispatch(resetMember())
+  clearTokens()
 }

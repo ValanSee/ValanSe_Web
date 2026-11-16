@@ -9,7 +9,7 @@
 | 경로 | `/poll/[id]` |
 | 인증 필요 | △ (조회는 가능, 투표/댓글/신고는 로그인 필요) |
 | 작성일 | 2026-05-16 |
-| 최종 수정일 | 2026-10-28 |
+| 최종 수정일 | 2026-11-05 |
 
 ## 🎯 화면 목적
 
@@ -72,7 +72,7 @@
 - 공유 시트를 닫으면 아무 동작 없음
 - 공유 미리보기 이미지는 게임별 OG 이미지(`opengraph-image.tsx`)
 - 공유 URL 에 `utm_source=share&utm_medium=native|web_share|copy` 를 붙인다(canonical 은 쿼리 없는 주소 그대로). 공유 성공 시 GA `share` 이벤트(method · item_id · location `header`|`post_vote`)
-- 측정(GA4, `lib/analytics.ts`): 투표 `vote`(source `detail`|`list`|`home`, 로그인 후 자동 제출은 `after_login`), 댓글 `comment`(is_reply). 운영 도메인에서만 전송, 앱 WebView 는 platform=app
+- 측정(GA4, `lib/analytics.ts`): 투표 `vote`(source `detail`|`list`|`home`, 로그인 후 자동 제출은 `after_login`), 비로그인으로 선택지를 눌러 로그인으로 보내지면 `vote_attempt`(같은 파라미터), 댓글 `comment`(is_reply). 운영 도메인에서만 전송, 앱 WebView 는 platform=app
 
 ### 1. PollCard
 

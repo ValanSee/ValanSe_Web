@@ -3,27 +3,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Bot, MessageSquarePlus, RefreshCw } from 'lucide-react'
 import { errorMessageOf } from '@/lib/api'
-import { fetchComments } from '@/lib/comments'
+import { fetchAdminComments } from '@/lib/comments'
 import { runCommentSeed, runContentSeed } from '@/lib/contentSeed'
 import { fetchVotes } from '@/lib/votes'
-import type { Vote, VoteComment } from '@/types/vote'
+import type { AdminComment, Vote } from '@/types/vote'
 import { AiVoteItem } from '@/components/ai-review/AiVoteItem'
 import { CommentRow } from '@/components/ai-review/CommentRow'
 
-/**
- * 서버에 검수(승인/반려) API 나 isBot 필터가 없어서
- * 최신 투표를 페이지 단위로 훑으며 클라이언트에서 isBot 으로 거른다.
- */
-const SCAN_PAGE_SIZE = 50
-/** "더 찾기" 한 번에 훑는 최대 페이지 수 */
-const SCAN_MAX_PAGES = 4
-/** AI 댓글 탭에서 댓글을 확인할 최신 투표 수 */
-const COMMENT_SCAN_VOTES = 30
-/**
- * 서버가 짧은 시간에 몰린 요청을 막으면 CORS 헤더 없이 응답해 Network Error 가 난다.
- * 동시 요청을 낮게 유지한다.
- */
-const COMMENT_SCAN_CONCURRENCY = 2
+/** 서버에 사전 승인 API 가 없어 이미 게시된 AI 콘텐츠를 isBot 필터로 모아 사후 검수한다 */
+const VOTE_PAGE_SIZE = 20
+const COMMENT_PAGE_SIZE = 30
 
 type Tab = 'votes' | 'comments'
 /** all: 새 투표 생성 + AI 투표·댓글, comments: 기존 투표에 AI 투표·댓글만 */
@@ -33,7 +22,6 @@ const SEED_CONFIRM: Record<SeedKind, string> = {
   all: 'AI 콘텐츠 생성을 지금 실행하시겠습니까?',
   comments: '새 투표 없이 기존 투표에 AI 투표·댓글만 지금 생성하시겠습니까?',
 }
-type BotComment = VoteComment & { voteTitle: string }
 
 export default function AiReviewPage() {
   const [tab, setTab] = useState<Tab>('votes')
@@ -41,40 +29,33 @@ export default function AiReviewPage() {
   const [votes, setVotes] = useState<Vote[]>([])
   const [cursor, setCursor] = useState<string | undefined>(undefined)
   const [hasNext, setHasNext] = useState(false)
-  const [scanned, setScanned] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [botComments, setBotComments] = useState<BotComment[] | null>(null)
+  const [botComments, setBotComments] = useState<AdminComment[] | null>(null)
+  const [commentPage, setCommentPage] = useState(0)
+  /** 마지막으로 불러온 페이지 이후 삭제한 댓글 수 — offset 이 그만큼 앞으로 당겨진다 */
+  const [deletedSinceLoad, setDeletedSinceLoad] = useState(0)
+  const [commentsHasNext, setCommentsHasNext] = useState(false)
   const [commentsLoading, setCommentsLoading] = useState(false)
   const [commentsError, setCommentsError] = useState<string | null>(null)
-  const [commentsFailed, setCommentsFailed] = useState(0)
 
   const [seedBusy, setSeedBusy] = useState<SeedKind | null>(null)
   const [seedMessage, setSeedMessage] = useState<string | null>(null)
 
-  const scanVotes = useCallback(
+  const loadVotes = useCallback(
     async (next: boolean) => {
       setLoading(true)
       setError(null)
-      let c = next ? cursor : undefined
-      let more = true
-      let scannedCount = 0
-      const found: Vote[] = []
       try {
-        // 한 페이지에 AI 투표가 없을 수 있어 하나라도 찾을 때까지 몇 페이지 더 본다
-        for (let i = 0; i < SCAN_MAX_PAGES && more; i++) {
-          const data = await fetchVotes({ size: SCAN_PAGE_SIZE, cursor: c })
-          scannedCount += data.votes.length
-          found.push(...data.votes.filter((v) => v.isBot))
-          more = data.has_next_page
-          c = data.next_cursor
-          if (found.length > 0) break
-        }
-        setVotes((prev) => (next ? [...prev, ...found] : found))
-        setScanned((prev) => (next ? prev + scannedCount : scannedCount))
-        setHasNext(more)
-        setCursor(c)
+        const data = await fetchVotes({
+          isBot: true,
+          size: VOTE_PAGE_SIZE,
+          cursor: next ? cursor : undefined,
+        })
+        setVotes((prev) => (next ? [...prev, ...data.votes] : data.votes))
+        setHasNext(data.has_next_page)
+        setCursor(data.next_cursor)
       } catch (err) {
         setError(errorMessageOf(err, '목록을 불러오지 못했습니다.'))
       } finally {
@@ -84,51 +65,58 @@ export default function AiReviewPage() {
     [cursor],
   )
 
-  const scanComments = useCallback(async () => {
-    setCommentsLoading(true)
-    setCommentsError(null)
-    setCommentsFailed(0)
-    try {
-      const { votes: recent } = await fetchVotes({ size: COMMENT_SCAN_VOTES })
-      // 댓글이 없는 투표는 조회할 필요가 없다
-      const targets = recent.filter((v) => v.total_comment_count > 0)
-      const result: BotComment[] = []
-      let failed = 0
-      for (let i = 0; i < targets.length; i += COMMENT_SCAN_CONCURRENCY) {
-        const chunk = targets.slice(i, i + COMMENT_SCAN_CONCURRENCY)
-        // 일부 투표가 실패해도 나머지 결과는 보여준다
-        const pages = await Promise.allSettled(
-          chunk.map((v) => fetchComments(v.id)),
-        )
-        pages.forEach((page, j) => {
-          if (page.status === 'rejected') {
-            failed += 1
-            return
-          }
-          page.value.comments
-            .filter((cm) => cm.isBot && !cm.deletedAt)
-            .forEach((cm) => result.push({ ...cm, voteTitle: chunk[j].title }))
+  const loadComments = useCallback(
+    async (next: boolean) => {
+      setCommentsLoading(true)
+      setCommentsError(null)
+      // 서버는 page*size offset 으로 자르므로, 삭제한 만큼 당겨진 첫 미표시 위치가
+      // 들어 있는 페이지부터 받는다. 이미 보이는 댓글은 아래에서 중복 제거된다.
+      const page = next
+        ? Math.max(
+            0,
+            Math.floor(
+              ((commentPage + 1) * COMMENT_PAGE_SIZE - deletedSinceLoad) /
+                COMMENT_PAGE_SIZE,
+            ),
+          )
+        : 0
+      try {
+        const data = await fetchAdminComments({
+          isBot: true,
+          page,
+          size: COMMENT_PAGE_SIZE,
         })
+        // 신규 댓글이나 위 보정으로 같은 댓글이 다시 올 수 있다
+        setBotComments((prev) => {
+          if (!next || !prev) return data.comments
+          const seen = new Set(prev.map((c) => c.commentId))
+          return [
+            ...prev,
+            ...data.comments.filter((c) => !seen.has(c.commentId)),
+          ]
+        })
+        setCommentPage(page)
+        setDeletedSinceLoad(0)
+        setCommentsHasNext(data.hasNext)
+      } catch (err) {
+        setCommentsError(errorMessageOf(err, '댓글을 불러오지 못했습니다.'))
+      } finally {
+        setCommentsLoading(false)
       }
-      setBotComments(result)
-      setCommentsFailed(failed)
-    } catch (err) {
-      setCommentsError(errorMessageOf(err, '댓글을 불러오지 못했습니다.'))
-    } finally {
-      setCommentsLoading(false)
-    }
-  }, [])
+    },
+    [commentPage, deletedSinceLoad],
+  )
 
   useEffect(() => {
-    scanVotes(false)
+    loadVotes(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const onTabChange = (next: Tab) => {
     setTab(next)
-    // 댓글 스캔은 요청이 많아 탭을 처음 열 때만 한다
+    // 댓글 목록은 탭을 처음 열 때만 불러온다
     if (next === 'comments' && botComments === null && !commentsLoading)
-      scanComments()
+      loadComments(false)
   }
 
   const onRunSeed = async (kind: SeedKind) => {
@@ -153,8 +141,8 @@ export default function AiReviewPage() {
   }
 
   const onRefresh = () => {
-    if (tab === 'votes') scanVotes(false)
-    else scanComments()
+    if (tab === 'votes') loadVotes(false)
+    else loadComments(false)
   }
 
   const onVoteDeleted = (voteId: number) => {
@@ -165,6 +153,7 @@ export default function AiReviewPage() {
     setBotComments(
       (prev) => prev?.filter((c) => c.commentId !== commentId) ?? null,
     )
+    setDeletedSinceLoad((n) => n + 1)
   }
 
   const busy = tab === 'votes' ? loading : commentsLoading
@@ -250,9 +239,7 @@ export default function AiReviewPage() {
           {error}
         </p>
       )}
-      <p className="text-xs text-gray-500">
-        최신 투표 {scanned}개 중 AI 투표 {votes.length}개
-      </p>
+      <p className="text-xs text-gray-500">AI 투표 {votes.length}개 표시 중</p>
       <ul className="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 bg-white">
         {votes.length === 0 && !loading && (
           <li className="px-4 py-12 text-center text-sm text-gray-500">
@@ -269,10 +256,10 @@ export default function AiReviewPage() {
       {hasNext && !loading && (
         <button
           type="button"
-          onClick={() => scanVotes(true)}
+          onClick={() => loadVotes(true)}
           className="w-full rounded-md border border-gray-300 bg-white py-2 text-sm text-gray-700 hover:bg-gray-50"
         >
-          이전 투표에서 더 찾기
+          더 보기
         </button>
       )}
     </section>
@@ -285,26 +272,17 @@ export default function AiReviewPage() {
           {commentsError}
         </p>
       )}
-      {commentsFailed > 0 && !commentsLoading && (
-        <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          투표 {commentsFailed}개의 댓글을 불러오지 못했습니다. 잠시 후
-          새로고침하세요.
-        </p>
-      )}
       <p className="text-xs text-gray-500">
-        최신 투표 {COMMENT_SCAN_VOTES}개에 달린 댓글 중 AI 댓글
-        {botComments ? ` ${botComments.length}개` : ''}
+        AI 댓글{botComments ? ` ${botComments.length}개 표시 중` : ''}
       </p>
-      {commentsLoading ? (
-        <p className="py-4 text-center text-xs text-gray-500">불러오는 중...</p>
-      ) : (
+      {botComments !== null && (
         <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white px-4">
-          {botComments?.length === 0 && (
+          {botComments.length === 0 && !commentsLoading && (
             <li className="py-12 text-center text-sm text-gray-500">
               AI 댓글이 없습니다.
             </li>
           )}
-          {botComments?.map((c) => (
+          {botComments.map((c) => (
             <CommentRow
               key={c.commentId}
               comment={c}
@@ -313,6 +291,18 @@ export default function AiReviewPage() {
             />
           ))}
         </ul>
+      )}
+      {commentsLoading && (
+        <p className="py-4 text-center text-xs text-gray-500">불러오는 중...</p>
+      )}
+      {commentsHasNext && !commentsLoading && (
+        <button
+          type="button"
+          onClick={() => loadComments(true)}
+          className="w-full rounded-md border border-gray-300 bg-white py-2 text-sm text-gray-700 hover:bg-gray-50"
+        >
+          더 보기
+        </button>
       )}
     </section>
   )

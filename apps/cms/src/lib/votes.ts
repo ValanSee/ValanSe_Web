@@ -7,11 +7,15 @@ export async function fetchVotes(params: {
   sort?: 'latest' | 'popular'
   cursor?: string
   size?: number
+  /** true 면 AI 프로필 투표만, false 면 사람 투표만, 생략하면 전체 */
+  isBot?: boolean
 }): Promise<VoteListResponse> {
   const query: Record<string, string | number> = { size: params.size ?? 20 }
-  if (params.category && params.category !== 'ALL') query.category = params.category
+  if (params.category && params.category !== 'ALL')
+    query.category = params.category
   if (params.sort) query.sort = params.sort
   if (params.cursor) query.cursor = params.cursor
+  if (params.isBot !== undefined) query.isBot = String(params.isBot)
 
   const res = await api.get<VoteListResponse>('/votes', { params: query })
   return res.data

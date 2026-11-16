@@ -59,3 +59,23 @@ export interface PagedCommentResponse {
   size: number
   hasNext: boolean
 }
+
+/** 관리자 댓글 검수 목록 항목 — 부모 댓글과 대댓글이 한 목록에 섞여 온다 */
+export interface AdminComment {
+  commentId: number
+  content: string
+  nickname: string
+  isBot: boolean
+  createdAt: string
+  isReply: boolean
+  parentCommentId: number | null
+  voteId: number
+  voteTitle: string
+}
+
+export interface PagedAdminCommentResponse {
+  comments: AdminComment[]
+  page: number
+  size: number
+  hasNext: boolean
+}

@@ -8,6 +8,8 @@ export const GA_MEASUREMENT_ID = 'G-40G3Q6FDX7'
 export type AnalyticsEventName =
   | 'share'
   | 'vote'
+  /** 비로그인 상태에서 투표 선택지를 눌러 로그인으로 보내진 경우 */
+  | 'vote_attempt'
   | 'login'
   | 'sign_up'
   | 'onboarding_complete'
