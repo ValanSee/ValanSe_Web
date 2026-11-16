@@ -9,6 +9,8 @@ export interface BestComment {
 
 export interface Comment {
   commentId: number
+  /** 작성자 회원 ID — 차단에 사용 (서버 미배포 시 없음) */
+  authorId?: number | null
   nickname: string
   createdAt: string
   content: string
@@ -25,6 +27,8 @@ export interface Comment {
 
 export interface Reply {
   id: number
+  /** 작성자 회원 ID — 차단에 사용 (서버 미배포 시 없음) */
+  authorId?: number | null
   nickname: string
   createdAt: string
   content: string

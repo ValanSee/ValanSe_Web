@@ -34,6 +34,7 @@ import { Icon } from '@/components/ui/icon'
 import { SITE_URL } from '@/constants/seo'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { useReportAction } from '@/hooks/utils/useReportAction'
+import { useBlockAction } from '@/hooks/utils/useBlockAction'
 import { buildCurrentReturnPath } from '@/utils/authRedirect'
 import { getAccessToken } from '@/utils/tokenUtils'
 import type {
@@ -104,6 +105,13 @@ function PollDetailContent({
 
   const { openReport, reportUi } = useReportAction({
     returnPath: postLoginReturnPath,
+  })
+
+  // 작성자를 차단하면 이 게시글도 바로 가린다 (목록에서는 서버가 제외)
+  const [authorBlocked, setAuthorBlocked] = useState(false)
+  const { openBlock, blockUi } = useBlockAction({
+    returnPath: postLoginReturnPath,
+    onBlocked: () => setAuthorBlocked(true),
   })
 
   // 클라이언트 이동 시엔 인라인 스크립트가 안 돌므로 페인트 전에 토큰 여부를 다시 반영
@@ -193,9 +201,23 @@ function PollDetailContent({
     )
   if (!data) return null
 
+  if (authorBlocked)
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-ds-4 bg-background px-5 text-center">
+        <p className="typo-title-02 text-foreground">
+          차단한 사용자의 게시물이에요
+        </p>
+        <Button size="l" variant="primary" onClick={() => router.replace('/')}>
+          홈으로
+        </Button>
+        {blockUi}
+      </div>
+    )
+
   // 본인 게시글은 서버에서 신고를 거부하므로 메뉴에서도 제외
   const isOwnVote = !!profile && profile.nickname === data.creatorNickname
   const categoryMeta = getCategoryMeta(data.category)
+  const authorId = data.authorId
   const moreMenu = isOwnVote ? undefined : (
     <MoreMenu
       label="게시글 메뉴"
@@ -205,6 +227,16 @@ function PollDetailContent({
           icon: 'tabler:flag',
           onSelect: () => openReport('VOTE', data.voteId),
         },
+        // 작성자 ID 를 받은 경우에만 차단 가능 (서버 미배포 · 탈퇴 회원 제외)
+        ...(authorId
+          ? [
+              {
+                label: '이 사용자 차단',
+                icon: 'tabler:ban',
+                onSelect: () => openBlock(authorId, data.creatorNickname),
+              },
+            ]
+          : []),
       ]}
     />
   )
@@ -360,6 +392,7 @@ function PollDetailContent({
         {sidebar}
       </div>
       {reportUi}
+      {blockUi}
     </div>
   )
 }
