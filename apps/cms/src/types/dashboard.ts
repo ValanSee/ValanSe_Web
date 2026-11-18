@@ -25,6 +25,11 @@ export interface GaDashboard {
   daily: ({ date: string } & ByPlatform<number>)[]
   events: ({ name: string } & ByPlatform<number>)[]
   sources: { sourceMedium: string; sessions: number; activeUsers: number }[]
+  /**
+   * 비로그인 투표 시도 → 로그인 후 자동 투표 전환.
+   * after_login 측정기준 등록일(since) 이후만 센다. 조회 실패 시 null
+   */
+  loginConversion: { attempts: number; afterLoginVotes: number; since: string } | null
 }
 
 /** Play 설치 통계 하루치. Daily Device/User 열은 비어 있어 이벤트 열을 쓴다 */

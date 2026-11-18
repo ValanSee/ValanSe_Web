@@ -23,6 +23,11 @@ const CACHE_TTL_MS = 10 * 60 * 1000
 /** 웹 GA 설정이 모든 이벤트에 붙이는 platform 파라미터 (GA 맞춤 측정기준 · 이벤트 범위) */
 const PLATFORM_DIM = 'customEvent:platform'
 
+/** vote 이벤트의 after_login 파라미터 (맞춤 측정기준 · 이벤트 범위) */
+const AFTER_LOGIN_DIM = 'customEvent:after_login'
+/** 맞춤 측정기준은 등록 후부터 수집 — 그 전 vote_attempt 까지 세면 전환율이 낮게 나온다 */
+const AFTER_LOGIN_SINCE = '2026-11-18'
+
 /** apps/web 의 trackEvent 로 보내는 이벤트 */
 const TRACKED_EVENTS = [
   'sign_up',
@@ -62,6 +67,41 @@ function emptyTotals(): PlatformTotals {
   }
 }
 
+type LoginConversion = GaDashboard['loginConversion']
+
+/** 투표 시도 대비 로그인 후 자동 투표 수. 실패해도(측정기준 미반영 등) 나머지 대시보드는 보여준다 */
+async function loadConversion(
+  client: NonNullable<ReturnType<typeof getGaClient>>,
+  propertyId: string,
+  startDate: string,
+  endDate: string,
+): Promise<LoginConversion> {
+  const since = AFTER_LOGIN_SINCE
+  const from = startDate > since ? startDate : since
+  if (from > endDate) return { attempts: 0, afterLoginVotes: 0, since }
+  try {
+    const [r] = await client.runReport({
+      property: `properties/${propertyId}`,
+      dateRanges: [{ startDate: from, endDate }],
+      dimensions: [{ name: 'eventName' }, { name: AFTER_LOGIN_DIM }],
+      metrics: [{ name: 'eventCount' }],
+      dimensionFilter: {
+        filter: { fieldName: 'eventName', inListFilter: { values: ['vote_attempt', 'vote'] } },
+      },
+    })
+    let attempts = 0
+    let afterLoginVotes = 0
+    for (const row of r.rows ?? []) {
+      if (dim(row, 0) === 'vote_attempt') attempts += num(row, 0)
+      else if (dim(row, 1) === 'true') afterLoginVotes += num(row, 0)
+    }
+    return { attempts, afterLoginVotes, since }
+  } catch (err) {
+    console.error('[dashboard/ga] loginConversion', err)
+    return null
+  }
+}
+
 async function load(days: number): Promise<GaDashboard> {
   const client = getGaClient()
   const propertyId = process.env.GA_PROPERTY_ID
@@ -72,6 +112,9 @@ async function load(days: number): Promise<GaDashboard> {
   const startDate = kstDate(days)
   const dateRanges = [{ startDate, endDate }]
   const platform = { name: PLATFORM_DIM }
+
+  // batchRunReports 는 리포트 5개까지라 전환율은 따로 병렬 조회
+  const conversionP = loadConversion(client, propertyId, startDate, endDate)
 
   const [res] = await client.batchRunReports({
     property: `properties/${propertyId}`,
@@ -123,6 +166,7 @@ async function load(days: number): Promise<GaDashboard> {
     ],
   })
 
+  const loginConversion = await conversionP
   const reports: Report[] = res.reports ?? []
   const [dailyR, totalsR, eventsR, sourcesR, activeR] = reports
 
@@ -176,6 +220,7 @@ async function load(days: number): Promise<GaDashboard> {
       sessions: num(row, 0),
       activeUsers: num(row, 1),
     })),
+    loginConversion,
   }
 }
 
