@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/_shared/header'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { TopicCard } from './topicCard'
 import MtPptDownloadButton from './mtPptDownloadButton'
 import { cn } from '@/lib/utils'
@@ -156,8 +155,6 @@ export default function MtPptPage() {
           </dl>
         </TopicCard>
       </div>
-
-      <BottomNavBar />
     </div>
   )
 }

@@ -3,7 +3,6 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import { getCategoryIntro } from '@/constants/categoryIntro'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
@@ -252,8 +251,6 @@ function BalancePageContent({ initialData }: BalancePageProps) {
           </div>
         </div>
       </div>
-
-      <BottomNavBar />
     </div>
   )
 }

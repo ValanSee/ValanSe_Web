@@ -12,6 +12,7 @@ import { PageViewTracker } from '@/components/_shared/pageViewTracker'
 import DesktopHeader from '@/components/_shared/nav/desktopHeader'
 import DesktopFooter from '@/components/_shared/desktopFooter'
 import ChromeGate from '@/components/_shared/nav/chromeGate'
+import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { JsonLd } from '@/components/_shared/jsonLd'
 import {
   BASE_OPEN_GRAPH,
@@ -153,6 +154,7 @@ export default function RootLayout({
             </ChromeGate>
             {/* 페이지 본문 랜드마크. 하위 페이지에서는 <main> 을 다시 쓰지 않는다 */}
             <main className="lg:flex lg:flex-1 lg:flex-col">{children}</main>
+            <BottomNavBar />
             <ChromeGate>
               <DesktopFooter />
             </ChromeGate>

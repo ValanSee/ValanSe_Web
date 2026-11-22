@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import Header from '@/components/_shared/header'
 import { TopicCard, TopicVoteCard } from './topicCard'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 import type { CategoryMeta } from '@/constants/category'
@@ -117,8 +116,6 @@ export default function TopicsPage({ popular, sections }: Props) {
           </a>
         </TopicCard>
       </div>
-
-      <BottomNavBar />
     </div>
   )
 }

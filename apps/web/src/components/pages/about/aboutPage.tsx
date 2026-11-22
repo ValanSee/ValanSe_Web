@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Header from '@/components/_shared/header'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import { TopicCard } from '@/components/pages/topics/topicCard'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
@@ -71,8 +70,6 @@ export default function AboutPage() {
           </dl>
         </TopicCard>
       </div>
-
-      <BottomNavBar />
     </div>
   )
 }

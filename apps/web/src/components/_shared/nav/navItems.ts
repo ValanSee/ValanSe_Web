@@ -16,3 +16,23 @@ export function isNavActive(pathname: string, route: string): boolean {
   // 홈('/')은 모든 경로의 접두사라 정확히 일치할 때만 활성
   return route === '/' ? pathname === '/' : pathname.startsWith(route)
 }
+
+/** 하단 탭바를 보여주는 경로 (정확 일치) */
+export const BOTTOM_NAV_PATHS: readonly string[] = [
+  '/',
+  '/balanse',
+  '/create',
+  '/my',
+  '/about',
+  '/topics',
+  '/topics/mt-ppt',
+]
+
+export function showsBottomNav(pathname: string): boolean {
+  return BOTTOM_NAV_PATHS.includes(pathname)
+}
+
+/** NAV_ITEMS 안에서 pathname 과 정확히 일치하는 탭 인덱스, 없으면 -1 */
+export function getTabIndex(pathname: string): number {
+  return NAV_ITEMS.findIndex((item) => item.route === pathname)
+}

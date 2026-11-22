@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Icon } from '@/components/ui/icon'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Loading from '@/components/_shared/loading'
 import Header from '@/components/_shared/header'
 import Avatar from '@/components/_shared/avatar'
@@ -185,8 +184,6 @@ function MyPage() {
           탈퇴하기
         </button>
       </section>
-
-      <BottomNavBar />
     </div>
   )
 }
