@@ -23,6 +23,8 @@ export interface PollDetail {
   content: string | null
   category: string
   creatorNickname: string
+  /** 작성자 회원 ID — 차단에 사용 (서버 미배포 시 없음) */
+  authorId?: number | null
   creatorTitle: string | null
   createdAt: string
   totalVoteCount: number

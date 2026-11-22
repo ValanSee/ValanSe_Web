@@ -14,6 +14,7 @@ import MoreMenu, { type MoreMenuItem } from '@/components/_shared/moreMenu'
 import { Popup } from '@/components/ui/popup'
 import { toast } from '@/components/ui/toaster'
 import { useReportAction } from '@/hooks/utils/useReportAction'
+import { useBlockAction } from '@/hooks/utils/useBlockAction'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import { Profile } from '@/types/member'
 import { cn } from '@/lib/utils'
@@ -68,6 +69,22 @@ const CommentDetail = ({
   const pathname = usePathname()
   const { openReport, reportUi } = useReportAction({
     returnPath: postLoginReturnPath ?? pathname,
+  })
+
+  // 차단하면 화면에 떠 있는 그 사용자의 댓글·대댓글을 바로 걷어낸다 (다음 조회부터는 서버가 제외)
+  const { openBlock, blockUi } = useBlockAction({
+    returnPath: postLoginReturnPath ?? pathname,
+    onBlocked: (memberId) => {
+      setLocalComments((prev) => prev.filter((c) => c.authorId !== memberId))
+      setReplies((prev) =>
+        Object.fromEntries(
+          Object.entries(prev).map(([k, list]) => [
+            k,
+            list.filter((rp) => rp.authorId !== memberId),
+          ]),
+        ),
+      )
+    },
   })
   const { isReported } = useReportedContent()
 
@@ -311,6 +328,17 @@ const CommentDetail = ({
                   },
                 ]
               : []),
+            // 작성자 ID 를 받은 경우에만 차단 가능 (서버 미배포 · 탈퇴 회원 제외)
+            ...(!isOwn && comment.authorId
+              ? [
+                  {
+                    label: '이 사용자 차단',
+                    icon: 'tabler:ban',
+                    onSelect: () =>
+                      openBlock(comment.authorId!, comment.nickname),
+                  },
+                ]
+              : []),
           ]
 
           return (
@@ -420,6 +448,19 @@ const CommentDetail = ({
                                       onSelect: () =>
                                         openReport('COMMENT', reply.id),
                                     },
+                                    ...(reply.authorId
+                                      ? [
+                                          {
+                                            label: '이 사용자 차단',
+                                            icon: 'tabler:ban',
+                                            onSelect: () =>
+                                              openBlock(
+                                                reply.authorId!,
+                                                reply.nickname,
+                                              ),
+                                          },
+                                        ]
+                                      : []),
                                   ]}
                                 />
                               )}
@@ -490,6 +531,7 @@ const CommentDetail = ({
       />
 
       {reportUi}
+      {blockUi}
     </div>
   )
 }

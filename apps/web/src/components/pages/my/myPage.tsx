@@ -165,6 +165,13 @@ function MyPage() {
         <h2 className="typo-title-03 pb-2 text-brand-gray-200">계정 관리</h2>
         <button
           type="button"
+          onClick={() => router.push('/my/blocks')}
+          className="typo-label-01 py-3 text-left text-foreground"
+        >
+          차단한 사용자
+        </button>
+        <button
+          type="button"
           onClick={handleLogout}
           className="typo-label-01 py-3 text-left text-foreground"
         >
