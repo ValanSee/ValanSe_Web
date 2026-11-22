@@ -87,8 +87,8 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
         className={cn(
           'flex flex-col gap-3 px-4 pb-24 pt-3',
           listSlideClass,
-          // 방향 슬라이드는 모바일 전용. PC 는 기존 동작 유지
-          'lg:animate-none',
+          // 방향 슬라이드는 모바일 전용. PC 는 기존 동작 유지 (! 로 slideInClass 의 lg:animate-fade-only 보다 우선)
+          'lg:!animate-none',
         )}
       >
         {error && (

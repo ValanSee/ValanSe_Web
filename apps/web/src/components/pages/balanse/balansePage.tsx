@@ -248,8 +248,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
               className={cn(
                 'flex flex-col gap-3 px-4 pt-4 lg:grid lg:grid-cols-2 lg:gap-ds-4 lg:px-0 lg:pt-0',
                 listSlideClass,
-                // 방향 슬라이드는 모바일 탭 전용. PC 는 기존처럼 카드별 등장 애니메이션
-                'lg:animate-none',
+                // 방향 슬라이드는 모바일 탭 전용. PC 는 기존처럼 카드별 등장 애니메이션 (! 로 lg:animate-fade-only 보다 우선)
+                'lg:!animate-none',
               )}
             >
               {/* 다음 페이지 실패 등은 목록 위에 표시 */}

@@ -139,6 +139,17 @@ export default {
         'ds-grid-margin': '24px',
         'ds-grid-gutter': '16px',
       },
+      // 페이지 · 탭 전환 페이드 (slideTransition.ts). transform 이 없어야
+      // 전환 중에도 position: fixed 자손이 화면 기준으로 남는다
+      keyframes: {
+        'fade-only': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+      },
+      animation: {
+        'fade-only': 'fade-only 250ms cubic-bezier(0,0,0.2,1)',
+      },
       fontFamily: {
         pretendard: [
           'Pretendard Variable',

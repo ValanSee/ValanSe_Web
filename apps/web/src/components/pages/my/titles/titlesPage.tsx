@@ -122,8 +122,8 @@ const TitlesPage = () => {
         className={cn(
           'px-4 pb-20',
           listSlideClass,
-          // 방향 슬라이드는 모바일 전용. PC 는 기존 동작 유지
-          'lg:animate-none',
+          // 방향 슬라이드는 모바일 전용. PC 는 기존 동작 유지 (! 로 slideInClass 의 lg:animate-fade-only 보다 우선)
+          'lg:!animate-none',
         )}
       >
         {visible.length === 0 ? (
