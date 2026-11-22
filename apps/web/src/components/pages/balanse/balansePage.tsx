@@ -10,6 +10,7 @@ import { fetchVotes } from '@/api/pages/valanse/balanseListapi'
 import type { Vote, VoteListResponse } from '@/types/balanse/vote'
 import { useReportedContent } from '@/hooks/utils/useReportedContent'
 import { useSlideDirection } from '@/hooks/utils/useSlideDirection'
+import { slideInClass } from '@/lib/slideTransition'
 import { BalanseListSkeleton } from '@/components/_shared/skeleton/balanseListSkeleton'
 import BalanseVoteCard from './balanseVoteCard'
 import HotTrendingBar from './hotTrendingBar'
@@ -69,9 +70,24 @@ function BalancePageContent({ initialData }: BalancePageProps) {
   const serverVotes =
     !votesSynced && initialData?.key === listKey ? initialData.votes : null
   const listReady = votesSynced || !!serverVotes
-  const listSlideClass = useSlideDirection(
+  const categorySlideClass = useSlideDirection(
     TABS.findIndex((t) => t.value === category),
   )
+  // 마지막 변경이 정렬이면 목록이 다시 마운트돼도 직전 카테고리 슬라이드를 재생하지 않고 페이드만
+  const [lastChange, setLastChange] = useState({
+    category,
+    sort,
+    by: 'category' as 'category' | 'sort',
+  })
+  if (lastChange.category !== category || lastChange.sort !== sort) {
+    setLastChange({
+      category,
+      sort,
+      by: lastChange.category !== category ? 'category' : 'sort',
+    })
+  }
+  const listSlideClass =
+    lastChange.by === 'sort' ? slideInClass(null) : categorySlideClass
 
   const { isReported } = useReportedContent()
   // 내가 신고한 투표는 관리자 처리 전까지 목록에서 아예 감춘다
@@ -91,6 +107,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
   const updateCategory = (newCategory: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('category', newCategory)
+    // 다른 카테고리는 첫 페이지부터 (?cursor= 로 들어온 경우)
+    params.delete('cursor')
     // 서버 왕복(loading.tsx 전체 덮기) 없이 URL 만 바꾼다. Next 가 useSearchParams 와 동기화하고
     // 아래 effect 가 목록만 받아온다. PC 사이드바 링크 · 직접 접속은 그대로 서버 렌더링
     window.history.pushState(null, '', `?${params.toString()}`)
@@ -113,6 +131,8 @@ function BalancePageContent({ initialData }: BalancePageProps) {
       setHasNextPage(data.has_next_page)
       setNextCursor(data.next_cursor)
     } catch {
+      // 받는 사이 카테고리가 바뀌었으면 이전 목록의 실패도 새 목록에 띄우지 않는다
+      if (listKeyRef.current !== requestKey) return
       setError('추가 데이터를 불러오지 못했습니다.')
     } finally {
       setIsLoadingMore(false)
