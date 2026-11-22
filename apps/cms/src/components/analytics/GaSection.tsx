@@ -175,6 +175,7 @@ export default function GaSection({
               </ResponsiveContainer>
             )}
           </div>
+          {data && <LoginConversion value={data.loginConversion} />}
         </Panel>
 
         <Panel title="참여도" description={data ? `최근 ${data.days}일` : undefined}>
@@ -189,6 +190,30 @@ export default function GaSection({
       >
         <SourcesTable data={data} />
       </Panel>
+    </div>
+  )
+}
+
+/** 비로그인 투표 시도 중 로그인 후 자동 투표까지 이어진 비율 */
+function LoginConversion({ value }: { value: GaDashboard['loginConversion'] }) {
+  if (!value) {
+    return <p className="mt-3 text-xs text-gray-400">로그인 전환율을 불러오지 못했습니다.</p>
+  }
+  const { attempts, afterLoginVotes, since } = value
+  return (
+    <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 border-t border-gray-100 pt-3">
+      <span className="text-xs text-gray-600">
+        로그인 전환율 (투표 시도 → 로그인 후 투표)
+        <span className="ml-1 text-gray-400">{since} 부터</span>
+      </span>
+      <span className="text-sm text-gray-900">
+        <span className="font-semibold">
+          {attempts ? `${Math.round((afterLoginVotes / attempts) * 100)}%` : '-'}
+        </span>
+        <span className="ml-1.5 text-xs text-gray-500">
+          {fmt(afterLoginVotes)} / {fmt(attempts)}
+        </span>
+      </span>
     </div>
   )
 }
