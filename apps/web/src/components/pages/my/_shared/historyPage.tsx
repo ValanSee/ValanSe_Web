@@ -7,6 +7,7 @@ import Header from '@/components/_shared/header'
 import BalanseHistoryCard from '@/components/pages/my/_shared/balanseHistoryCard'
 import { TabBar, TabItem } from '@/components/ui/tabBar'
 import { fetchMineVotesCreated, fetchMineVotesVoted } from '@/api/votes'
+import { useSlideDirection } from '@/hooks/utils/useSlideDirection'
 import { MyVoteHistoryItem } from '@/types/my/history'
 import { cn } from '@/lib/utils'
 import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
@@ -28,6 +29,9 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
   const [sort, setSort] = useState<'latest' | 'popular'>('latest')
   const [votes, setVotes] = useState<MyVoteHistoryItem[]>([])
   const [error, setError] = useState<string | null>(null)
+  const listSlideClass = useSlideDirection(
+    CATEGORIES.findIndex((c) => c.value === category),
+  )
 
   const title =
     mode === 'created' ? '내가 만든 밸런스 게임' : '내가 투표한 밸런스 게임'
@@ -78,7 +82,15 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
           <Icon icon="icon-park-solid:down-one" width={14} aria-hidden />
         </button>
       </div>
-      <div className="flex flex-col gap-3 px-4 pb-24 pt-3">
+      <div
+        key={category}
+        className={cn(
+          'flex flex-col gap-3 px-4 pb-24 pt-3',
+          listSlideClass,
+          // 방향 슬라이드는 모바일 전용. PC 는 기존 동작 유지
+          'lg:animate-none',
+        )}
+      >
         {error && (
           <p className="typo-body-b-01 py-8 text-center text-destructive">
             {error}
