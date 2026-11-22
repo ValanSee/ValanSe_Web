@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import Loading from '@/components/_shared/loading'
+import { tabPageSkeletonFor } from '@/components/_shared/skeleton/tabPageSkeletons'
 import {
   buildCurrentReturnPath,
   entryHrefWithRedirect,
@@ -47,12 +48,8 @@ function AuthGuardInner({ children }: { children: React.ReactNode }) {
     return <>{children}</>
   }
 
-  if (!hasToken) {
-    return <Loading />
-  }
-
-  if (!isLogined) {
-    return <Loading />
+  if (!hasToken || !isLogined) {
+    return tabPageSkeletonFor(pathname) ?? <Loading />
   }
 
   return <>{children}</>
