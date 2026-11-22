@@ -1,10 +1,9 @@
 import Header from '@/components/_shared/header'
 import { BalanseListSkeleton } from '@/components/_shared/skeleton/balanseListSkeleton'
-import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
-import { cn } from '@/lib/utils'
+import Loading from '@/components/_shared/loading'
 
 const BLOCK = 'animate-pulse rounded-xl bg-brand-gray-50'
-const ROOT = cn('flex min-h-screen flex-col bg-card pb-24', DESKTOP_PAGE_COLUMN)
+const ROOT = 'flex min-h-screen flex-col bg-card pb-24'
 
 export function BalansePageSkeleton() {
   return (
@@ -52,8 +51,7 @@ export function MyPageSkeleton() {
   )
 }
 
-/** 탭 경로(정확 일치)일 때만 해당 스켈레톤, 그 외는 null */
-export function tabPageSkeletonFor(pathname: string): React.ReactNode | null {
+function skeletonFor(pathname: string): React.ReactNode | null {
   switch (pathname) {
     case '/balanse':
       return <BalansePageSkeleton />
@@ -64,4 +62,21 @@ export function tabPageSkeletonFor(pathname: string): React.ReactNode | null {
     default:
       return null
   }
+}
+
+/**
+ * 탭 경로(정확 일치)일 때만 노드를 반환, 그 외는 null.
+ * 스켈레톤은 모바일 전용(lg:hidden), PC 는 기존 로고 로더(hidden lg:block).
+ */
+export function tabPageSkeletonFor(pathname: string): React.ReactNode | null {
+  const skeleton = skeletonFor(pathname)
+  if (!skeleton) return null
+  return (
+    <>
+      <div className="lg:hidden">{skeleton}</div>
+      <div className="hidden lg:block">
+        <Loading />
+      </div>
+    </>
+  )
 }
