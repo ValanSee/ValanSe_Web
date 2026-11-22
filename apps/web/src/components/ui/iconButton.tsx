@@ -17,7 +17,7 @@ const iconButtonVariants = cva(
         ghost: 'bg-brand-gray-50 text-foreground hover:bg-brand-violet-50',
         /** V300 배경 · white 아이콘 · 강조 액션 (플로팅 등) */
         primary:
-          'bg-primary text-primary-foreground hover:bg-brand-violet-400 disabled:bg-brand-gray-75',
+          'bg-primary text-primary-foreground hover:bg-brand-violet-400 disabled:bg-brand-gray-50',
       },
       size: {
         sm: 'h-6 w-6',

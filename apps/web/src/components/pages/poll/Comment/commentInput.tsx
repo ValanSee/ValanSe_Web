@@ -77,7 +77,6 @@ export default function CommentInput({
           variant="primary"
           size="md"
           shape="square"
-          className={!canSubmit ? 'bg-brand-gray-50 text-brand-gray-75' : ''}
           onClick={handleSubmit}
           disabled={!canSubmit}
           loading={isSubmitting}
