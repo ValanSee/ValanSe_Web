@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Icon } from '@/components/ui/icon'
-import Loading from '@/components/_shared/loading'
+import { tabPageSkeletonFor } from '@/components/_shared/skeleton/tabPageSkeletons'
 import Header from '@/components/_shared/header'
 import Avatar from '@/components/_shared/avatar'
 import { IconButton } from '@/components/ui/iconButton'
@@ -59,7 +59,8 @@ function MyPage() {
     if (!titles) void dispatch(fetchTitlesThunk()).catch(() => {})
   }, [dispatch, titles])
 
-  if (!mypageData) return <Loading />
+  // 모바일은 loading.tsx 와 같은 마이 스켈레톤을 이어 보여주고, PC 는 기존 로고 로더
+  if (!mypageData) return tabPageSkeletonFor('/my')
 
   const point = pointHistory?.[0]?.remainingPoint ?? null
   const equippedTitle =
