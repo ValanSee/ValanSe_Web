@@ -8,6 +8,8 @@ export default {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     // 레이아웃 클래스 상수 (DESKTOP_PAGE_COLUMN 등)
     './src/constants/**/*.{js,ts}',
+    // 슬라이드 전환 클래스 리터럴 (slideTransition.ts)
+    './src/lib/**/*.{js,ts}',
   ],
   theme: {
     extend: {
