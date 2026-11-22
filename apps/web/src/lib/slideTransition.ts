@@ -8,7 +8,8 @@ export function getSlideDirection(prev: number, next: number): SlideDirection {
 
 /** Tailwind JIT 가 읽도록 클래스는 완성된 리터럴로 둔다. */
 export function slideInClass(dir: SlideDirection): string {
-  const base = 'animate-in fade-in [animation-duration:250ms] ease-out'
+  const base =
+    'animate-in fade-in [animation-duration:250ms] [animation-timing-function:cubic-bezier(0,0,0.2,1)]'
   if (dir === 'right') {
     return `${base} slide-in-from-right-1/4 motion-reduce:slide-in-from-right-0`
   }
