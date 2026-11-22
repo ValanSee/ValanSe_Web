@@ -11,10 +11,10 @@ export function slideInClass(dir: SlideDirection): string {
   const base =
     'animate-in fade-in [animation-duration:250ms] [animation-timing-function:cubic-bezier(0,0,0.2,1)]'
   if (dir === 'right') {
-    return `${base} slide-in-from-right-1/4 motion-reduce:slide-in-from-right-0`
+    return `${base} slide-in-from-right-1/4 lg:slide-in-from-right-0 motion-reduce:slide-in-from-right-0`
   }
   if (dir === 'left') {
-    return `${base} slide-in-from-left-1/4 motion-reduce:slide-in-from-left-0`
+    return `${base} slide-in-from-left-1/4 lg:slide-in-from-left-0 motion-reduce:slide-in-from-left-0`
   }
   return base
 }
