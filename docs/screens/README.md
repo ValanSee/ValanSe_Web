@@ -54,6 +54,15 @@
 - **푸터** (`components/_shared/desktopFooter.tsx`): 홈 · 밸런스게임 모음 · 인기 · 주제 추천(`/topics`) · MT 밸런스게임 PPT(`/topics/mt-ppt`) · 만들기, 카테고리별 `/balanse?category=*`, 개인정보 처리방침 · 모임·행사용 문의(구글폼, 새 탭) 링크 (내부 링크용)
 - **바텀시트**(신고 · MBTI 선택): 화면 가운데 모달로 표시
 
+## 공통: 탭 전환 슬라이드 · 하단 탭바 (모바일)
+
+> 2026-11-22 추가.
+
+- **하단 탭바 위치**: 페이지마다 렌더하지 않고 루트 `app/layout.tsx` 에 한 번만 둠 → 탭 이동 시 탭바가 재마운트·깜빡임 없이 유지. 표시 경로는 `navItems.ts` `BOTTOM_NAV_PATHS` (`/` · `/balanse` · `/create` · `/my` · `/about` · `/topics` · `/topics/mt-ppt`), `/poll/*` 등 그 외는 숨김
+- **페이지 전환**: `app/template.tsx` → `RouteTransition` 이 pathname 기준으로 재마운트. 탭(홈·인기·밸런스·만들기·마이) 간 이동은 탭 순서 기준 좌/우 슬라이드(250ms) + 페이드, 탭이 아닌 화면 이동·같은 탭은 페이드만. `prefers-reduced-motion` 이면 슬라이드 제거
+- **탭 로딩 스켈레톤**: 밸런스·만들기·마이는 `loading.tsx` 에서 탭 모양 스켈레톤 표시. **모바일 전용** — PC(`lg`+)는 기존 로고 Loading 유지
+- **PC**: 탭바가 없고 페이지 슬라이드 방향 연출은 모바일 기준. 목록 내부 슬라이드는 SCR-BALANSE-001 · SCR-MY-* 참조
+
 ## 공통: 앱 업데이트 권장 모달 (앱 WebView)
 
 > 2026-10-28 추가. 웹 브라우저에서는 뜨지 않음.
