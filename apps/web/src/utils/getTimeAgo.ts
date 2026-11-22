@@ -1,9 +1,10 @@
 // utils/getTimeAgo.ts
-export const getTimeAgo = (utcDate: Date | string): string => {
-  const utc = typeof utcDate === 'string' ? new Date(utcDate) : utcDate
-  const d = new Date(utc.getTime() + 9 * 60 * 60 * 1000)
+import { parseServerDate } from './serverDate'
+
+export const getTimeAgo = (serverDate: Date | string): string => {
+  const d = parseServerDate(serverDate)
   const now = new Date()
-  const diff = Math.floor((now.getTime() - d.getTime()) / 1000)
+  const diff = Math.max(0, Math.floor((now.getTime() - d.getTime()) / 1000))
 
   if (diff < 60) return `${diff}초 전`
   if (diff < 3600) return `${Math.floor(diff / 60)}분 전`

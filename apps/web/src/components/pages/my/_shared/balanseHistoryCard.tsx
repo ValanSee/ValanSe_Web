@@ -3,6 +3,7 @@ import { useAppSelector } from '@/hooks/utils/useAppSelector'
 import { MyVoteHistoryItem } from '@/types/my/history'
 import { Chip } from '@/components/ui/chip'
 import { numberToAlphabet } from '@/utils/map'
+import { formatKstDate } from '@/utils/serverDate'
 
 const CATEGORY_LABEL: Record<string, string> = {
   LOVE: '연애',
@@ -33,7 +34,7 @@ export default function BalanseHistoryCard({
           {CATEGORY_LABEL[data.category] ?? data.category}
         </Chip>
         <span className="typo-body-c-02 text-brand-gray-100">
-          {nickname} · {data.createdAt}
+          {nickname} · {formatKstDate(data.createdAt)}
         </span>
       </div>
       <h3 className="typo-heading-06 text-foreground">{data.title}</h3>

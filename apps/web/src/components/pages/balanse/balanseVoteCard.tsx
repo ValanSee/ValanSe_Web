@@ -8,6 +8,7 @@ import VsBadge from '@/components/_shared/vsBadge'
 import VoteOptionPill from '@/components/_shared/voteOptionPill'
 import { useVoteAction } from '@/hooks/utils/useVoteAction'
 import type { Vote } from '@/types/balanse/vote'
+import { formatKstDate } from '@/utils/serverDate'
 
 interface Props {
   data: Vote
@@ -33,7 +34,7 @@ export default function BalanseVoteCard({ data }: Props) {
           <div className="flex items-center gap-2">
             <CategoryChip category={data.category} />
             <span className="typo-body-c-02 text-brand-gray-100">
-              {data.nickname} · {data.created_at}
+              {data.nickname} · {formatKstDate(data.created_at)}
             </span>
           </div>
           <h3 className="typo-heading-06 text-foreground">{data.title}</h3>
