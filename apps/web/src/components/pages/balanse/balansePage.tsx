@@ -56,7 +56,9 @@ function BalancePageContent({ initialData }: BalancePageProps) {
   )
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const loadingRef = useRef<HTMLDivElement>(null)
-  const listKeyRef = useRef<string | null>(null)
+  // 목록 세대. 동기화 effect 가 돌 때마다(목록이 바뀔 때마다) 1 증가.
+  // listKey 비교만으로는 A→B→A 로 돌아온 뒤 A 의 옛 다음 페이지가 섞이므로 세대로 구분한다
+  const listGenRef = useRef(0)
 
   const category = searchParams.get('category') || 'ALL'
   const sort = (searchParams.get('sort') as 'latest' | 'popular') || 'latest'
@@ -116,7 +118,7 @@ function BalancePageContent({ initialData }: BalancePageProps) {
 
   const loadMore = useCallback(async () => {
     if (isLoadingMore || !hasNextPage || !nextCursor) return
-    const requestKey = listKey
+    const requestGen = listGenRef.current
     try {
       setIsLoadingMore(true)
       const data = await fetchVotes({
@@ -125,19 +127,21 @@ function BalancePageContent({ initialData }: BalancePageProps) {
         cursor: nextCursor,
         size: 5,
       })
-      // 받는 사이 카테고리가 바뀌었으면 이전 목록의 다음 페이지는 버린다
-      if (listKeyRef.current !== requestKey) return
+      // 받는 사이 목록이 바뀌었으면(같은 카테고리로 돌아왔어도) 이전 목록의 다음 페이지는 버린다
+      if (listGenRef.current !== requestGen) return
       setVotes((prev) => [...prev, ...data.votes])
       setHasNextPage(data.has_next_page)
       setNextCursor(data.next_cursor)
     } catch {
-      // 받는 사이 카테고리가 바뀌었으면 이전 목록의 실패도 새 목록에 띄우지 않는다
-      if (listKeyRef.current !== requestKey) return
+      // 받는 사이 목록이 바뀌었으면 이전 목록의 실패도 새 목록에 띄우지 않는다
+      if (listGenRef.current !== requestGen) return
       setError('추가 데이터를 불러오지 못했습니다.')
     } finally {
-      setIsLoadingMore(false)
+      // 버려진 요청은 로딩 상태를 건드리지 않는다. 세대가 바뀔 때 effect 가 이미 풀었고,
+      // 그 뒤 새 목록이 시작한 요청의 로딩을 여기서 풀면 같은 커서로 중복 요청이 나갈 수 있다
+      if (listGenRef.current === requestGen) setIsLoadingMore(false)
     }
-  }, [category, sort, listKey, hasNextPage, nextCursor, isLoadingMore])
+  }, [category, sort, hasNextPage, nextCursor, isLoadingMore])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -154,7 +158,9 @@ function BalancePageContent({ initialData }: BalancePageProps) {
   }, [loadMore, hasNextPage, isLoadingMore, votesSynced])
 
   useEffect(() => {
-    listKeyRef.current = listKey
+    // 새 목록 세대 시작: 진행 중이던 다음 페이지 요청은 버려지므로 로딩 상태를 여기서 푼다
+    listGenRef.current += 1
+    setIsLoadingMore(false)
     // 서버가 내려준 첫 페이지(직접 접속 · PC 사이드바 링크 · 처음 카테고리로 뒤로가기)와 일치하면 재조회 생략
     if (initialData?.key === listKey) {
       setVotes(initialData.votes)
