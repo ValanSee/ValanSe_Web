@@ -13,6 +13,7 @@ import {
   purchaseTitleThunk,
 } from '@/store/thunks/memberThunks'
 import { entryHrefWithRedirect } from '@/utils/authRedirect'
+import { useSlideDirection } from '@/hooks/utils/useSlideDirection'
 import { Title } from '@/types/_shared/title'
 import TitleCurrentSection from './titleCurrentSection'
 import TitleTabs, { TitleTabKey } from './titleTabs'
@@ -33,6 +34,7 @@ const TitlesPage = () => {
   const [tab, setTab] = useState<TitleTabKey>('owned')
   const [modal, setModal] = useState<ModalState>(null)
   const [pending, setPending] = useState(false)
+  const listSlideClass = useSlideDirection(tab === 'owned' ? 0 : 1)
 
   useEffect(() => {
     void (async () => {
@@ -115,7 +117,15 @@ const TitlesPage = () => {
         ownedCount={ownedAll.length}
         lockedCount={lockedAll.length}
       />
-      <ul className="px-4 pb-20">
+      <ul
+        key={tab}
+        className={cn(
+          'px-4 pb-20',
+          listSlideClass,
+          // 방향 슬라이드는 모바일 전용. PC 는 기존 동작 유지 (! 로 slideInClass 의 lg:animate-fade-only 보다 우선)
+          'lg:!animate-none',
+        )}
+      >
         {visible.length === 0 ? (
           <li className="typo-body-b-01 py-16 text-center text-brand-gray-100">
             {tab === 'owned' ? '보유한 칭호가 없어요' : '잠금 칭호가 없어요'}

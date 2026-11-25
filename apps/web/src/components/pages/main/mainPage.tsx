@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { Icon } from '@/components/ui/icon'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import SectionHeader from '@/components/_shared/sectionHeader'
 import EmptyState from '@/components/_shared/emptyState'
@@ -179,8 +178,6 @@ const MainPage = ({ initialFeatured, initialLatest }: MainPageProps) => {
           </div>
         )}
       </section>
-
-      <BottomNavBar />
     </div>
   )
 }

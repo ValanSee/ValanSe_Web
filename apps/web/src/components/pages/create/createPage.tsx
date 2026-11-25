@@ -3,7 +3,6 @@
 import { Icon } from '@/components/ui/icon'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import BottomNavBar from '@/components/_shared/nav/bottomNavBar'
 import Header from '@/components/_shared/header'
 import { Chip } from '@/components/ui/chip'
 import { TextField } from '@/components/ui/textField'
@@ -304,7 +303,6 @@ const CreatePage = () => {
           </p>
         </div>
       </div>
-      <BottomNavBar />
     </div>
   )
 }

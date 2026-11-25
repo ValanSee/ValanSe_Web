@@ -9,6 +9,7 @@
 | 경로 | `/my/point` |
 | 인증 필요 | ✓ |
 | 작성일 | 2026-05-19 |
+| 최종 수정일 | 2026-11-25 |
 | 관련 디자인 | TODO: 확인 |
 
 ## 🎯 화면 목적
@@ -42,7 +43,7 @@
 
 **사용자 액션**
 
-- "칭호 상점 가기" 버튼 클릭 → `/my/titles` 이동 (TODO: SCR-MY-TITLE-001 작성 예정)
+- "칭호 상점 가기" 버튼 클릭 → `/my/titles` 이동 (SCR-MY-TITLE-001)
 
 **상태별 처리**
 
@@ -99,7 +100,7 @@
 **시나리오 2: 칭호 상점 진입**
 
 1. `/my/point`에서 "칭호 상점 가기" 클릭
-2. `/my/titles` 이동 (후속 작업 SCR-MY-TITLE-001)
+2. `/my/titles` 이동 (SCR-MY-TITLE-001)
 
 ## ✅ 수용 기준 (Acceptance Criteria)
 
@@ -143,4 +144,4 @@
 ## 📎 관련 문서
 
 - 진입 출처: `SCR-MY-001_my.md`
-- 후속 화면: `SCR-MY-TITLE-001_my-titles.md` (작성 예정)
+- 후속 화면: `SCR-MY-TITLE-001_my-titles.md`

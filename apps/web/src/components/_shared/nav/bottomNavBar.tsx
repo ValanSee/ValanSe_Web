@@ -1,10 +1,16 @@
+'use client'
+
 import { Suspense } from 'react'
+import { usePathname } from 'next/navigation'
 import NavBarContent from './navBarContent'
-import Loading from '@/components/_shared/loading'
+import { showsBottomNav } from './navItems'
 
 function BottomNavBar() {
+  const pathname = usePathname()
+  if (!showsBottomNav(pathname)) return null
+
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={null}>
       <NavBarContent />
     </Suspense>
   )

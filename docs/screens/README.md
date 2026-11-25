@@ -26,6 +26,7 @@
 | SCR-MY-EDIT-001 | `/my/edit` | ✓ | [SCR-MY-EDIT-001_my-edit.md](./SCR-MY-EDIT-001_my-edit.md) |
 | SCR-MY-POINT-001 | `/my/point` | ✓ | [SCR-MY-POINT-001_my-point.md](./SCR-MY-POINT-001_my-point.md) |
 | SCR-MY-BLOCKS-001 | `/my/blocks` | ✓ | [SCR-MY-BLOCKS-001_my-blocks.md](./SCR-MY-BLOCKS-001_my-blocks.md) |
+| SCR-MY-TITLE-001 | `/my/titles` | ✓ | [SCR-MY-TITLE-001_my-titles.md](./SCR-MY-TITLE-001_my-titles.md) |
 | SCR-MY-VOTED-001 | `/my/voted` | ✓ | [SCR-MY-VOTED-001_my-voted.md](./SCR-MY-VOTED-001_my-voted.md) |
 | SCR-POLL-001 | `/poll/[id]` | ✓ | [SCR-POLL-001_poll-detail.md](./SCR-POLL-001_poll-detail.md) |
 | SCR-BALANSE-001 | `/balanse` | ✗ | [SCR-BALANSE-001_balanse.md](./SCR-BALANSE-001_balanse.md) |
@@ -53,6 +54,15 @@
 - **본문**: 기본은 가운데 정렬 768px 컬럼 (`DESKTOP_PAGE_COLUMN`, 회색 배경 위 흰 컬럼). 홈·밸런스·투표 상세는 1200px 전용 레이아웃 (`DESKTOP_PAGE_WIDE`, 각 SCR 문서의 "PC 레이아웃" 참조)
 - **푸터** (`components/_shared/desktopFooter.tsx`): 홈 · 밸런스게임 모음 · 인기 · 주제 추천(`/topics`) · MT 밸런스게임 PPT(`/topics/mt-ppt`) · 만들기, 카테고리별 `/balanse?category=*`, 개인정보 처리방침 · 모임·행사용 문의(구글폼, 새 탭) 링크 (내부 링크용)
 - **바텀시트**(신고 · MBTI 선택): 화면 가운데 모달로 표시
+
+## 공통: 탭 전환 슬라이드 · 하단 탭바 (모바일)
+
+> 2026-11-22 추가.
+
+- **하단 탭바 위치**: 페이지마다 렌더하지 않고 루트 `app/layout.tsx` 에 한 번만 둠 → 탭 이동 시 탭바가 재마운트·깜빡임 없이 유지. 표시 경로는 `navItems.ts` `BOTTOM_NAV_PATHS` (`/` · `/balanse` · `/create` · `/my` · `/about` · `/topics` · `/topics/mt-ppt`), `/poll/*` 등 그 외는 숨김
+- **페이지 전환**: `app/template.tsx` → `RouteTransition` 이 pathname 기준으로 재마운트. 탭(홈·밸런스·만들기·마이 4탭, `NAV_ITEMS`) 간 이동은 탭 순서 기준 좌/우 슬라이드(250ms) + 페이드, 탭이 아닌 화면 이동·같은 탭은 페이드만. `/about` · `/topics` · `/topics/mt-ppt` 는 탭바는 보이지만 슬라이드 대상이 아니라 페이드. `prefers-reduced-motion` 이면 슬라이드 제거
+- **탭 로딩 스켈레톤**: 밸런스·만들기·마이는 `loading.tsx` 에서 탭 모양 스켈레톤 표시. **모바일 전용** — PC(`lg`+)는 기존 로고 Loading 유지
+- **PC**: 탭바 없음, 페이지·목록 전환 모두 슬라이드 없이 기존처럼 페이드 (밸런스 PC 는 기존 카드별 등장 애니메이션). 목록 내부 슬라이드는 SCR-BALANSE-001 · SCR-MY-* 참조
 
 ## 공통: 앱 업데이트 권장 모달 (앱 WebView)
 
