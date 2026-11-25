@@ -69,7 +69,7 @@ export default function MoreMenu({
                 item.onSelect()
               }}
               className={cn(
-                'typo-label-03 flex w-full items-center gap-2 px-4 py-2',
+                'typo-label-03 flex w-full items-center gap-2 whitespace-nowrap px-4 py-2',
                 item.destructive ? 'text-destructive' : 'text-brand-gray-200',
               )}
             >
