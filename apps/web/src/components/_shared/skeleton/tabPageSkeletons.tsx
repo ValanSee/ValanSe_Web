@@ -18,7 +18,8 @@ export function BalansePageSkeleton() {
 export function CreatePageSkeleton() {
   return (
     <div className={ROOT} aria-busy aria-hidden>
-      <Header showBackButton title="밸런스 게임 만들기" />
+      {/* aria-hidden 안이라 포커스 가능한 뒤로가기 버튼은 두지 않는다 (실제 페이지에만) */}
+      <Header title="밸런스 게임 만들기" />
       <div className="flex flex-col gap-4 px-4 pt-4">
         <div className={`${BLOCK} h-14`} />
         <div className={`${BLOCK} h-32`} />
