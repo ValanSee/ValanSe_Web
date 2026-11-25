@@ -26,7 +26,14 @@ function SlideIn({
   }, [pathname])
 
   return (
-    <div className={cn('page-safe-bottom', slideInClass(dir))}>{children}</div>
+    // 바깥(움직이지 않는) 요소의 overflow-x-clip: 옆에서 들어오는 동안 본문이 화면 밖으로 밀려
+    // 모바일 브라우저가 레이아웃 폭을 넓혔다 줄이며 고정 하단 탭바를 다시 배치(깜빡임)하지 않게 한다.
+    // 움직이는 래퍼 자체에 걸면 래퍼 박스가 같이 밀려 효과가 없다. hidden 이 아니라 clip 이라 sticky 헤더는 그대로 동작
+    <div className="overflow-x-clip">
+      <div className={cn('page-safe-bottom', slideInClass(dir))}>
+        {children}
+      </div>
+    </div>
   )
 }
 
