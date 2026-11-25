@@ -68,6 +68,31 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
   const title =
     mode === 'created' ? '내가 만든 밸런스 게임' : '내가 투표한 밸런스 게임'
 
+  const renderListContent = (
+    items: MyVoteHistoryItem[],
+    listError: string | null,
+  ) => (
+    <>
+      {listError && (
+        <p className="typo-body-b-01 py-8 text-center text-destructive">
+          {listError}
+        </p>
+      )}
+      {!listError && items.length === 0 && (
+        <p className="typo-body-b-01 py-8 text-center text-brand-gray-100">
+          아직 활동 내역이 없어요
+        </p>
+      )}
+      {items.map((vote) => (
+        <BalanseHistoryCard
+          key={vote.voteId}
+          data={vote}
+          onClick={() => router.push(`/poll/${vote.voteId}`)}
+        />
+      ))}
+    </>
+  )
+
   useEffect(() => {
     // 빠르게 연달아 바꾸면 이전 요청은 버리고 마지막 카테고리 · 정렬의 응답만 반영
     let cancelled = false
@@ -121,11 +146,21 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
         </button>
       </div>
       {!listReady ? (
-        <div className="flex flex-col gap-3 px-4 pb-24 pt-3" aria-hidden>
-          {[0, 1, 2].map((i) => (
-            <div key={i} className={`${SKELETON_BLOCK} h-40`} />
-          ))}
-        </div>
+        <>
+          {/* 스켈레톤은 모바일 전용 */}
+          <div
+            className="flex flex-col gap-3 px-4 pb-24 pt-3 lg:hidden"
+            aria-hidden
+          >
+            {[0, 1, 2].map((i) => (
+              <div key={i} className={`${SKELETON_BLOCK} h-40`} />
+            ))}
+          </div>
+          {/* PC 는 기존 동작 유지: 새 응답이 올 때까지 직전 목록을 그대로 보여준다 */}
+          <div className="hidden flex-col gap-3 px-4 pb-24 pt-3 lg:flex">
+            {renderListContent(result?.votes ?? [], result?.error ?? null)}
+          </div>
+        </>
       ) : (
         <div
           key={category}
@@ -136,23 +171,7 @@ const HistoryPage = ({ mode }: HistoryPageProps) => {
             'lg:!animate-none',
           )}
         >
-          {error && (
-            <p className="typo-body-b-01 py-8 text-center text-destructive">
-              {error}
-            </p>
-          )}
-          {!error && votes.length === 0 && (
-            <p className="typo-body-b-01 py-8 text-center text-brand-gray-100">
-              아직 활동 내역이 없어요
-            </p>
-          )}
-          {votes.map((vote) => (
-            <BalanseHistoryCard
-              key={vote.voteId}
-              data={vote}
-              onClick={() => router.push(`/poll/${vote.voteId}`)}
-            />
-          ))}
+          {renderListContent(votes, error)}
         </div>
       )}
     </div>
