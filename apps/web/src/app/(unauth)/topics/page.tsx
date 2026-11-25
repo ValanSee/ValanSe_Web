@@ -8,9 +8,10 @@ import { BASE_OPEN_GRAPH, SITE_NAME, SITE_URL } from '@/constants/seo'
 import { JsonLd } from '@/components/_shared/jsonLd'
 
 const PATH = '/topics'
-const TITLE = '밸런스게임 주제 추천 모음 - 연애·음식·친구 밸런스 질문'
+// 홈 title 이 '밸런스게임 주제 모음' 을 쓰므로 여기는 '질문 추천' 으로 검색어를 나눈다
+const TITLE = '밸런스게임 질문 추천 - 커플·친구·술자리 인기 주제'
 const DESCRIPTION =
-  '커플·친구·술자리에서 바로 쓰는 밸런스게임 주제 추천. 지금 인기 있는 질문과 연애·음식·살까말까·스포츠·고민상담 카테고리별 밸런스게임을 모았어요.'
+  '라면 면 먼저 vs 스프 먼저처럼 바로 쓸 수 있는 밸런스게임 질문을 인기순으로 모았어요. 연애·음식·살까말까·고민상담 카테고리별로 고르고 다른 사람들의 선택 비율도 확인해 보세요.'
 
 const POPULAR_SIZE = 10
 const SECTION_SIZE = 5

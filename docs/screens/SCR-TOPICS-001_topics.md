@@ -26,7 +26,7 @@
 ## 🖥️ 렌더링 (SEO)
 
 - 전체 인기순 10개 + 카테고리 6개 각 인기순 5개를 서버에서 비로그인으로 조회해 SSR (`GET /votes`, 60초 캐시)
-- title `밸런스게임 주제 추천 모음 - 연애·음식·친구 밸런스 질문`, canonical `/topics`
+- title `밸런스게임 질문 추천 - 커플·친구·술자리 인기 주제` (홈의 `밸런스게임 주제 모음` 과 검색어를 나눔), canonical `/topics`
 - JSON-LD: BreadcrumbList (홈 › 밸런스게임 주제 추천), ItemList (인기 10개)
 
 ## 📐 레이아웃 구성
