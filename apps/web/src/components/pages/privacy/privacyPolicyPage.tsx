@@ -5,7 +5,7 @@ import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 const APP_NAME = 'Valanse'
 const CONTACT_EMAIL = 'valansekr@gmail.com'
 const SERVICE_URL = 'https://valanse.kr'
-const EFFECTIVE_DATE = '2026-11-15'
+const EFFECTIVE_DATE = '2026-11-25'
 
 export const PrivacyPolicyPage = () => {
   return (
@@ -111,6 +111,12 @@ export const PrivacyPolicyPage = () => {
             <li>
               <strong>Apple 로그인 연결 정보</strong>: 회원 탈퇴 시 Apple에 연결
               해제(토큰 폐기)를 요청하고 즉시 삭제
+            </li>
+            <li>
+              <strong>작성한 밸런스 게임 · 댓글</strong>: 탈퇴 즉시 작성자
+              정보(닉네임 등)를 표시하지 않고 &quot;탈퇴한 사용자&quot;로
+              표시하며, 내용은 다른 이용자와의 대화 흐름 유지를 위해 남을 수
+              있습니다. 탈퇴 전에 직접 삭제할 수 있습니다
             </li>
             <li>
               <strong>이용 기록/로그</strong>: 서비스 안정성 및 보안 목적 범위

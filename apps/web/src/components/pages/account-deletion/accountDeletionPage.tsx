@@ -74,10 +74,22 @@ const AccountDeletionPage = () => {
               </h3>
               <ul className="typo-body-b-02 ml-2 list-inside list-disc space-y-1 text-brand-gray-200">
                 <li>프로필 정보 (닉네임, 성별, 나이, MBTI 등)</li>
-                <li>작성한 투표 게시글</li>
-                <li>작성한 댓글</li>
                 <li>투표 기록</li>
-                <li>계정 인증 정보</li>
+                <li>계정 인증 정보 (카카오 · Apple 로그인 연결 해제)</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="typo-body-b-01 mb-2 text-foreground">
+                익명으로 남는 데이터:
+              </h3>
+              <ul className="typo-body-b-02 ml-2 list-inside list-disc space-y-1 text-brand-gray-200">
+                <li>
+                  작성한 밸런스 게임과 댓글은 다른 사용자와의 대화 흐름을 위해
+                  삭제되지 않고 &quot;탈퇴한 사용자&quot;로 표시돼요. 닉네임 등
+                  나를 알아볼 수 있는 정보는 탈퇴 즉시 보이지 않아요.
+                </li>
+                <li>지우고 싶은 글은 탈퇴 전에 직접 삭제해 주세요.</li>
               </ul>
             </div>
 
