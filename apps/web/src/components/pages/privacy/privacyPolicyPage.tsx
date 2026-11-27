@@ -5,7 +5,7 @@ import { DESKTOP_PAGE_COLUMN } from '@/constants/layout'
 const APP_NAME = 'Valanse'
 const CONTACT_EMAIL = 'valansekr@gmail.com'
 const SERVICE_URL = 'https://valanse.kr'
-const EFFECTIVE_DATE = '2026-11-25'
+const EFFECTIVE_DATE = '2026-11-27'
 
 export const PrivacyPolicyPage = () => {
   return (
