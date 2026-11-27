@@ -25,11 +25,9 @@ jobs:
         project:
           - name: valan-se-web
             id: prj_e8TgEcNfhkDK0q0SleJy4k178Fso
-            node: "22.x"
             paths: '^(apps/web/|[^/]+$|\.github/workflows/vercel-deploy\.yml|packages/|libs/|shared/)'
           - name: valan-se-web-cms-19s6
             id: prj_2zuHK0H4CVoTbo2ougZmdswWob9b
-            node: "24.x"
             paths: '^(apps/cms/|[^/]+$|\.github/workflows/vercel-deploy\.yml|packages/|libs/|shared/)'
     env:
       VERCEL_ORG_ID: team_mTIhGDSaBWWNhXxtA0mFl257
@@ -59,25 +57,11 @@ jobs:
             echo "No changes for ${{ matrix.project.name }}, skipping."
           fi
 
-      - uses: actions/setup-node@v5
-        if: steps.changed.outputs.run == 'true'
-        with:
-          node-version: ${{ matrix.project.node }}
-
-      - name: Install Vercel CLI and package managers
-        if: steps.changed.outputs.run == 'true'
-        run: npm install --global vercel@latest pnpm@latest
-
-      - name: Pull Vercel settings
-        if: steps.changed.outputs.run == 'true'
-        run: vercel pull --yes --environment=${{ env.PROD == 'true' && 'production' || 'preview' }} --token="$VERCEL_TOKEN"
-
-      - name: Build
-        if: steps.changed.outputs.run == 'true'
-        run: vercel build ${{ env.PROD == 'true' && '--prod' || '' }} --token="$VERCEL_TOKEN"
-
+      # Build runs on Vercel (not --prebuilt): Sensitive env vars can't be pulled,
+      # and Vercel keeps using the project's own Node version / package manager.
       - name: Deploy
         if: steps.changed.outputs.run == 'true'
         run: |
-          url=$(vercel deploy --prebuilt ${{ env.PROD == 'true' && '--prod' || '' }} --token="$VERCEL_TOKEN")
+          npm install --global vercel@latest
+          url=$(vercel deploy --yes --archive=tgz ${{ env.PROD == 'true' && '--prod' || '' }} --token="$VERCEL_TOKEN")
           echo "### ${{ matrix.project.name }}: $url" >> "$GITHUB_STEP_SUMMARY"
